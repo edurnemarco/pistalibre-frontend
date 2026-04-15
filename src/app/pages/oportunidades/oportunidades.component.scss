@@ -104,6 +104,19 @@
   }
 }
 
+.checkbox-hidden {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  margin: 0;
+
+  &:focus-visible + .checkbox {
+    outline: 2px solid $color-texto;
+    outline-offset: 2px;
+  }
+}
+
 .limpiar-filtros {
   margin-top: 16px;
   font-family: $fuente-mono;

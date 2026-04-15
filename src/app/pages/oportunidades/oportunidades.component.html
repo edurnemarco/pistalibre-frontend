@@ -17,66 +17,96 @@
     <div class="filtros-inner">
       <div class="filtros-grid">
         <div class="filtro-grupo">
-          <p class="filtro-label">disciplina</p>
-          <div class="filtro-opciones">
+          <p class="filtro-label" id="disciplina-label">disciplina</p>
+          <div
+            class="filtro-opciones"
+            role="group"
+            aria-labelledby="disciplina-label"
+          >
             <label *ngFor="let d of disciplinasOpciones" class="filtro-item">
+              <input
+                type="checkbox"
+                class="checkbox-hidden"
+                [checked]="filtros.disciplinas.includes(d)"
+                (change)="toggleDisciplina(d, filtros)"
+                [attr.aria-label]="'Filtrar por ' + d"
+              />
               <span
                 class="checkbox"
                 [class.checked]="filtros.disciplinas.includes(d)"
-                (click)="toggleDisciplina(d, filtros)"
               ></span>
-              <span (click)="toggleDisciplina(d, filtros)">{{ d }}</span>
+              <span>{{ d }}</span>
             </label>
           </div>
         </div>
 
         <div class="filtro-grupo">
-          <p class="filtro-label">tipo</p>
-          <div class="filtro-opciones">
+          <p class="filtro-label" id="tipo-label">tipo</p>
+          <div
+            class="filtro-opciones"
+            role="group"
+            aria-labelledby="tipo-label"
+          >
             <label *ngFor="let t of tiposOpciones" class="filtro-item">
+              <input
+                type="checkbox"
+                class="checkbox-hidden"
+                [checked]="filtros.tipos.includes(t)"
+                (change)="toggleTipo(t, filtros)"
+                [attr.aria-label]="'Filtrar por tipo ' + t"
+              />
               <span
                 class="checkbox"
                 [class.checked]="filtros.tipos.includes(t)"
-                (click)="toggleTipo(t, filtros)"
               ></span>
-              <span (click)="toggleTipo(t, filtros)">{{ t }}</span>
+              <span>{{ t }}</span>
             </label>
           </div>
         </div>
 
         <div class="filtro-grupo">
-          <p class="filtro-label">lugar</p>
+          <p class="filtro-label" id="lugar-label">lugar</p>
           <input
             type="text"
             placeholder="ciudad o región"
             [value]="filtros.ciudad"
             (input)="onCiudadChange($event)"
-            aria-label="filtrar por ciudad"
+            aria-labelledby="lugar-label"
+            aria-label="filtrar por ciudad o región"
           />
         </div>
 
         <div class="filtro-grupo">
-          <p class="filtro-label">estado</p>
-          <div class="filtro-opciones">
+          <p class="filtro-label" id="estado-label">estado</p>
+          <div
+            class="filtro-opciones"
+            role="group"
+            aria-labelledby="estado-label"
+          >
             <label *ngFor="let e of estadosOpciones" class="filtro-item">
+              <input
+                type="checkbox"
+                class="checkbox-hidden"
+                [checked]="filtros.estado === e"
+                (change)="setEstado(e, filtros)"
+                [attr.aria-label]="'Filtrar por estado ' + e"
+              />
               <span
                 class="checkbox"
                 [class.checked]="filtros.estado === e"
-                (click)="setEstado(e, filtros)"
               ></span>
-              <span (click)="setEstado(e, filtros)">{{ e }}</span>
+              <span>{{ e }}</span>
             </label>
           </div>
         </div>
-      </div>
 
-      <button class="limpiar-filtros" (click)="limpiarFiltros()">
-        limpiar filtros
-      </button>
+        <button class="limpiar-filtros" (click)="limpiarFiltros()">
+          limpiar filtros
+        </button>
+      </div>
     </div>
   </div>
 </div>
-
 <div class="oportunidades-container">
   <hr class="filtros-hr" />
   <!-- LOADING -->
@@ -99,6 +129,7 @@
       <article
         *ngFor="let c of convocatoriasPaginadas$ | async"
         class="convocatoria-item"
+        [attr.aria-label]="'Convocatoria: ' + c.titulo"
       >
         <div class="convocatoria-fecha">
           <p class="col-titulo">fecha límite</p>
@@ -161,7 +192,15 @@
 
         <!-- FOOTER CON VER MÁS Y GUARDAR -->
         <div class="convocatoria-footer">
-          <button class="btn-ver-mas" (click)="toggleExpansion(c.id)">
+          <button
+            class="btn-ver-mas"
+            (click)="toggleExpansion(c.id)"
+            [attr.aria-label]="
+              isExpanded(c.id)
+                ? 'Ver menos de ' + c.titulo
+                : 'Ver más de ' + c.titulo
+            "
+          >
             {{ isExpanded(c.id) ? "- ver menos" : "+ ver más" }}
           </button>
           <button

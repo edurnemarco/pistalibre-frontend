@@ -8,6 +8,7 @@
       [attr.aria-selected]="tipo === 'artista'"
       [class.active]="tipo === 'artista'"
       (click)="setTipo('artista')"
+      aria-controls="form-artista"
     >
       artista
     </button>
@@ -16,21 +17,29 @@
       [attr.aria-selected]="tipo === 'institucion'"
       [class.active]="tipo === 'institucion'"
       (click)="setTipo('institucion')"
+      aria-controls="form-institucion"
     >
       institución
     </button>
   </div>
 
-  <div *ngIf="error$ | async as error" class="error" role="alert">
+  <div
+    *ngIf="error$ | async as error"
+    class="error"
+    role="alert"
+    aria-live="assertive"
+  >
     {{ error }}
   </div>
 
   <!-- FORMULARIO ARTISTA -->
   <form
+    id="form-artista"
     *ngIf="tipo === 'artista'"
     [formGroup]="formArtista"
     (ngSubmit)="onSubmit()"
     novalidate
+    aria-label="formulario de registro como artista"
   >
     <div class="field">
       <label for="nombre">nombre*</label>
@@ -39,6 +48,8 @@
         type="text"
         formControlName="nombre"
         placeholder="tu nombre"
+        autocomplete="given-name"
+        aria-required="true"
         [attr.aria-invalid]="
           formArtista.get('nombre')?.invalid &&
           formArtista.get('nombre')?.touched
@@ -48,6 +59,7 @@
       <span
         id="nombre-error"
         class="field-error"
+        role="alert"
         *ngIf="
           formArtista.get('nombre')?.invalid &&
           formArtista.get('nombre')?.touched
@@ -64,6 +76,8 @@
         type="text"
         formControlName="apellidos"
         placeholder="tus apellidos"
+        autocomplete="family-name"
+        aria-required="true"
         [attr.aria-invalid]="
           formArtista.get('apellidos')?.invalid &&
           formArtista.get('apellidos')?.touched
@@ -73,6 +87,7 @@
       <span
         id="apellidos-error"
         class="field-error"
+        role="alert"
         *ngIf="
           formArtista.get('apellidos')?.invalid &&
           formArtista.get('apellidos')?.touched
@@ -90,6 +105,7 @@
         [attr.aria-expanded]="disciplinasAbiertas"
         aria-haspopup="listbox"
         aria-labelledby="disciplinas-label"
+        aria-required="true"
         (click)="toggleDesplegable()"
         tabindex="0"
         (keydown.enter)="toggleDesplegable()"
@@ -140,6 +156,8 @@
         type="email"
         formControlName="email"
         placeholder="tu@email.com"
+        autocomplete="email"
+        aria-required="true"
         [attr.aria-invalid]="
           formArtista.get('email')?.invalid && formArtista.get('email')?.touched
         "
@@ -148,6 +166,7 @@
       <span
         id="email-error"
         class="field-error"
+        role="alert"
         *ngIf="
           formArtista.get('email')?.invalid && formArtista.get('email')?.touched
         "
@@ -163,6 +182,8 @@
         type="password"
         formControlName="password"
         placeholder="mínimo 8 caracteres"
+        autocomplete="new-password"
+        aria-required="true"
         [attr.aria-invalid]="
           formArtista.get('password')?.invalid &&
           formArtista.get('password')?.touched
@@ -172,6 +193,7 @@
       <span
         id="password-error"
         class="field-error"
+        role="alert"
         *ngIf="
           formArtista.get('password')?.invalid &&
           formArtista.get('password')?.touched
@@ -188,6 +210,8 @@
         type="password"
         formControlName="passwordConfirm"
         placeholder="········"
+        autocomplete="new-password"
+        aria-required="true"
         [attr.aria-invalid]="
           formArtista.errors?.['passwordsMismatch'] &&
           formArtista.get('passwordConfirm')?.touched
@@ -197,6 +221,7 @@
       <span
         id="passwordConfirm-error"
         class="field-error"
+        role="alert"
         *ngIf="
           formArtista.errors?.['passwordsMismatch'] &&
           formArtista.get('passwordConfirm')?.touched
@@ -222,10 +247,12 @@
 
   <!-- FORMULARIO INSTITUCIÓN -->
   <form
+    id="form-institucion"
     *ngIf="tipo === 'institucion'"
     [formGroup]="formInstitucion"
     (ngSubmit)="onSubmit()"
     novalidate
+    aria-label="formulario de registro como institución"
   >
     <div class="field">
       <label for="nombreInst">nombre*</label>
@@ -234,6 +261,8 @@
         type="text"
         formControlName="nombre"
         placeholder="nombre de la institución"
+        autocomplete="organization"
+        aria-required="true"
         [attr.aria-invalid]="
           formInstitucion.get('nombre')?.invalid &&
           formInstitucion.get('nombre')?.touched
@@ -243,6 +272,7 @@
       <span
         id="nombreInst-error"
         class="field-error"
+        role="alert"
         *ngIf="
           formInstitucion.get('nombre')?.invalid &&
           formInstitucion.get('nombre')?.touched
@@ -259,6 +289,8 @@
         type="text"
         formControlName="ciudad"
         placeholder="ciudad"
+        autocomplete="address-level2"
+        aria-required="true"
         [attr.aria-invalid]="
           formInstitucion.get('ciudad')?.invalid &&
           formInstitucion.get('ciudad')?.touched
@@ -268,6 +300,7 @@
       <span
         id="ciudad-error"
         class="field-error"
+        role="alert"
         *ngIf="
           formInstitucion.get('ciudad')?.invalid &&
           formInstitucion.get('ciudad')?.touched
@@ -284,6 +317,8 @@
         type="text"
         formControlName="region"
         placeholder="comunidad autónoma"
+        autocomplete="address-level1"
+        aria-required="true"
         [attr.aria-invalid]="
           formInstitucion.get('region')?.invalid &&
           formInstitucion.get('region')?.touched
@@ -293,6 +328,7 @@
       <span
         id="region-error"
         class="field-error"
+        role="alert"
         *ngIf="
           formInstitucion.get('region')?.invalid &&
           formInstitucion.get('region')?.touched
@@ -309,6 +345,8 @@
         type="text"
         formControlName="pais"
         placeholder="ES"
+        autocomplete="country"
+        aria-required="true"
         [attr.aria-invalid]="
           formInstitucion.get('pais')?.invalid &&
           formInstitucion.get('pais')?.touched
@@ -318,6 +356,7 @@
       <span
         id="pais-error"
         class="field-error"
+        role="alert"
         *ngIf="
           formInstitucion.get('pais')?.invalid &&
           formInstitucion.get('pais')?.touched
@@ -334,6 +373,7 @@
         type="url"
         formControlName="web"
         placeholder="https://tuinstitucion.com"
+        autocomplete="url"
       />
     </div>
 
@@ -344,6 +384,8 @@
         type="email"
         formControlName="email"
         placeholder="contacto@institucion.com"
+        autocomplete="email"
+        aria-required="true"
         [attr.aria-invalid]="
           formInstitucion.get('email')?.invalid &&
           formInstitucion.get('email')?.touched
@@ -353,6 +395,7 @@
       <span
         id="emailInst-error"
         class="field-error"
+        role="alert"
         *ngIf="
           formInstitucion.get('email')?.invalid &&
           formInstitucion.get('email')?.touched
@@ -369,6 +412,8 @@
         type="password"
         formControlName="password"
         placeholder="mínimo 8 caracteres"
+        autocomplete="new-password"
+        aria-required="true"
         [attr.aria-invalid]="
           formInstitucion.get('password')?.invalid &&
           formInstitucion.get('password')?.touched
@@ -378,6 +423,7 @@
       <span
         id="passwordInst-error"
         class="field-error"
+        role="alert"
         *ngIf="
           formInstitucion.get('password')?.invalid &&
           formInstitucion.get('password')?.touched
@@ -394,6 +440,8 @@
         type="password"
         formControlName="passwordConfirm"
         placeholder="········"
+        autocomplete="new-password"
+        aria-required="true"
         [attr.aria-invalid]="
           formInstitucion.errors?.['passwordsMismatch'] &&
           formInstitucion.get('passwordConfirm')?.touched
@@ -403,6 +451,7 @@
       <span
         id="passwordConfirmInst-error"
         class="field-error"
+        role="alert"
         *ngIf="
           formInstitucion.errors?.['passwordsMismatch'] &&
           formInstitucion.get('passwordConfirm')?.touched

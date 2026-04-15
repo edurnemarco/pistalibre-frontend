@@ -28,6 +28,13 @@
   }
 }
 
+.field-error {
+  display: block;
+  color: #256af4;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
 .forgot {
   display: block;
   color: $color-texto-secundario;
@@ -40,7 +47,7 @@
 }
 
 .error {
-  color: red;
+  color: #256af4;
   margin-bottom: 16px;
   text-align: center;
 }

@@ -2,11 +2,21 @@
   <h1>iniciar sesión</h1>
   <p>¿no tienes una cuenta? <a routerLink="/register">regístrate</a></p>
 
-  <div *ngIf="error$ | async as error" class="error" role="alert">
+  <div
+    *ngIf="error$ | async as error"
+    class="error"
+    role="alert"
+    aria-live="assertive"
+  >
     {{ error }}
   </div>
 
-  <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+  <form
+    [formGroup]="form"
+    (ngSubmit)="onSubmit()"
+    novalidate
+    aria-label="formulario de inicio de sesión"
+  >
     <div class="field">
       <label for="email">email*</label>
       <input
@@ -14,14 +24,17 @@
         type="email"
         formControlName="email"
         placeholder="tu@email.com"
+        autocomplete="email"
         [attr.aria-invalid]="
           form.get('email')?.invalid && form.get('email')?.touched
         "
         aria-describedby="email-error"
+        aria-required="true"
       />
       <span
         id="email-error"
         class="field-error"
+        role="alert"
         *ngIf="form.get('email')?.invalid && form.get('email')?.touched"
       >
         introduce un email válido
@@ -35,27 +48,33 @@
         type="password"
         formControlName="password"
         placeholder="········"
+        autocomplete="current-password"
         [attr.aria-invalid]="
           form.get('password')?.invalid && form.get('password')?.touched
         "
         aria-describedby="password-error"
+        aria-required="true"
       />
       <span
         id="password-error"
         class="field-error"
+        role="alert"
         *ngIf="form.get('password')?.invalid && form.get('password')?.touched"
       >
         mínimo 8 caracteres
       </span>
     </div>
 
-    <a class="forgot" href="#">¿has olvidado tu contraseña?</a>
+    <a class="forgot" href="#" aria-label="recuperar contraseña olvidada"
+      >¿has olvidado tu contraseña?</a
+    >
 
     <button
       type="submit"
       class="btn-primary"
       [disabled]="form.invalid || (loading$ | async)"
       [attr.aria-busy]="loading$ | async"
+      aria-live="polite"
     >
       {{ (loading$ | async) ? "cargando..." : "iniciar sesión" }}
     </button>
