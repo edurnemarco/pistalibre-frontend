@@ -1,0 +1,353 @@
+@use "../../../styles" as *;
+
+.oportunidades-container {
+  padding: 0 16px;
+}
+
+@media (min-width: 768px) {
+  .oportunidades-container {
+    padding: 0 32px;
+  }
+}
+
+// Filtros
+.filtros-header {
+  margin-bottom: 8px;
+}
+
+.filtros-toggle {
+  width: 100%;
+  display: block;
+  font-family: $fuente-mono;
+  font-size: 14px;
+  color: $color-texto;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  padding: 0;
+
+  &:focus-visible {
+    outline: 2px solid $color-texto;
+    outline-offset: 2px;
+  }
+}
+.filtros-fondo {
+  background: $color-acento;
+  width: 100%;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.filtros-inner {
+  padding: 16px;
+
+  @media (min-width: 768px) {
+    padding: 16px 32px;
+  }
+}
+
+.filtros-panel {
+  max-height: 60vh;
+  overflow-y: auto;
+  padding-bottom: 16px;
+}
+
+.filtros-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.filtro-grupo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.filtro-label {
+  font-size: 12px;
+  color: $color-texto-secundario;
+  margin-bottom: 4px;
+}
+
+.filtro-opciones {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.filtro-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  font-size: 12px;
+
+  .checkbox {
+    width: 12px;
+    height: 12px;
+    min-width: 12px;
+    border: 1px solid $color-texto;
+    display: block;
+    flex-shrink: 0;
+    transition: background 0.1s;
+
+    &.checked {
+      background: $color-texto;
+    }
+  }
+}
+
+.limpiar-filtros {
+  margin-top: 16px;
+  font-family: $fuente-mono;
+  font-size: 12px;
+  color: $color-texto-secundario;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+}
+
+.filtros-hr {
+  border: none;
+  border-top: 1px solid $color-borde;
+}
+
+// Loading
+.loading {
+  text-align: center;
+  color: $color-texto-secundario;
+  padding: 48px 0;
+}
+
+.sin-resultados {
+  text-align: center;
+  color: $color-texto-secundario;
+  padding: 48px 0;
+}
+
+// Listado
+.convocatorias-lista {
+  display: flex;
+  flex-direction: column;
+}
+
+.col-titulo {
+  font-size: 11px;
+  color: $color-texto-secundario;
+  margin-bottom: 6px;
+
+  @media (min-width: 768px) {
+    display: block;
+  }
+}
+
+.convocatoria-item {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  padding: 24px 0;
+  border-bottom: 1px solid $color-borde;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  @media (min-width: 768px) {
+    grid-template-columns: 0.5fr 2fr 1fr 0.5fr;
+    grid-template-rows: auto auto;
+    gap: 24px;
+    align-items: start;
+  }
+}
+
+.convocatoria-fecha {
+  .fecha-limite {
+    font-size: 12px;
+    font-weight: 500;
+    margin-bottom: 4px;
+  }
+
+  .web-link {
+    font-size: 12px;
+    color: $color-texto;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+.convocatoria-info {
+  h2 {
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 4px;
+  }
+
+  .tipo {
+    font-size: 12px;
+    color: $color-texto;
+    margin-bottom: 4px;
+  }
+
+  .duracion,
+  .requisitos {
+    font-size: 12px;
+    color: $color-texto;
+    margin-top: 4px;
+  }
+}
+
+.institucion-link {
+  font-size: 12px;
+  color: $color-texto;
+  text-decoration: underline;
+  display: block;
+  margin-bottom: 8px;
+
+  @media (min-width: 768px) {
+    font-size: 14px;
+  }
+
+  &:hover {
+    color: $color-texto-secundario;
+  }
+}
+
+.disciplinas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 6px 0;
+}
+
+.disciplina-tag {
+  font-size: 12px;
+  color: $color-texto-secundario;
+  border: 1px solid $color-borde;
+  padding: 2px 6px;
+}
+
+.convocatoria-oferta {
+  font-size: 12px;
+  color: $color-texto;
+  line-height: 1.8;
+}
+
+.convocatoria-lugar {
+  .ciudad {
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+  .region {
+    font-size: 12px;
+    color: $color-texto;
+  }
+}
+
+// Footer con ver más y guardar
+.convocatoria-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 4px;
+
+  @media (min-width: 768px) {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+}
+
+.btn-ver-mas {
+  font-family: $fuente-mono;
+  font-size: 12px;
+  color: $color-texto-secundario;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.btn-guardar {
+  font-family: $fuente-mono;
+  font-size: 12px;
+  color: $color-texto;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+
+  &:focus-visible {
+    outline: 2px solid $color-texto;
+    outline-offset: 2px;
+  }
+}
+
+// Panel desplegable
+.convocatoria-detalle {
+  padding: 0;
+
+  @media (min-width: 768px) {
+    grid-column: 2 / 3;
+    grid-row: 2;
+    padding: 0 0 16px 0;
+  }
+
+  .descripcion-completa {
+    font-size: 12px;
+    text-align: justify;
+    text-justify: inter-word;
+    hyphens: auto;
+    line-height: 1.8;
+    color: $color-texto;
+    max-width: 700px;
+  }
+}
+
+// Paginación
+
+.paginacion {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  padding: 32px 0;
+}
+
+.pagina-btn {
+  font-family: $fuente-mono;
+  font-size: 13px;
+  color: $color-texto;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px 8px;
+
+  &.activa {
+    background: $color-acento;
+  }
+
+  &:hover {
+    text-decoration: underline;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $color-texto;
+    outline-offset: 2px;
+  }
+}

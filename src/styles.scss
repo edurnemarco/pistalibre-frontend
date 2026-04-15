@@ -1,1 +1,71 @@
-/* You can add global styles to this file, and also import other style files */
+// Variables
+$color-fondo: #ffffff;
+$color-texto: #1a1a1a;
+$color-texto-secundario: #888888;
+$color-acento: #fcf9ce; // #f9fcce;
+$color-borde: #e0e0e0;
+$fuente-mono: "Sometype Mono", "Courier New", monospace;
+
+// Reset base
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: $fuente-mono;
+  font-size: 12px;
+  color: $color-texto;
+  background-color: $color-fondo;
+  line-height: 1.5;
+  @media (min-width: 768px) {
+    font-size: 14px;
+  }
+}
+
+main {
+  min-height: calc(100vh - 120px);
+}
+
+a {
+  color: $color-texto;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+button {
+  font-family: $fuente-mono;
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+input,
+select,
+textarea {
+  font-family: $fuente-mono;
+  font-size: 14px;
+  width: 100%;
+  border: none;
+  border-bottom: 1px solid $color-borde;
+  padding: 8px 4px;
+  outline: none;
+  background: transparent;
+}
+
+.btn-primary {
+  background-color: $color-acento;
+  padding: 12px 24px;
+  font-size: 14px;
+  width: 100%;
+  text-align: center;
+}
+
+.container {
+  padding: 0 16px;
+  max-width: 1100px;
+  margin: 0 auto;
+}

@@ -1,0 +1,151 @@
+@use "../../../styles" as *;
+
+.register-container {
+  padding: 48px 16px;
+  max-width: 480px;
+  margin: 0 auto;
+
+  h1 {
+    font-size: 24px;
+    font-weight: 400;
+    margin-bottom: 8px;
+    text-align: center;
+  }
+
+  p {
+    text-align: center;
+    color: $color-texto-secundario;
+    margin-bottom: 32px;
+  }
+}
+
+.tipo-tabs {
+  display: flex;
+  border-bottom: 1px solid $color-borde;
+  margin-bottom: 32px;
+
+  button {
+    flex: 1;
+    padding: 12px;
+    font-family: $fuente-mono;
+    font-size: 12px;
+    color: $color-texto-secundario;
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    margin-bottom: -1px;
+
+    &.active {
+      color: $color-texto;
+      border-bottom: 2px solid $color-texto;
+    }
+
+    &:focus-visible {
+      outline: 2px solid $color-texto;
+      outline-offset: 2px;
+    }
+  }
+}
+
+.field {
+  margin-bottom: 24px;
+
+  label {
+    display: block;
+    margin-bottom: 8px;
+  }
+}
+
+.field-error {
+  display: block;
+  color: red;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+// Desplegable personalizado
+.desplegable {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid $color-borde;
+  padding: 8px 4px;
+  cursor: pointer;
+  user-select: none;
+
+  &:focus-visible {
+    outline: 2px solid $color-texto;
+    outline-offset: 2px;
+  }
+
+  .desplegable-arrow {
+    font-size: 12px;
+    color: $color-texto-secundario;
+  }
+}
+
+.desplegable-opciones {
+  border: 1px solid $color-borde;
+  border-top: none;
+  padding: 8px 0;
+  background: $color-fondo;
+}
+
+.disciplina-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  cursor: pointer;
+
+  &:hover {
+    background: $color-acento;
+  }
+
+  span:last-child {
+    margin-left: 12px;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $color-texto;
+    outline-offset: -2px;
+  }
+}
+
+// Checkbox personalizado
+.checkbox {
+  width: 14px;
+  height: 14px;
+  min-width: 14px;
+  border: 1px solid $color-texto;
+  display: block;
+  align-self: center;
+  flex-shrink: 0;
+  transition: background 0.1s;
+
+  &.checked {
+    background: $color-texto;
+  }
+}
+
+.error {
+  color: red;
+  margin-bottom: 16px;
+  text-align: center;
+  font-size: 13px;
+}
+
+.login-link {
+  text-align: center;
+  margin-top: 24px;
+  color: $color-texto-secundario;
+}
+
+// Botón desactivado
+.btn-primary {
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}

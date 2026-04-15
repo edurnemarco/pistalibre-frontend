@@ -1,0 +1,54 @@
+@use "../../../styles" as *;
+
+.login-container {
+  padding: 48px 16px;
+  max-width: 480px;
+  margin: 0 auto;
+
+  h1 {
+    font-size: 24px;
+    font-weight: 400;
+    margin-bottom: 8px;
+    text-align: center;
+  }
+
+  p {
+    text-align: center;
+    color: $color-texto-secundario;
+    margin-bottom: 32px;
+  }
+}
+
+.field {
+  margin-bottom: 24px;
+
+  label {
+    display: block;
+    margin-bottom: 8px;
+  }
+}
+
+.forgot {
+  display: block;
+  color: $color-texto-secundario;
+  text-decoration: none;
+  margin-bottom: 32px;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.error {
+  color: red;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+// Botón desactivado
+.btn-primary {
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}

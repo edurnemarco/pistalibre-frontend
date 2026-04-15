@@ -1,0 +1,428 @@
+<div class="register-container">
+  <h1>registrarte</h1>
+  <p>crea tu cuenta según tus necesidades</p>
+
+  <div class="tipo-tabs" role="tablist">
+    <button
+      role="tab"
+      [attr.aria-selected]="tipo === 'artista'"
+      [class.active]="tipo === 'artista'"
+      (click)="setTipo('artista')"
+    >
+      artista
+    </button>
+    <button
+      role="tab"
+      [attr.aria-selected]="tipo === 'institucion'"
+      [class.active]="tipo === 'institucion'"
+      (click)="setTipo('institucion')"
+    >
+      institución
+    </button>
+  </div>
+
+  <div *ngIf="error$ | async as error" class="error" role="alert">
+    {{ error }}
+  </div>
+
+  <!-- FORMULARIO ARTISTA -->
+  <form
+    *ngIf="tipo === 'artista'"
+    [formGroup]="formArtista"
+    (ngSubmit)="onSubmit()"
+    novalidate
+  >
+    <div class="field">
+      <label for="nombre">nombre*</label>
+      <input
+        id="nombre"
+        type="text"
+        formControlName="nombre"
+        placeholder="tu nombre"
+        [attr.aria-invalid]="
+          formArtista.get('nombre')?.invalid &&
+          formArtista.get('nombre')?.touched
+        "
+        aria-describedby="nombre-error"
+      />
+      <span
+        id="nombre-error"
+        class="field-error"
+        *ngIf="
+          formArtista.get('nombre')?.invalid &&
+          formArtista.get('nombre')?.touched
+        "
+      >
+        el nombre es obligatorio
+      </span>
+    </div>
+
+    <div class="field">
+      <label for="apellidos">apellidos*</label>
+      <input
+        id="apellidos"
+        type="text"
+        formControlName="apellidos"
+        placeholder="tus apellidos"
+        [attr.aria-invalid]="
+          formArtista.get('apellidos')?.invalid &&
+          formArtista.get('apellidos')?.touched
+        "
+        aria-describedby="apellidos-error"
+      />
+      <span
+        id="apellidos-error"
+        class="field-error"
+        *ngIf="
+          formArtista.get('apellidos')?.invalid &&
+          formArtista.get('apellidos')?.touched
+        "
+      >
+        los apellidos son obligatorios
+      </span>
+    </div>
+
+    <div class="field">
+      <label id="disciplinas-label">ámbitos artísticos*</label>
+      <div
+        class="desplegable"
+        role="combobox"
+        [attr.aria-expanded]="disciplinasAbiertas"
+        aria-haspopup="listbox"
+        aria-labelledby="disciplinas-label"
+        (click)="toggleDesplegable()"
+        tabindex="0"
+        (keydown.enter)="toggleDesplegable()"
+        (keydown.space)="toggleDesplegable()"
+      >
+        <span>
+          {{
+            disciplinasSeleccionadas.length > 0
+              ? disciplinasSeleccionadas.join(", ")
+              : "selecciona tus ámbitos"
+          }}
+        </span>
+        <span class="desplegable-arrow">{{
+          disciplinasAbiertas ? "∧" : "∨"
+        }}</span>
+      </div>
+
+      <div
+        *ngIf="disciplinasAbiertas"
+        class="desplegable-opciones"
+        role="listbox"
+        aria-labelledby="disciplinas-label"
+        aria-multiselectable="true"
+      >
+        <div
+          *ngFor="let d of disciplinasOpciones"
+          class="disciplina-item"
+          role="option"
+          [attr.aria-selected]="isDisciplinaSelected(d)"
+          (click)="toggleDisciplina(d)"
+          tabindex="0"
+          (keydown.enter)="toggleDisciplina(d)"
+          (keydown.space)="toggleDisciplina(d)"
+        >
+          <span
+            class="checkbox"
+            [class.checked]="isDisciplinaSelected(d)"
+          ></span>
+          <span>{{ d }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="email">email*</label>
+      <input
+        id="email"
+        type="email"
+        formControlName="email"
+        placeholder="tu@email.com"
+        [attr.aria-invalid]="
+          formArtista.get('email')?.invalid && formArtista.get('email')?.touched
+        "
+        aria-describedby="email-error"
+      />
+      <span
+        id="email-error"
+        class="field-error"
+        *ngIf="
+          formArtista.get('email')?.invalid && formArtista.get('email')?.touched
+        "
+      >
+        introduce un email válido
+      </span>
+    </div>
+
+    <div class="field">
+      <label for="password">contraseña*</label>
+      <input
+        id="password"
+        type="password"
+        formControlName="password"
+        placeholder="mínimo 8 caracteres"
+        [attr.aria-invalid]="
+          formArtista.get('password')?.invalid &&
+          formArtista.get('password')?.touched
+        "
+        aria-describedby="password-error"
+      />
+      <span
+        id="password-error"
+        class="field-error"
+        *ngIf="
+          formArtista.get('password')?.invalid &&
+          formArtista.get('password')?.touched
+        "
+      >
+        mínimo 8 caracteres
+      </span>
+    </div>
+
+    <div class="field">
+      <label for="passwordConfirm">repetir contraseña*</label>
+      <input
+        id="passwordConfirm"
+        type="password"
+        formControlName="passwordConfirm"
+        placeholder="········"
+        [attr.aria-invalid]="
+          formArtista.errors?.['passwordsMismatch'] &&
+          formArtista.get('passwordConfirm')?.touched
+        "
+        aria-describedby="passwordConfirm-error"
+      />
+      <span
+        id="passwordConfirm-error"
+        class="field-error"
+        *ngIf="
+          formArtista.errors?.['passwordsMismatch'] &&
+          formArtista.get('passwordConfirm')?.touched
+        "
+      >
+        las contraseñas no coinciden
+      </span>
+    </div>
+
+    <button
+      type="submit"
+      class="btn-primary"
+      [disabled]="formArtista.invalid || (loading$ | async)"
+      [attr.aria-busy]="loading$ | async"
+    >
+      {{ (loading$ | async) ? "cargando..." : "crear cuenta" }}
+    </button>
+
+    <p class="login-link">
+      ¿ya tienes cuenta? <a routerLink="/login">inicia sesión</a>
+    </p>
+  </form>
+
+  <!-- FORMULARIO INSTITUCIÓN -->
+  <form
+    *ngIf="tipo === 'institucion'"
+    [formGroup]="formInstitucion"
+    (ngSubmit)="onSubmit()"
+    novalidate
+  >
+    <div class="field">
+      <label for="nombreInst">nombre*</label>
+      <input
+        id="nombreInst"
+        type="text"
+        formControlName="nombre"
+        placeholder="nombre de la institución"
+        [attr.aria-invalid]="
+          formInstitucion.get('nombre')?.invalid &&
+          formInstitucion.get('nombre')?.touched
+        "
+        aria-describedby="nombreInst-error"
+      />
+      <span
+        id="nombreInst-error"
+        class="field-error"
+        *ngIf="
+          formInstitucion.get('nombre')?.invalid &&
+          formInstitucion.get('nombre')?.touched
+        "
+      >
+        el nombre es obligatorio
+      </span>
+    </div>
+
+    <div class="field">
+      <label for="ciudad">ciudad*</label>
+      <input
+        id="ciudad"
+        type="text"
+        formControlName="ciudad"
+        placeholder="ciudad"
+        [attr.aria-invalid]="
+          formInstitucion.get('ciudad')?.invalid &&
+          formInstitucion.get('ciudad')?.touched
+        "
+        aria-describedby="ciudad-error"
+      />
+      <span
+        id="ciudad-error"
+        class="field-error"
+        *ngIf="
+          formInstitucion.get('ciudad')?.invalid &&
+          formInstitucion.get('ciudad')?.touched
+        "
+      >
+        la ciudad es obligatoria
+      </span>
+    </div>
+
+    <div class="field">
+      <label for="region">región*</label>
+      <input
+        id="region"
+        type="text"
+        formControlName="region"
+        placeholder="comunidad autónoma"
+        [attr.aria-invalid]="
+          formInstitucion.get('region')?.invalid &&
+          formInstitucion.get('region')?.touched
+        "
+        aria-describedby="region-error"
+      />
+      <span
+        id="region-error"
+        class="field-error"
+        *ngIf="
+          formInstitucion.get('region')?.invalid &&
+          formInstitucion.get('region')?.touched
+        "
+      >
+        la región es obligatoria
+      </span>
+    </div>
+
+    <div class="field">
+      <label for="pais">país*</label>
+      <input
+        id="pais"
+        type="text"
+        formControlName="pais"
+        placeholder="ES"
+        [attr.aria-invalid]="
+          formInstitucion.get('pais')?.invalid &&
+          formInstitucion.get('pais')?.touched
+        "
+        aria-describedby="pais-error"
+      />
+      <span
+        id="pais-error"
+        class="field-error"
+        *ngIf="
+          formInstitucion.get('pais')?.invalid &&
+          formInstitucion.get('pais')?.touched
+        "
+      >
+        el país es obligatorio
+      </span>
+    </div>
+
+    <div class="field">
+      <label for="web">web</label>
+      <input
+        id="web"
+        type="url"
+        formControlName="web"
+        placeholder="https://tuinstitucion.com"
+      />
+    </div>
+
+    <div class="field">
+      <label for="emailInst">email*</label>
+      <input
+        id="emailInst"
+        type="email"
+        formControlName="email"
+        placeholder="contacto@institucion.com"
+        [attr.aria-invalid]="
+          formInstitucion.get('email')?.invalid &&
+          formInstitucion.get('email')?.touched
+        "
+        aria-describedby="emailInst-error"
+      />
+      <span
+        id="emailInst-error"
+        class="field-error"
+        *ngIf="
+          formInstitucion.get('email')?.invalid &&
+          formInstitucion.get('email')?.touched
+        "
+      >
+        introduce un email válido
+      </span>
+    </div>
+
+    <div class="field">
+      <label for="passwordInst">contraseña*</label>
+      <input
+        id="passwordInst"
+        type="password"
+        formControlName="password"
+        placeholder="mínimo 8 caracteres"
+        [attr.aria-invalid]="
+          formInstitucion.get('password')?.invalid &&
+          formInstitucion.get('password')?.touched
+        "
+        aria-describedby="passwordInst-error"
+      />
+      <span
+        id="passwordInst-error"
+        class="field-error"
+        *ngIf="
+          formInstitucion.get('password')?.invalid &&
+          formInstitucion.get('password')?.touched
+        "
+      >
+        mínimo 8 caracteres
+      </span>
+    </div>
+
+    <div class="field">
+      <label for="passwordConfirmInst">repetir contraseña*</label>
+      <input
+        id="passwordConfirmInst"
+        type="password"
+        formControlName="passwordConfirm"
+        placeholder="········"
+        [attr.aria-invalid]="
+          formInstitucion.errors?.['passwordsMismatch'] &&
+          formInstitucion.get('passwordConfirm')?.touched
+        "
+        aria-describedby="passwordConfirmInst-error"
+      />
+      <span
+        id="passwordConfirmInst-error"
+        class="field-error"
+        *ngIf="
+          formInstitucion.errors?.['passwordsMismatch'] &&
+          formInstitucion.get('passwordConfirm')?.touched
+        "
+      >
+        las contraseñas no coinciden
+      </span>
+    </div>
+
+    <button
+      type="submit"
+      class="btn-primary"
+      [disabled]="formInstitucion.invalid || (loading$ | async)"
+      [attr.aria-busy]="loading$ | async"
+    >
+      {{ (loading$ | async) ? "cargando..." : "crear cuenta" }}
+    </button>
+
+    <p class="login-link">
+      ¿ya tienes cuenta? <a routerLink="/login">inicia sesión</a>
+    </p>
+  </form>
+</div>

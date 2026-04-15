@@ -1,0 +1,89 @@
+@use "../../../styles" as *;
+
+nav {
+  padding: 16px 16px 0px 16px;
+
+  hr {
+    border: none;
+    border-top: 1px solid $color-borde;
+    margin-top: 12px;
+  }
+
+  @media (min-width: 768px) {
+    padding: 20px 32px 0px 32px;
+  }
+}
+
+// Móvil
+.nav-mobile {
+  display: block;
+
+  @media (min-width: 768px) {
+    display: none;
+  }
+}
+
+.nav-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.nav-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+// Desktop
+.nav-desktop {
+  display: none;
+
+  @media (min-width: 768px) {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+}
+
+.nav-links {
+  display: flex;
+  gap: 32px;
+  align-items: center;
+}
+
+.nav-logo {
+  font-size: 13px;
+  text-decoration: none;
+  font-weight: 400;
+  color: $color-texto;
+
+  @media (min-width: 768px) {
+    font-size: 16px;
+  }
+}
+
+// Links compartidos
+.nav-mobile,
+.nav-desktop {
+  a,
+  button,
+  span {
+    font-size: 12px;
+    text-decoration: none;
+    color: $color-texto;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: $fuente-mono;
+
+    &:hover {
+      text-decoration: underline;
+    }
+
+    @media (min-width: 768px) {
+      font-size: 14px;
+    }
+  }
+}

@@ -1,0 +1,63 @@
+<div class="login-container">
+  <h1>iniciar sesión</h1>
+  <p>¿no tienes una cuenta? <a routerLink="/register">regístrate</a></p>
+
+  <div *ngIf="error$ | async as error" class="error" role="alert">
+    {{ error }}
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+    <div class="field">
+      <label for="email">email*</label>
+      <input
+        id="email"
+        type="email"
+        formControlName="email"
+        placeholder="tu@email.com"
+        [attr.aria-invalid]="
+          form.get('email')?.invalid && form.get('email')?.touched
+        "
+        aria-describedby="email-error"
+      />
+      <span
+        id="email-error"
+        class="field-error"
+        *ngIf="form.get('email')?.invalid && form.get('email')?.touched"
+      >
+        introduce un email válido
+      </span>
+    </div>
+
+    <div class="field">
+      <label for="password">contraseña*</label>
+      <input
+        id="password"
+        type="password"
+        formControlName="password"
+        placeholder="········"
+        [attr.aria-invalid]="
+          form.get('password')?.invalid && form.get('password')?.touched
+        "
+        aria-describedby="password-error"
+      />
+      <span
+        id="password-error"
+        class="field-error"
+        *ngIf="form.get('password')?.invalid && form.get('password')?.touched"
+      >
+        mínimo 8 caracteres
+      </span>
+    </div>
+
+    <a class="forgot" href="#">¿has olvidado tu contraseña?</a>
+
+    <button
+      type="submit"
+      class="btn-primary"
+      [disabled]="form.invalid || (loading$ | async)"
+      [attr.aria-busy]="loading$ | async"
+    >
+      {{ (loading$ | async) ? "cargando..." : "iniciar sesión" }}
+    </button>
+  </form>
+</div>

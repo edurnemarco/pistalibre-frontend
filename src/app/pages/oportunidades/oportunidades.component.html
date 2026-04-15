@@ -1,0 +1,197 @@
+<!-- FILTROS -->
+<div class="filtros-fondo">
+  <button
+    class="filtros-toggle"
+    (click)="toggleFiltros()"
+    [attr.aria-expanded]="filtrosAbiertos"
+  >
+    <div class="filtros-inner">
+      {{ filtrosAbiertos ? "- filtros" : "+ filtros" }}
+    </div>
+  </button>
+
+  <div
+    class="filtros-panel"
+    *ngIf="filtrosAbiertos && (filtros$ | async) as filtros"
+  >
+    <div class="filtros-inner">
+      <div class="filtros-grid">
+        <div class="filtro-grupo">
+          <p class="filtro-label">disciplina</p>
+          <div class="filtro-opciones">
+            <label *ngFor="let d of disciplinasOpciones" class="filtro-item">
+              <span
+                class="checkbox"
+                [class.checked]="filtros.disciplinas.includes(d)"
+                (click)="toggleDisciplina(d, filtros)"
+              ></span>
+              <span (click)="toggleDisciplina(d, filtros)">{{ d }}</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="filtro-grupo">
+          <p class="filtro-label">tipo</p>
+          <div class="filtro-opciones">
+            <label *ngFor="let t of tiposOpciones" class="filtro-item">
+              <span
+                class="checkbox"
+                [class.checked]="filtros.tipos.includes(t)"
+                (click)="toggleTipo(t, filtros)"
+              ></span>
+              <span (click)="toggleTipo(t, filtros)">{{ t }}</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="filtro-grupo">
+          <p class="filtro-label">lugar</p>
+          <input
+            type="text"
+            placeholder="ciudad o región"
+            [value]="filtros.ciudad"
+            (input)="onCiudadChange($event)"
+            aria-label="filtrar por ciudad"
+          />
+        </div>
+
+        <div class="filtro-grupo">
+          <p class="filtro-label">estado</p>
+          <div class="filtro-opciones">
+            <label *ngFor="let e of estadosOpciones" class="filtro-item">
+              <span
+                class="checkbox"
+                [class.checked]="filtros.estado === e"
+                (click)="setEstado(e, filtros)"
+              ></span>
+              <span (click)="setEstado(e, filtros)">{{ e }}</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <button class="limpiar-filtros" (click)="limpiarFiltros()">
+        limpiar filtros
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="oportunidades-container">
+  <hr class="filtros-hr" />
+  <!-- LOADING -->
+  <div
+    *ngIf="loading$ | async"
+    class="loading"
+    role="status"
+    aria-live="polite"
+  >
+    cargando convocatorias...
+  </div>
+
+  <!-- LISTADO -->
+  <div *ngIf="!(loading$ | async)">
+    <div *ngIf="(convocatorias$ | async)?.length === 0" class="sin-resultados">
+      no hay convocatorias que coincidan con los filtros
+    </div>
+
+    <div class="convocatorias-lista">
+      <article
+        *ngFor="let c of convocatoriasPaginadas$ | async"
+        class="convocatoria-item"
+      >
+        <div class="convocatoria-fecha">
+          <p class="col-titulo">fecha límite</p>
+          <p class="fecha-limite">{{ formatFecha(c.fecha_limite) }}</p>
+          <a
+            *ngIf="c.url_original"
+            [href]="c.url_original"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="web-link"
+          >
+            web oficial ↗
+          </a>
+        </div>
+
+        <div class="convocatoria-info">
+          <p class="col-titulo">información</p>
+          <h2>{{ c.titulo }}</h2>
+          <a
+            *ngIf="c.institucion"
+            [routerLink]="['/instituciones', c.institucion.id]"
+            class="institucion-link"
+          >
+            {{ c.institucion?.nombre }}
+          </a>
+          <p *ngIf="c.tipo" class="tipo">Tipo: {{ c.tipo }}</p>
+          <div *ngIf="c.disciplinas?.length" class="disciplinas">
+            <span *ngFor="let d of c.disciplinas" class="disciplina-tag">{{
+              d
+            }}</span>
+          </div>
+          <p *ngIf="c.duracion" class="duracion">Duración: {{ c.duracion }}</p>
+          <p *ngIf="c.requisitos" class="requisitos">
+            Requisitos: {{ c.requisitos }}
+          </p>
+        </div>
+
+        <div class="convocatoria-oferta">
+          <p class="col-titulo">lo que ofrece</p>
+          <p *ngIf="c.dotacion">Dotación: {{ c.dotacion }}€</p>
+          <p *ngIf="c.beneficios?.dotacion_detalle && !c.dotacion">
+            Dotación: {{ c.beneficios?.dotacion_detalle }}
+          </p>
+          <p *ngIf="c.beneficios?.estudio">
+            Estudio: {{ c.beneficios?.estudio }}
+          </p>
+          <p *ngIf="c.beneficios?.alojamiento">
+            Alojamiento: {{ c.beneficios?.alojamiento }}
+          </p>
+          <p *ngIf="c.beneficios?.manutencion">
+            Manutención: {{ c.beneficios?.manutencion }}
+          </p>
+        </div>
+
+        <div class="convocatoria-lugar">
+          <p class="col-titulo">lugar</p>
+          <p class="ciudad">{{ c.ciudad }}</p>
+          <p class="region">{{ c.region }}</p>
+        </div>
+
+        <!-- FOOTER CON VER MÁS Y GUARDAR -->
+        <div class="convocatoria-footer">
+          <button class="btn-ver-mas" (click)="toggleExpansion(c.id)">
+            {{ isExpanded(c.id) ? "- ver menos" : "+ ver más" }}
+          </button>
+          <button
+            *ngIf="isAuthenticated$ | async"
+            class="btn-guardar"
+            aria-label="guardar convocatoria"
+          >
+            guardar
+          </button>
+        </div>
+
+        <!-- PANEL DESPLEGABLE -->
+        <div class="convocatoria-detalle" *ngIf="isExpanded(c.id)">
+          <p class="descripcion-completa">{{ c.descripcion }}</p>
+        </div>
+      </article>
+    </div>
+    <div class="paginacion" *ngIf="totalPaginas$ | async as total">
+      <ng-container *ngIf="total > 1">
+        <button
+          *ngFor="let p of paginas$ | async"
+          class="pagina-btn"
+          [class.activa]="(paginaActual$ | async) === p"
+          (click)="irAPagina(p)"
+          [attr.aria-label]="'ir a página ' + p"
+          [attr.aria-current]="(paginaActual$ | async) === p ? 'page' : null"
+        >
+          {{ p }}
+        </button>
+      </ng-container>
+    </div>
+  </div>
+</div>
