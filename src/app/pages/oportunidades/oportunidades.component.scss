@@ -60,7 +60,8 @@
   gap: 24px;
 
   @media (min-width: 768px) {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: 1fr 1fr 1.5fr 1.5fr 1fr;
+    align-items: start;
   }
 }
 
@@ -80,6 +81,12 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
+
+  @media (min-width: 768px) {
+    max-height: 220px;
+    overflow-y: auto;
+    padding-right: 20px;
+  }
 }
 
 .filtro-item {
@@ -117,6 +124,50 @@
   }
 }
 
+.filtro-grupo input {
+  font-size: 12px;
+  color: $color-texto;
+  border-bottom: 0.5px solid $color-texto;
+}
+
+.filtro-grupo input::placeholder {
+  color: $color-texto;
+  opacity: 1;
+}
+.select-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  select {
+    font-family: $fuente-mono;
+    font-size: 12px;
+    color: $color-texto;
+    background: none;
+    border: none;
+    border-bottom: 0.5px solid $color-texto;
+    padding: 8px 4px;
+    cursor: pointer;
+    width: 100%;
+    appearance: none;
+  }
+
+  select:focus-visible {
+    outline: 2px solid $color-texto;
+    outline-offset: 2px;
+  }
+  select:focus {
+    outline: none;
+  }
+  .select-arrow {
+    position: absolute;
+    right: 4px;
+    font-size: 10px;
+    color: $color-texto-secundario;
+    pointer-events: none;
+  }
+}
+
 .limpiar-filtros {
   margin-top: 16px;
   font-family: $fuente-mono;
@@ -127,6 +178,7 @@
   cursor: pointer;
   text-decoration: underline;
   padding: 0;
+  text-align: left;
 }
 
 .filtros-hr {

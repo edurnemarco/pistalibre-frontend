@@ -42,19 +42,28 @@ export class OportunidadesComponent implements OnInit {
 
   disciplinasOpciones = [
     'pintura',
+    'ilustración',
     'escultura',
     'fotografía',
     'videoarte',
+    'cine',
+    'danza',
+    'artes escénicas',
+    'música',
+    'gestión cultural',
+    'investigación',
     'instalación',
     'grabado',
     'diseño',
     'escritura',
     'multidisciplinar',
-  ];
+  ].sort((a, b) => a.localeCompare(b, 'es'));
 
   tiposOpciones = ['convocatoria', 'residencia', 'beca', 'concurso'];
   estadosOpciones = ['abierta', 'próximamente', 'cerrada'];
   convocatoriasExpandidas = new Set<string>();
+  aniosOpciones$: Observable<string[]>;
+  mesesOpciones$: Observable<{ valor: string; label: string }[]>;
 
   constructor(private store: Store) {
     this.convocatorias$ = this.store.select(selectConvocatoriasFiltradas);
@@ -84,12 +93,48 @@ export class OportunidadesComponent implements OnInit {
     this.paginas$ = this.totalPaginas$.pipe(
       map((total) => Array.from({ length: total }, (_, i) => i + 1)),
     );
+    this.aniosOpciones$ = this.convocatorias$.pipe(
+      map((convocatorias) => {
+        return convocatorias
+          .map((c) => new Date(c.fecha_limite).getFullYear().toString())
+          .filter((v, i, a) => a.indexOf(v) === i)
+          .sort();
+      }),
+    );
+
+    this.mesesOpciones$ = this.convocatorias$.pipe(
+      map((convocatorias) => {
+        const mesesNombres = [
+          'enero',
+          'febrero',
+          'marzo',
+          'abril',
+          'mayo',
+          'junio',
+          'julio',
+          'agosto',
+          'septiembre',
+          'octubre',
+          'noviembre',
+          'diciembre',
+        ];
+        return convocatorias
+          .map((c) => new Date(c.fecha_limite).getMonth() + 1)
+          .filter((v, i, a) => a.indexOf(v) === i)
+          .sort((a, b) => a - b)
+          .map((m) => ({ valor: m.toString(), label: mesesNombres[m - 1] }));
+      }),
+    );
   }
 
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent) {
     const target = event.target as HTMLElement;
-    if (!target.closest('.filtros-fondo')) {
+    if (
+      !target.closest('.filtros-fondo') &&
+      !target.closest('.btn-ver-mas') &&
+      !target.closest('.btn-guardar')
+    ) {
       this.filtrosAbiertos = false;
     }
   }
@@ -100,6 +145,9 @@ export class OportunidadesComponent implements OnInit {
 
   toggleFiltros() {
     this.filtrosAbiertos = !this.filtrosAbiertos;
+    if (!this.filtrosAbiertos) {
+      (document.activeElement as HTMLElement)?.blur();
+    }
   }
 
   toggleDisciplina(disciplina: string, filtrosActuales: FiltrosConvocatorias) {
@@ -129,6 +177,18 @@ export class OportunidadesComponent implements OnInit {
   onCiudadChange(event: Event) {
     const ciudad = (event.target as HTMLInputElement).value;
     this.store.dispatch(actualizarFiltros({ filtros: { ciudad } }));
+    this.paginaActual$.next(1);
+  }
+
+  onMesChange(event: Event) {
+    const mes = (event.target as HTMLSelectElement).value;
+    this.store.dispatch(actualizarFiltros({ filtros: { mes } }));
+    this.paginaActual$.next(1);
+  }
+
+  onAnioChange(event: Event) {
+    const anio = (event.target as HTMLSelectElement).value;
+    this.store.dispatch(actualizarFiltros({ filtros: { anio } }));
     this.paginaActual$.next(1);
   }
 

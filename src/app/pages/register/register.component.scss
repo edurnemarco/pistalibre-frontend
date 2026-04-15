@@ -90,12 +90,26 @@
   border-top: none;
   padding: 8px 0;
   background: $color-fondo;
+  max-height: 200px;
+  overflow-y: auto;
+
+  &::-webkit-scrollbar {
+    width: 3px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: $color-borde;
+  }
 }
 
 .disciplina-item {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 24px;
   padding: 8px 12px;
   cursor: pointer;
 
@@ -103,16 +117,30 @@
     background: $color-acento;
   }
 
-  span:last-child {
-    margin-left: 12px;
-  }
-
   &:focus-visible {
     outline: 2px solid $color-texto;
     outline-offset: -2px;
   }
 }
+.disciplina-custom {
+  input {
+    border: none;
+    background: transparent;
+    font-family: $fuente-mono;
+    font-size: 14px;
+    color: $color-texto;
+    width: 100%;
+    padding: 0;
 
+    &::placeholder {
+      color: $color-texto-secundario;
+    }
+
+    &:focus {
+      outline: none;
+    }
+  }
+}
 // Checkbox personalizado
 .checkbox {
   width: 14px;

@@ -44,6 +44,8 @@ export interface FiltrosConvocatorias {
   ciudad: string;
   region: string;
   estado: string;
+  mes: string;
+  anio: string;
 }
 
 export interface ConvocatoriasState {
@@ -59,6 +61,8 @@ export const initialFiltros: FiltrosConvocatorias = {
   ciudad: '',
   region: '',
   estado: '',
+  mes: '',
+  anio: '',
 };
 
 export const initialConvocatoriasState: ConvocatoriasState = {

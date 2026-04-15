@@ -146,6 +146,20 @@
           ></span>
           <span>{{ d }}</span>
         </div>
+        <div class="disciplina-item disciplina-custom" role="option">
+          <span
+            class="checkbox"
+            [class.checked]="disciplinaInputRef.value.length > 0"
+          ></span>
+          <input
+            #disciplinaInputRef
+            type="text"
+            placeholder="otra..."
+            (keydown.enter)="agregarDisciplinaPersonalizada(disciplinaInputRef)"
+            (blur)="agregarDisciplinaPersonalizada(disciplinaInputRef)"
+            aria-label="añadir disciplina personalizada"
+          />
+        </div>
       </div>
     </div>
 

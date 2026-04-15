@@ -62,6 +62,17 @@ export const selectConvocatoriasFiltradas = createSelector(
         }
       }
 
+      if (filtros.mes) {
+        const mesNum = parseInt(filtros.mes);
+        if (isNaN(new Date(c.fecha_limite).getMonth())) return false;
+        if (new Date(c.fecha_limite).getMonth() + 1 !== mesNum) return false;
+      }
+
+      if (filtros.anio) {
+        if (new Date(c.fecha_limite).getFullYear().toString() !== filtros.anio)
+          return false;
+      }
+
       return true;
     });
   },

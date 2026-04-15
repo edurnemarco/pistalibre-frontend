@@ -32,15 +32,22 @@ export class RegisterComponent {
 
   disciplinasOpciones = [
     'pintura',
+    'ilustración',
     'escultura',
     'fotografía',
     'videoarte',
+    'cine',
+    'danza',
+    'artes escénicas',
+    'música',
+    'gestión cultural',
+    'investigación',
     'instalación',
     'grabado',
     'diseño',
     'escritura',
     'multidisciplinar',
-  ];
+  ].sort((a, b) => a.localeCompare(b, 'es'));
 
   formArtista: FormGroup;
   formInstitucion: FormGroup;
@@ -99,6 +106,16 @@ export class RegisterComponent {
       ? current.filter((d) => d !== disciplina)
       : [...current, disciplina];
     this.formArtista.get('disciplinas')?.setValue(updated);
+  }
+  agregarDisciplinaPersonalizada(input: HTMLInputElement) {
+    const d = input.value.trim().toLowerCase();
+    if (d && !this.disciplinasOpciones.includes(d)) {
+      this.disciplinasOpciones = [...this.disciplinasOpciones, d].sort((a, b) =>
+        a.localeCompare(b, 'es'),
+      );
+      this.toggleDisciplina(d);
+    }
+    input.value = '';
   }
 
   isDisciplinaSelected(disciplina: string): boolean {
