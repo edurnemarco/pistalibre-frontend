@@ -40,11 +40,6 @@
       color: $color-texto;
       border-bottom: 2px solid $color-texto;
     }
-
-    &:focus-visible {
-      outline: 2px solid $color-texto;
-      outline-offset: 2px;
-    }
   }
 }
 
@@ -73,11 +68,6 @@
   padding: 8px 4px;
   cursor: pointer;
   user-select: none;
-
-  &:focus-visible {
-    outline: 2px solid $color-texto;
-    outline-offset: 2px;
-  }
 
   .desplegable-arrow {
     font-size: 12px;
@@ -116,11 +106,6 @@
   &:hover {
     background: $color-acento;
   }
-
-  &:focus-visible {
-    outline: 2px solid $color-texto;
-    outline-offset: -2px;
-  }
 }
 .disciplina-custom {
   input {
@@ -158,7 +143,7 @@
 }
 
 .error {
-  color: #256af4;
+  color: $color-aviso;
   margin-bottom: 16px;
   text-align: center;
   font-size: 13px;

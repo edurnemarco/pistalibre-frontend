@@ -26,11 +26,6 @@
   cursor: pointer;
   text-align: left;
   padding: 0;
-
-  &:focus-visible {
-    outline: 2px solid $color-texto;
-    outline-offset: 2px;
-  }
 }
 .filtros-fondo {
   background: $color-acento;
@@ -81,6 +76,7 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
+  scroll-padding: 8px;
 
   @media (min-width: 768px) {
     max-height: 220px;
@@ -100,6 +96,7 @@
     width: 12px;
     height: 12px;
     min-width: 12px;
+    margin-left: 3px;
     border: 1px solid $color-texto;
     display: block;
     flex-shrink: 0;
@@ -119,9 +116,12 @@
   margin: 0;
 
   &:focus-visible + .checkbox {
-    outline: 2px solid $color-texto;
-    outline-offset: 2px;
+    outline: 2px solid $color-aviso;
+    outline-offset: 1px;
   }
+}
+.checkbox-hidden:focus-visible ~ * {
+  scroll-margin-top: 8px;
 }
 
 .filtro-grupo input {
@@ -149,16 +149,13 @@
     padding: 8px 4px;
     cursor: pointer;
     width: 100%;
-    appearance: none;
+
+    &:focus-visible {
+      outline: 2px solid $color-aviso;
+      outline-offset: 2px;
+    }
   }
 
-  select:focus-visible {
-    outline: 2px solid $color-texto;
-    outline-offset: 2px;
-  }
-  select:focus {
-    outline: none;
-  }
   .select-arrow {
     position: absolute;
     right: 4px;
@@ -361,6 +358,12 @@
   &:focus-visible {
     outline: 2px solid $color-texto;
     outline-offset: 2px;
+  }
+
+  &.guardado {
+    color: $color-texto-secundario;
+    text-decoration: none;
+    cursor: pointer;
   }
 }
 

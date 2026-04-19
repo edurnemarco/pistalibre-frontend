@@ -74,4 +74,13 @@ export const authReducer = createReducer(
     user,
     token,
   })),
+
+  //Guardar cambios perfil
+  on(AuthActions.updateUserSuccess, (state, { user }) => {
+    localStorage.setItem('user', JSON.stringify(user));
+    return {
+      ...state,
+      user,
+    };
+  }),
 );

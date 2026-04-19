@@ -29,6 +29,7 @@
                 class="checkbox-hidden"
                 [checked]="filtros.disciplinas.includes(d)"
                 (change)="toggleDisciplina(d, filtros)"
+                (focus)="onCheckboxFocus($event)"
                 [attr.aria-label]="'Filtrar por ' + d"
               />
               <span
@@ -80,28 +81,33 @@
           <p class="filtro-label" id="fecha-label">fecha límite</p>
           <div class="select-wrapper">
             <select
-              aria-labelledby="fecha-label"
               aria-label="filtrar por mes"
-              (change)="onMesChange($event)"
-              *ngIf="mesesOpciones$ | async as meses"
+              [(ngModel)]="mesSeleccionado"
+              (ngModelChange)="onMesChange($event)"
             >
               <option value="">mes</option>
-              <option *ngFor="let m of meses" [value]="m.valor">
+              <option
+                *ngFor="let m of (mesesOpciones$ | async) || []"
+                [value]="m.valor"
+              >
                 {{ m.label }}
               </option>
             </select>
-            <span class="select-arrow">∨</span>
           </div>
           <div class="select-wrapper">
             <select
               aria-label="filtrar por año"
-              (change)="onAnioChange($event)"
-              *ngIf="aniosOpciones$ | async as anios"
+              [(ngModel)]="anioSeleccionado"
+              (ngModelChange)="onAnioChange($event)"
             >
               <option value="">año</option>
-              <option *ngFor="let a of anios" [value]="a">{{ a }}</option>
+              <option
+                *ngFor="let a of (aniosOpciones$ | async) || []"
+                [value]="a"
+              >
+                {{ a }}
+              </option>
             </select>
-            <span class="select-arrow">∨</span>
           </div>
         </div>
 
@@ -235,9 +241,15 @@
           <button
             *ngIf="isAuthenticated$ | async"
             class="btn-guardar"
-            aria-label="guardar convocatoria"
+            [class.guardado]="isFavorito(c.id) | async"
+            (click)="toggleFavorito(c.id)"
+            [attr.aria-label]="
+              (isFavorito(c.id) | async)
+                ? 'eliminar de favoritos'
+                : 'guardar en favoritos'
+            "
           >
-            guardar
+            {{ (isFavorito(c.id) | async) ? "guardado" : "guardar" }}
           </button>
         </div>
 

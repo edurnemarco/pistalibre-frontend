@@ -1,1 +1,473 @@
-<p>perfil works!</p>
+<div class="perfil-page" *ngIf="user$ | async as user">
+  <!-- HEADER HORIZONTAL -->
+  <div class="perfil-header-bar">
+    <h1>{{ user.nombre }} {{ getApellidos(user) }}</h1>
+    <button
+      class="btn-editar"
+      (click)="toggleEditar()"
+      *ngIf="tabActiva === 'perfil'"
+    >
+      {{ editando ? "cancelar" : "editar perfil" }}
+    </button>
+    <!-- <button
+      class="btn-editar"
+      *ngIf="tabActiva === 'participaciones'"
+      (click)="nuevaParticipacion()"
+    >
+      + nueva participación
+    </button>
+  --></div>
+  <hr aria-hidden="true" class="perfil-hr" />
+  <div class="perfil-body">
+    <!-- SIDEBAR -->
+    <aside class="perfil-sidebar">
+      <div
+        class="avatar-placeholder"
+        [class.editable]="editando"
+        (click)="editando && onAvatarClick()"
+        [attr.aria-label]="editando ? 'cambiar foto de perfil' : null"
+        [attr.role]="editando ? 'button' : null"
+        [attr.tabindex]="editando ? 0 : null"
+        (keydown.enter)="editando && onAvatarClick()"
+      >
+        <ng-container *ngIf="subiendoAvatar">
+          <div class="avatar-cargando">...</div>
+        </ng-container>
+
+        <ng-container *ngIf="!subiendoAvatar">
+          <img
+            *ngIf="avatarPreview || avatarUrl"
+            [src]="avatarPreview || avatarUrl"
+            alt="foto de perfil"
+            class="avatar-img"
+          />
+          <span *ngIf="!avatarPreview && !avatarUrl">
+            {{ (user$ | async)?.nombre?.charAt(0) }}
+          </span>
+          <div class="avatar-overlay" *ngIf="editando" aria-hidden="true">
+            editar
+          </div>
+        </ng-container>
+      </div>
+
+      <nav class="perfil-nav" aria-label="navegación del perfil">
+        <button
+          [class.activa]="tabActiva === 'perfil'"
+          (click)="setTab('perfil')"
+          [attr.aria-selected]="tabActiva === 'perfil'"
+        >
+          mi perfil
+        </button>
+        <button
+          [class.activa]="tabActiva === 'favoritos'"
+          (click)="setTab('favoritos')"
+          [attr.aria-selected]="tabActiva === 'favoritos'"
+        >
+          favoritos<span
+            *ngIf="tieneFavoritosUrgentes$ | async"
+            aria-label="tienes convocatorias urgentes"
+          >
+            &nbsp;*</span
+          >
+        </button>
+        <button
+          [class.activa]="tabActiva === 'alertas'"
+          (click)="setTab('alertas')"
+          [attr.aria-selected]="tabActiva === 'alertas'"
+        >
+          alertas
+        </button>
+        <button
+          [class.activa]="tabActiva === 'participaciones'"
+          (click)="setTab('participaciones')"
+          [attr.aria-selected]="tabActiva === 'participaciones'"
+        >
+          participaciones
+        </button>
+      </nav>
+    </aside>
+
+    <!-- CONTENIDO -->
+    <main class="perfil-contenido">
+      <div *ngIf="mensajeExito" class="mensaje-exito" role="status">
+        {{ mensajeExito }}
+      </div>
+
+      <!-- TAB: MI PERFIL -->
+      <div *ngIf="tabActiva === 'perfil'">
+        <!-- MODO VISUALIZACIÓN -->
+        <div *ngIf="!editando" class="perfil-datos">
+          <div class="dato-grupo">
+            <p class="dato-label">NOMBRE</p>
+            <p>{{ user.nombre }} {{ getApellidos(user) }}</p>
+          </div>
+          <div class="dato-grupo">
+            <p class="dato-label">UBICACIÓN</p>
+            <p>
+              {{ user.ciudad || "—"
+              }}{{ user.region ? ", " + user.region : "" }}
+            </p>
+          </div>
+          <div class="dato-grupo">
+            <p class="dato-label">WEB</p>
+            <a
+              *ngIf="user.web"
+              [href]="user.web"
+              target="_blank"
+              rel="noopener noreferrer"
+              >{{ user.web }}</a
+            >
+            <p *ngIf="!user.web" class="dato-vacio">—</p>
+          </div>
+          <div class="dato-grupo">
+            <p class="dato-label">REDES SOCIALES</p>
+            <p>{{ user.redes || "—" }}</p>
+          </div>
+          <div class="dato-grupo dato-grupo--full">
+            <p class="dato-label">SOBRE MÍ</p>
+            <p>{{ user.bio || "—" }}</p>
+          </div>
+          <div class="dato-grupo dato-grupo--full">
+            <p class="dato-label">DISCIPLINAS</p>
+            <p>
+              {{
+                disciplinasSeleccionadas.length > 0
+                  ? disciplinasSeleccionadas.join(", ")
+                  : "—"
+              }}
+            </p>
+          </div>
+        </div>
+
+        <!-- MODO EDICIÓN -->
+        <form
+          *ngIf="editando"
+          [formGroup]="form"
+          (ngSubmit)="guardarPerfil()"
+          novalidate
+          aria-label="editar perfil"
+        >
+          <div class="field">
+            <label for="nombre">nombre</label>
+            <input
+              id="nombre"
+              type="text"
+              formControlName="nombre"
+              autocomplete="given-name"
+            />
+          </div>
+          <div class="field">
+            <label for="apellidos">apellidos</label>
+            <input
+              id="apellidos"
+              type="text"
+              formControlName="apellidos"
+              autocomplete="family-name"
+            />
+          </div>
+          <div class="field">
+            <label for="bio">sobre mí</label>
+            <textarea
+              id="bio"
+              formControlName="bio"
+              rows="4"
+              placeholder="cuéntanos sobre ti"
+            ></textarea>
+          </div>
+          <div class="field">
+            <label for="ciudad">ciudad</label>
+            <input
+              id="ciudad"
+              type="text"
+              formControlName="ciudad"
+              autocomplete="address-level2"
+            />
+          </div>
+          <div class="field">
+            <label for="region">región</label>
+            <input
+              id="region"
+              type="text"
+              formControlName="region"
+              autocomplete="address-level1"
+            />
+          </div>
+          <div class="field">
+            <label for="pais">país</label>
+            <input
+              id="pais"
+              type="text"
+              formControlName="pais"
+              autocomplete="country"
+            />
+          </div>
+          <div class="field">
+            <label for="web">web</label>
+            <input
+              id="web"
+              type="url"
+              formControlName="web"
+              autocomplete="url"
+              placeholder="https://"
+            />
+          </div>
+          <div class="field">
+            <label for="redes">redes sociales</label>
+            <input
+              id="redes"
+              type="text"
+              formControlName="redes"
+              placeholder="@usuario"
+            />
+          </div>
+
+          <div class="field">
+            <label id="disciplinas-edit-label">disciplinas</label>
+            <div
+              class="desplegable"
+              (click)="toggleDisciplinas()"
+              [attr.aria-expanded]="disciplinasAbiertas"
+              tabindex="0"
+              (keydown.enter)="toggleDisciplinas()"
+              role="button"
+              aria-labelledby="disciplinas-edit-label"
+            >
+              <span>{{
+                disciplinasSeleccionadas.length > 0
+                  ? disciplinasSeleccionadas.join(", ")
+                  : "selecciona disciplinas"
+              }}</span>
+              <span>{{ disciplinasAbiertas ? "∧" : "∨" }}</span>
+            </div>
+            <div *ngIf="disciplinasAbiertas" class="desplegable-opciones">
+              <div
+                *ngFor="let d of disciplinasOpciones"
+                class="disciplina-item"
+                (click)="toggleDisciplina(d)"
+                tabindex="0"
+                (keydown.enter)="toggleDisciplina(d)"
+                role="option"
+                [attr.aria-selected]="isDisciplinaSelected(d)"
+              >
+                <span
+                  class="checkbox"
+                  [class.checked]="isDisciplinaSelected(d)"
+                ></span>
+                <span>{{ d }}</span>
+              </div>
+            </div>
+          </div>
+
+          <button type="submit" class="btn-primary" [disabled]="guardando">
+            {{ guardando ? "guardando..." : "guardar cambios" }}
+          </button>
+        </form>
+      </div>
+
+      <!-- TAB: FAVORITOS -->
+      <div *ngIf="tabActiva === 'favoritos'">
+        <div *ngIf="favoritosLoading$ | async" class="empty">cargando...</div>
+
+        <div *ngIf="!(favoritosLoading$ | async)">
+          <div *ngIf="(favoritos$ | async)?.length === 0" class="empty">
+            no tienes convocatorias guardadas
+          </div>
+
+          <div class="favoritos-lista">
+            <article
+              *ngFor="
+                let f of favoritosOrdenados$ | async;
+                trackBy: trackByFavorito
+              "
+              class="favorito-item"
+            >
+              <div class="favorito-fecha">
+                <p class="dato-label">FECHA LÍMITE</p>
+                <p>{{ formatFecha(f.convocatoria.fecha_limite) }}</p>
+                <p
+                  class="dias-restantes"
+                  [class.urgente]="
+                    diasRestantes(f.convocatoria.fecha_limite) <= 7 &&
+                    diasRestantes(f.convocatoria.fecha_limite) >= 0
+                  "
+                  [class.cerrada]="
+                    diasRestantes(f.convocatoria.fecha_limite) < 0
+                  "
+                >
+                  {{
+                    diasRestantes(f.convocatoria.fecha_limite) >= 0
+                      ? diasRestantes(f.convocatoria.fecha_limite) + " días"
+                      : "cerrada"
+                  }}
+                </p>
+              </div>
+
+              <div class="favorito-info">
+                <h3>{{ f.convocatoria.titulo }}</h3>
+                <p class="tipo">{{ f.convocatoria.tipo }}</p>
+                <p class="lugar">
+                  {{ f.convocatoria.ciudad }}, {{ f.convocatoria.region }}
+                </p>
+              </div>
+
+              <div class="favorito-acciones">
+                <button
+                  *ngIf="diasRestantes(f.convocatoria.fecha_limite) >= 0"
+                  class="btn-alerta"
+                  (click)="activarAlerta(f)"
+                  aria-label="gestionar alerta"
+                >
+                  {{
+                    (hasAlerta(f.convocatoria_id) | async)
+                      ? "editar alerta"
+                      : "activar alerta"
+                  }}
+                </button>
+                <span
+                  *ngIf="diasRestantes(f.convocatoria.fecha_limite) < 0"
+                ></span>
+                <button
+                  class="btn-eliminar"
+                  (click)="abrirConfirmacion('favorito', f.id)"
+                  aria-label="eliminar de favoritos"
+                >
+                  eliminar
+                </button>
+              </div>
+            </article>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB: ALERTAS -->
+      <div *ngIf="tabActiva === 'alertas'">
+        <div
+          *ngIf="(alertas$ | async)?.length === 0 && !procesandoAlertas"
+          class="empty"
+        >
+          no tienes alertas activas
+        </div>
+
+        <div class="alertas-lista" *ngIf="!procesandoAlertas">
+          <article
+            *ngFor="
+              let grupo of alertasPorConvocatoria$ | async;
+              trackBy: trackByAlerta
+            "
+            class="alerta-item"
+            [class.urgente]="diasRestantes(grupo.fechaLimite) <= 7"
+          >
+            <div class="alerta-info">
+              <h3>{{ grupo.titulo }}</h3>
+              <p class="alerta-ciudad">
+                {{ grupo.ciudad }}, {{ grupo.region }}
+              </p>
+              <p class="alerta-fecha">
+                cierra {{ formatFecha(grupo.fechaLimite) }}
+              </p>
+              <p class="alerta-avisos">
+                avisos: {{ ordenarDias(grupo.diasAntes).join(", ") }} días antes
+              </p>
+            </div>
+
+            <div class="alerta-dias">
+              <p class="dias-numero">{{ diasRestantes(grupo.fechaLimite) }}</p>
+              <p class="dias-label">días</p>
+            </div>
+
+            <div class="alerta-acciones">
+              <button
+                class="btn-alerta"
+                (click)="editarAlertaGrupo(grupo)"
+                aria-label="editar alertas"
+              >
+                editar
+              </button>
+              <button
+                class="btn-eliminar"
+                (click)="abrirConfirmacion('alerta', grupo.convocatoriaId)"
+                aria-label="eliminar alertas"
+              >
+                eliminar
+              </button>
+            </div>
+          </article>
+        </div>
+
+        <div *ngIf="procesandoAlertas" class="empty">actualizando...</div>
+      </div>
+      <!-- TAB: PARTICIPACIONES -->
+      <div *ngIf="tabActiva === 'participaciones'">
+        <h2>participaciones</h2>
+        <p class="empty">próximamente</p>
+      </div>
+    </main>
+  </div>
+  <!-- MODAL ALERTA -->
+  <div
+    class="modal-overlay"
+    *ngIf="modalAlertaAbierto"
+    (click)="cerrarModal()"
+    role="dialog"
+    aria-modal="true"
+  >
+    <div class="modal" (click)="$event.stopPropagation()">
+      <h3>{{ alertaExistente ? "editar alertas" : "activar alertas" }}</h3>
+      <p *ngIf="favoritoSeleccionado">
+        {{ favoritoSeleccionado.convocatoria.titulo }}
+      </p>
+      <p class="modal-subtitulo">selecciona cuándo quieres recibir avisos</p>
+
+      <div class="dias-opciones">
+        <label *ngFor="let dias of opcionesAlerta" class="dias-check">
+          <input
+            type="checkbox"
+            [checked]="diasSeleccionados.includes(dias)"
+            (change)="toggleDiasAlerta(dias)"
+          />
+          <span
+            class="checkbox"
+            [class.checked]="diasSeleccionados.includes(dias)"
+          ></span>
+          <span>{{ dias }} días antes</span>
+        </label>
+      </div>
+
+      <div class="modal-acciones">
+        <button
+          class="btn-primary"
+          (click)="confirmarAlerta()"
+          [disabled]="diasSeleccionados.length === 0"
+        >
+          {{ alertaExistente ? "actualizar alertas" : "activar alertas" }}
+        </button>
+        <button class="btn-cancelar" (click)="cerrarModal()">cancelar</button>
+      </div>
+    </div>
+  </div>
+  <div
+    class="modal-overlay"
+    *ngIf="modalConfirmacion"
+    (click)="cerrarConfirmacion()"
+    role="dialog"
+    aria-modal="true"
+  >
+    <div class="modal" (click)="$event.stopPropagation()">
+      <h3>¿estás segura?</h3>
+      <p *ngIf="modalConfirmacion === 'favorito'">
+        Se eliminará esta convocatoria de tus favoritos.
+      </p>
+      <p *ngIf="modalConfirmacion === 'alerta'">
+        Se eliminarán todas las alertas de esta convocatoria.
+      </p>
+      <div class="modal-acciones">
+        <button class="btn-primary" (click)="confirmarEliminacion()">
+          eliminar
+        </button>
+        <button class="btn-cancelar" (click)="cerrarConfirmacion()">
+          cancelar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -30,7 +30,7 @@
 
 .field-error {
   display: block;
-  color: #256af4;
+  color: $color-aviso;
   font-size: 12px;
   margin-top: 4px;
 }
@@ -47,7 +47,7 @@
 }
 
 .error {
-  color: #256af4;
+  color: $color-aviso;
   margin-bottom: 16px;
   text-align: center;
 }

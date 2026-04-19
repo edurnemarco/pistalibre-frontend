@@ -1,0 +1,609 @@
+@use "../../../styles" as *;
+
+.perfil-page {
+  display: flex;
+  flex-direction: column;
+}
+
+// Header horizontal
+.perfil-header-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+
+  @media (min-width: 768px) {
+    padding: 16px 32px;
+  }
+
+  h1 {
+    font-size: 12px;
+    font-weight: 400;
+
+    @media (min-width: 768px) {
+      font-size: 14px;
+    }
+  }
+}
+.perfil-hr {
+  border: none;
+  border-top: 1px solid $color-borde;
+  margin: 0 16px;
+
+  @media (min-width: 768px) {
+    margin: 0 32px;
+  }
+}
+
+.btn-editar {
+  font-family: $fuente-mono;
+  font-size: 12px;
+  color: $color-texto;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+// Body con sidebar y contenido
+.perfil-body {
+  display: grid;
+  grid-template-columns: 1fr;
+
+  @media (min-width: 768px) {
+    grid-template-columns: 300px 1fr;
+    min-height: calc(100vh - 120px);
+  }
+}
+
+// Sidebar
+.perfil-sidebar {
+  padding: 24px 16px;
+  border-bottom: 1px solid $color-borde;
+
+  @media (min-width: 768px) {
+    border-bottom: none;
+    padding: 24px;
+  }
+}
+
+.avatar-placeholder {
+  width: 100%;
+  aspect-ratio: 1;
+  border: 1px solid $color-borde;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  margin-bottom: 16px;
+  color: $color-texto-secundario;
+  position: relative;
+  overflow: hidden;
+
+  &.editable {
+    cursor: pointer;
+
+    &:hover .avatar-overlay {
+      opacity: 1;
+    }
+  }
+}
+
+.avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.avatar-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: $color-acento;
+  color: $color-texto;
+  font-size: 12px;
+  font-family: $fuente-mono;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.avatar-cargando {
+  width: 100%;
+  height: 100%;
+  background: $color-acento;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  color: $color-texto;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.perfil-nombre {
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 24px;
+}
+
+.perfil-nav {
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
+  overflow-x: auto;
+
+  @media (min-width: 768px) {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  button {
+    font-family: $fuente-mono;
+    font-size: 13px;
+    color: $color-texto-secundario;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px 0;
+    text-align: left;
+    white-space: nowrap;
+
+    span {
+      color: $color-aviso;
+    }
+
+    @media (min-width: 768px) {
+      border-bottom: 1px solid $color-borde;
+      padding: 12px 8px;
+
+      &:hover {
+        color: $color-texto;
+        border-bottom: 1px solid $color-texto;
+      }
+    }
+
+    &.activa {
+      color: $color-texto;
+      background: $color-acento;
+      padding-left: 8px;
+    }
+  }
+}
+
+// Contenido
+.perfil-contenido {
+  padding: 24px 16px;
+
+  @media (min-width: 768px) {
+    padding: 24px 32px 24px 0px;
+  }
+}
+
+// Datos perfil
+.perfil-datos {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 25px 40px;
+
+  @media (min-width: 768px) {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.dato-grupo {
+  border-bottom: 1px solid $color-borde;
+  padding-bottom: 5px;
+  &--full {
+    @media (min-width: 768px) {
+      grid-column: 1 / -1;
+    }
+  }
+
+  .dato-label {
+    font-size: 11px;
+    color: $color-texto-secundario;
+    margin-bottom: 6px;
+    letter-spacing: 0.05em;
+  }
+
+  .dato-vacio {
+    color: $color-texto-secundario;
+  }
+
+  a {
+    font-size: 13px;
+    color: $color-texto;
+    text-decoration: underline;
+  }
+
+  p {
+    font-size: 13px;
+  }
+}
+
+// Formulario edición
+.field {
+  margin-bottom: 24px;
+
+  label {
+    display: block;
+    font-size: 11px;
+    color: $color-texto-secundario;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  textarea {
+    font-family: $fuente-mono;
+    font-size: 13px;
+    width: 100%;
+    border: none;
+    border-bottom: 1px solid $color-borde;
+    padding: 8px 4px;
+    resize: vertical;
+    background: transparent;
+    color: $color-texto;
+
+    &:focus {
+      outline: none;
+      border-bottom-color: $color-texto;
+    }
+  }
+}
+
+.desplegable {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid $color-borde;
+  padding: 8px 4px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.desplegable-opciones {
+  border: 1px solid $color-borde;
+  border-top: none;
+  max-height: 200px;
+  overflow-y: auto;
+
+  &::-webkit-scrollbar {
+    width: 3px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: $color-borde;
+  }
+}
+
+.disciplina-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 13px;
+
+  &:hover {
+    background: $color-acento;
+  }
+
+  .checkbox {
+    width: 12px;
+    height: 12px;
+    min-width: 12px;
+    border: 1px solid $color-texto;
+    display: block;
+    flex-shrink: 0;
+    transition: background 0.1s;
+
+    &.checked {
+      background: $color-texto;
+    }
+  }
+}
+
+.mensaje-exito {
+  color: $color-aviso;
+  font-size: 13px;
+  margin-bottom: 16px;
+  padding: 8px 12px;
+  border: 1px solid $color-aviso;
+}
+
+.empty {
+  color: $color-texto-secundario;
+  font-size: 13px;
+  padding: 24px 0;
+}
+
+h2 {
+  font-size: 16px;
+  font-weight: 400;
+  margin-bottom: 24px;
+}
+
+// Favoritos
+.favoritos-lista {
+  display: flex;
+  flex-direction: column;
+}
+
+.favorito-item {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  padding: 16px 0;
+  border-bottom: 1px solid $color-borde;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  @media (min-width: 768px) {
+    grid-template-columns: 100px 1fr auto;
+    align-items: start;
+  }
+}
+
+.favorito-fecha {
+  .dato-label {
+    font-size: 11px;
+    color: $color-texto-secundario;
+    margin-bottom: 4px;
+  }
+
+  p {
+    font-size: 13px;
+  }
+}
+
+.dias-restantes {
+  font-size: 12px;
+  color: $color-texto-secundario;
+  margin-top: 4px;
+
+  &.urgente {
+    color: $color-aviso;
+  }
+
+  &.cerrada {
+    color: $color-texto-secundario;
+    font-style: italic;
+  }
+}
+
+.favorito-info {
+  h3 {
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 4px;
+  }
+
+  .tipo {
+    font-size: 12px;
+    color: $color-texto-secundario;
+    margin-bottom: 4px;
+  }
+
+  .lugar {
+    font-size: 12px;
+    color: $color-texto-secundario;
+  }
+}
+
+.favorito-acciones {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 0;
+
+  @media (min-width: 768px) {
+    align-self: stretch;
+  }
+}
+
+.btn-alerta {
+  font-family: $fuente-mono;
+  font-size: 12px;
+  color: $color-texto;
+  background: $color-acento;
+  border: none;
+  cursor: pointer;
+  padding: 4px 8px;
+}
+
+.btn-eliminar {
+  font-family: $fuente-mono;
+  font-size: 12px;
+  color: $color-texto-secundario;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+}
+
+.favoritos-lista,
+.alertas-lista {
+  .favorito-item:first-child,
+  .alerta-item:first-child {
+    padding-top: 0;
+  }
+}
+
+// Modal
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: $color-fondo;
+  padding: 32px;
+  max-width: 400px;
+  width: 90%;
+
+  h3 {
+    font-size: 16px;
+    font-weight: 400;
+    margin-bottom: 8px;
+  }
+
+  p {
+    font-size: 13px;
+    margin-bottom: 16px;
+  }
+}
+
+.modal-subtitulo {
+  color: $color-texto-secundario;
+  font-size: 12px !important;
+}
+
+.dias-check {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  font-size: 12px;
+
+  input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .checkbox {
+    width: 12px;
+    height: 12px;
+    min-width: 12px;
+    border: 1px solid $color-texto;
+    display: block;
+    flex-shrink: 0;
+    transition: background 0.1s;
+
+    &.checked {
+      background: $color-texto;
+    }
+  }
+}
+
+.dias-opciones {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+.modal-acciones {
+  display: flex;
+  gap: 12px;
+  flex-direction: column;
+}
+
+.btn-cancelar {
+  font-family: $fuente-mono;
+  font-size: 13px;
+  color: $color-texto-secundario;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+  text-align: center;
+}
+
+// Alertas
+.alerta-item {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 16px;
+  padding: 16px 0;
+  border-bottom: 1px solid $color-borde;
+  align-items: start;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &.urgente {
+    .dias-numero {
+      color: $color-aviso;
+    }
+  }
+}
+
+.alerta-info {
+  h3 {
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 4px;
+  }
+
+  .alerta-ciudad,
+  .alerta-fecha,
+  .alerta-avisos {
+    font-size: 12px;
+    color: $color-texto-secundario;
+    margin-top: 2px;
+  }
+}
+
+.alerta-dias {
+  text-align: center;
+  min-width: 48px;
+
+  .dias-numero {
+    font-size: 16px;
+    font-weight: 500;
+  }
+
+  .dias-label {
+    font-size: 11px;
+    color: $color-texto-secundario;
+  }
+}
+
+.alerta-acciones {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-end;
+}
+
+.btn-editar-alerta {
+  font-family: $fuente-mono;
+  font-size: 12px;
+  color: $color-texto;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+}
+.alerta-actualizando {
+  font-size: 12px;
+  color: $color-texto-secundario;
+  padding: 16px 0;
+  font-style: italic;
+}

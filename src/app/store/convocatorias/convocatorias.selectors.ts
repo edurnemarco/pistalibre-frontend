@@ -28,7 +28,7 @@ export const selectConvocatoriasFiltradas = createSelector(
   selectTodasConvocatorias,
   selectFiltros,
   (convocatorias, filtros) => {
-    return convocatorias.filter((c) => {
+    let filtradas = convocatorias.filter((c) => {
       if (filtros.disciplinas.length > 0) {
         const match = filtros.disciplinas.some((d) =>
           c.disciplinas.includes(d),
@@ -41,30 +41,29 @@ export const selectConvocatoriasFiltradas = createSelector(
       }
 
       if (filtros.ciudad) {
-        if (!c.ciudad.toLowerCase().includes(filtros.ciudad.toLowerCase()))
-          return false;
-      }
-
-      if (filtros.region) {
-        if (!c.region.toLowerCase().includes(filtros.region.toLowerCase()))
+        if (
+          !c.ciudad.toLowerCase().includes(filtros.ciudad.toLowerCase()) &&
+          !c.region.toLowerCase().includes(filtros.ciudad.toLowerCase())
+        )
           return false;
       }
 
       if (filtros.estado) {
         const hoy = new Date();
         const fechaLimite = new Date(c.fecha_limite);
-        if (filtros.estado === 'abierta' && fechaLimite < hoy) return false;
-        if (filtros.estado === 'cerrada' && fechaLimite >= hoy) return false;
-        if (filtros.estado === 'próximamente') {
-          const diasRestantes =
-            (fechaLimite.getTime() - hoy.getTime()) / (1000 * 60 * 60 * 24);
-          if (diasRestantes > 30 || diasRestantes < 0) return false;
-        }
+        const diasRestantes =
+          (fechaLimite.getTime() - hoy.getTime()) / (1000 * 60 * 60 * 24);
+        if (filtros.estado === 'abierta' && diasRestantes < 0) return false;
+        if (filtros.estado === 'cerrada' && diasRestantes >= 0) return false;
+        if (
+          filtros.estado === 'próximamente' &&
+          (diasRestantes > 30 || diasRestantes < 0)
+        )
+          return false;
       }
 
       if (filtros.mes) {
         const mesNum = parseInt(filtros.mes);
-        if (isNaN(new Date(c.fecha_limite).getMonth())) return false;
         if (new Date(c.fecha_limite).getMonth() + 1 !== mesNum) return false;
       }
 
@@ -75,5 +74,24 @@ export const selectConvocatoriasFiltradas = createSelector(
 
       return true;
     });
+
+    // Ordenar: abiertas primero por fecha más cercana, cerradas al final
+    const hoy = new Date();
+    const abiertas = filtradas
+      .filter((c) => new Date(c.fecha_limite) >= hoy)
+      .sort(
+        (a, b) =>
+          new Date(a.fecha_limite).getTime() -
+          new Date(b.fecha_limite).getTime(),
+      );
+    const cerradas = filtradas
+      .filter((c) => new Date(c.fecha_limite) < hoy)
+      .sort(
+        (a, b) =>
+          new Date(b.fecha_limite).getTime() -
+          new Date(a.fecha_limite).getTime(),
+      );
+
+    return [...abiertas, ...cerradas];
   },
 );

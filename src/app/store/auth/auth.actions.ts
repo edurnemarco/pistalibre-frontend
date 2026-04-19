@@ -55,3 +55,8 @@ export const loadUserFromStorageSuccess = createAction(
   '[Auth] Load User From Storage Success',
   props<{ user: User; token: string }>(),
 );
+
+export const updateUserSuccess = createAction(
+  '[Auth] Update User Success',
+  props<{ user: User }>(),
+);

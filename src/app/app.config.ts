@@ -11,6 +11,12 @@ import { authReducer } from './store/auth/auth.reducer';
 import { ConvocatoriasEffects } from './store/convocatorias/convocatorias.effects';
 import { convocatoriasReducer } from './store/convocatorias/convocatorias.reducer';
 
+import { FavoritosEffects } from './store/favoritos/favoritos.effects';
+import { favoritosReducer } from './store/favoritos/favoritos.reducer';
+
+import { AlertasEffects } from './store/alertas/alertas.effects';
+import { alertasReducer } from './store/alertas/alertas.reducer';
+
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
@@ -19,8 +25,15 @@ export const appConfig: ApplicationConfig = {
     provideStore({
       auth: authReducer,
       convocatorias: convocatoriasReducer,
+      favoritos: favoritosReducer,
+      alertas: alertasReducer,
     }),
-    provideEffects([AuthEffects, ConvocatoriasEffects]),
+    provideEffects([
+      AuthEffects,
+      ConvocatoriasEffects,
+      FavoritosEffects,
+      AlertasEffects,
+    ]),
     provideStoreDevtools({
       maxAge: 25,
       logOnly: false,

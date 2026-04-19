@@ -1,5 +1,5 @@
 <nav aria-label="navegación principal">
-  <!-- MÓVIL: dos líneas -->
+  <!-- MÓVIL -->
   <div class="nav-mobile">
     <div class="nav-top">
       <a
@@ -14,28 +14,25 @@
         </button>
       </ng-container>
       <ng-template #guestTopMobile>
-        <a routerLink="/login" aria-label="iniciar sesión">iniciar sesión</a>
+        <a routerLink="/login">iniciar sesión</a>
       </ng-template>
     </div>
     <div class="nav-bottom">
-      <a routerLink="/oportunidades" aria-label="ver oportunidades"
-        >oportunidades</a
-      >
-      <ng-container *ngIf="isAuthenticated$ | async; else guestBottomMobile">
-        <a routerLink="/publicar" aria-label="publicar convocatoria"
-          >publicar</a
-        >
+      <a routerLink="/oportunidades">oportunidades</a>
+      <ng-container *ngIf="isAuthenticated$ | async">
+        <ng-container *ngIf="userTipo$ | async as tipo">
+          <a routerLink="/perfil">mi perfil</a>
+          <a *ngIf="tipo === 'institucion'" routerLink="/publicar">publicar</a>
+        </ng-container>
       </ng-container>
-      <ng-template #guestBottomMobile>
-        <a routerLink="/publicar" aria-label="publicar convocatoria"
-          >publicar</a
-        >
-      </ng-template>
+      <ng-container *ngIf="!(isAuthenticated$ | async)">
+        <a routerLink="/publicar">publicar</a>
+      </ng-container>
     </div>
   </div>
 
-  <!-- DESKTOP: una línea -->
-  <div class="nav-desktop" role="navigation">
+  <!-- DESKTOP -->
+  <div class="nav-desktop">
     <a
       routerLink="/oportunidades"
       class="nav-logo"
@@ -45,14 +42,21 @@
     <div class="nav-links">
       <a routerLink="/oportunidades">oportunidades</a>
       <ng-container *ngIf="isAuthenticated$ | async; else guestDesktop">
-        <a routerLink="/perfil">mi perfil</a>
-        <a routerLink="/publicar">publicar</a>
-        <span class="nav-user" aria-label="usuario autenticado">{{
-          (user$ | async)?.nombre
-        }}</span>
-        <button (click)="onLogout()" aria-label="cerrar sesión">
-          cerrar sesión
-        </button>
+        <ng-container *ngIf="userTipo$ | async as tipo">
+          <a routerLink="/perfil">
+            mi perfil<span
+              *ngIf="tieneFavoritosUrgentes$ | async"
+              class="notif-asterisco"
+              aria-label="tienes convocatorias urgentes"
+            >
+              &nbsp;*</span
+            >
+          </a>
+          <a *ngIf="tipo === 'institucion'" routerLink="/publicar">publicar</a>
+          <button (click)="onLogout()" aria-label="cerrar sesión">
+            cerrar sesión
+          </button>
+        </ng-container>
       </ng-container>
       <ng-template #guestDesktop>
         <a routerLink="/publicar">publicar</a>

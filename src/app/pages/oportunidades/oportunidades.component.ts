@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, HostListener, OnInit } from '@angular/core';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
@@ -15,16 +15,27 @@ import {
   selectConvocatoriasFiltradas,
   selectConvocatoriasLoading,
   selectFiltros,
+  selectTodasConvocatorias,
 } from '../../store/convocatorias/convocatorias.selectors';
 import {
   Convocatoria,
   FiltrosConvocatorias,
 } from '../../store/convocatorias/convocatorias.state';
 
+import { take } from 'rxjs/operators';
+import {
+  addFavorito,
+  cargarFavoritos,
+  deleteFavorito,
+} from '../../store/favoritos/favoritos.actions';
+import {
+  selectFavoritoId,
+  selectIsFavorito,
+} from '../../store/favoritos/favoritos.selectors';
 @Component({
   selector: 'app-oportunidades',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, FormsModule],
   templateUrl: './oportunidades.component.html',
   styleUrl: './oportunidades.component.scss',
 })
@@ -64,13 +75,13 @@ export class OportunidadesComponent implements OnInit {
   convocatoriasExpandidas = new Set<string>();
   aniosOpciones$: Observable<string[]>;
   mesesOpciones$: Observable<{ valor: string; label: string }[]>;
-
+  mesSeleccionado = '';
+  anioSeleccionado = '';
   constructor(private store: Store) {
     this.convocatorias$ = this.store.select(selectConvocatoriasFiltradas);
     this.loading$ = this.store.select(selectConvocatoriasLoading);
     this.filtros$ = this.store.select(selectFiltros);
     this.isAuthenticated$ = this.store.select(selectIsAuthenticated);
-
     this.convocatoriasPaginadas$ = combineLatest([
       this.convocatorias$,
       this.paginaActual$,
@@ -93,16 +104,7 @@ export class OportunidadesComponent implements OnInit {
     this.paginas$ = this.totalPaginas$.pipe(
       map((total) => Array.from({ length: total }, (_, i) => i + 1)),
     );
-    this.aniosOpciones$ = this.convocatorias$.pipe(
-      map((convocatorias) => {
-        return convocatorias
-          .map((c) => new Date(c.fecha_limite).getFullYear().toString())
-          .filter((v, i, a) => a.indexOf(v) === i)
-          .sort();
-      }),
-    );
-
-    this.mesesOpciones$ = this.convocatorias$.pipe(
+    this.mesesOpciones$ = this.store.select(selectTodasConvocatorias).pipe(
       map((convocatorias) => {
         const mesesNombres = [
           'enero',
@@ -125,6 +127,15 @@ export class OportunidadesComponent implements OnInit {
           .map((m) => ({ valor: m.toString(), label: mesesNombres[m - 1] }));
       }),
     );
+
+    this.aniosOpciones$ = this.store.select(selectTodasConvocatorias).pipe(
+      map((convocatorias) => {
+        return convocatorias
+          .map((c) => new Date(c.fecha_limite).getFullYear().toString())
+          .filter((v, i, a) => a.indexOf(v) === i)
+          .sort();
+      }),
+    );
   }
 
   @HostListener('document:click', ['$event'])
@@ -140,6 +151,7 @@ export class OportunidadesComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.store.dispatch(cargarFavoritos());
     this.store.dispatch(cargarConvocatorias());
   }
 
@@ -180,15 +192,12 @@ export class OportunidadesComponent implements OnInit {
     this.paginaActual$.next(1);
   }
 
-  onMesChange(event: Event) {
-    const mes = (event.target as HTMLSelectElement).value;
-    this.store.dispatch(actualizarFiltros({ filtros: { mes } }));
+  onMesChange(valor: string) {
+    this.store.dispatch(actualizarFiltros({ filtros: { mes: valor } }));
     this.paginaActual$.next(1);
   }
-
-  onAnioChange(event: Event) {
-    const anio = (event.target as HTMLSelectElement).value;
-    this.store.dispatch(actualizarFiltros({ filtros: { anio } }));
+  onAnioChange(valor: string) {
+    this.store.dispatch(actualizarFiltros({ filtros: { anio: valor } }));
     this.paginaActual$.next(1);
   }
 
@@ -213,7 +222,22 @@ export class OportunidadesComponent implements OnInit {
   isExpanded(id: string): boolean {
     return this.convocatoriasExpandidas.has(id);
   }
+  isFavorito(convocatoriaId: string): Observable<boolean> {
+    return this.store.select(selectIsFavorito(convocatoriaId));
+  }
 
+  toggleFavorito(convocatoriaId: string) {
+    this.store
+      .select(selectFavoritoId(convocatoriaId))
+      .pipe(take(1))
+      .subscribe((favoritoId) => {
+        if (favoritoId) {
+          this.store.dispatch(deleteFavorito({ favoritoId }));
+        } else {
+          this.store.dispatch(addFavorito({ convocatoriaId }));
+        }
+      });
+  }
   diasRestantes(fechaLimite: string): number {
     const hoy = new Date();
     const fecha = new Date(fechaLimite);
@@ -225,6 +249,13 @@ export class OportunidadesComponent implements OnInit {
       day: 'numeric',
       month: 'short',
       year: 'numeric',
+    });
+  }
+  onCheckboxFocus(event: FocusEvent) {
+    const target = event.target as HTMLElement;
+    target.parentElement?.scrollIntoView({
+      block: 'nearest',
+      behavior: 'smooth',
     });
   }
 }

@@ -14,6 +14,16 @@ nav {
   }
 }
 
+span.notif-asterisco {
+  color: $color-aviso;
+  font-size: 14px;
+  margin-left: 1px;
+  text-decoration: none;
+  @media (min-width: 768px) {
+    display: inline-block;
+  }
+}
+
 // Móvil
 .nav-mobile {
   display: block;
@@ -68,8 +78,7 @@ nav {
 .nav-mobile,
 .nav-desktop {
   a,
-  button,
-  span {
+  button {
     font-size: 12px;
     text-decoration: none;
     color: $color-texto;
@@ -85,5 +94,9 @@ nav {
     @media (min-width: 768px) {
       font-size: 14px;
     }
+  }
+
+  span:hover {
+    text-decoration: none;
   }
 }
