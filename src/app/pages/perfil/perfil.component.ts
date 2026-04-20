@@ -1,6 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { filter, map, take } from 'rxjs/operators';
@@ -19,6 +24,7 @@ import {
 import { updateUserSuccess } from '../../store/auth/auth.actions';
 import { selectToken, selectUser } from '../../store/auth/auth.selectors';
 import { User } from '../../store/auth/auth.state';
+import { selectTodasConvocatorias } from '../../store/convocatorias/convocatorias.selectors';
 import {
   cargarFavoritos,
   deleteFavorito,
@@ -28,7 +34,17 @@ import {
   selectFavoritosLoading,
 } from '../../store/favoritos/favoritos.selectors';
 import { Favorito } from '../../store/favoritos/favoritos.state';
-
+import {
+  cargarParticipaciones,
+  createParticipacion,
+  deleteParticipacion,
+  updateParticipacion,
+} from '../../store/participaciones/participaciones.actions';
+import {
+  selectParticipaciones,
+  selectParticipacionesLoading,
+} from '../../store/participaciones/participaciones.selectors';
+import { Participacion } from '../../store/participaciones/participaciones.state';
 @Component({
   selector: 'app-perfil',
   standalone: true,
@@ -50,7 +66,7 @@ export class PerfilComponent implements OnInit {
   avatarUrl: string | null = null;
   avatarPreview: string | null = null;
 
-  // Formulario
+  // Formulario perfil
   form: FormGroup;
 
   // Disciplinas
@@ -72,7 +88,6 @@ export class PerfilComponent implements OnInit {
     'pintura',
     'videoarte',
   ];
-
   disciplinasSeleccionadas: string[] = [];
   disciplinasAbiertas = false;
 
@@ -89,9 +104,34 @@ export class PerfilComponent implements OnInit {
   diasSeleccionados: number[] = [];
   alertaExistente = false;
   opcionesAlerta = [1, 3, 7, 14, 30];
-  modalConfirmacion: 'favorito' | 'alerta' | null = null;
+  modalConfirmacion: 'favorito' | 'alerta' | 'participacion' | null = null;
   itemAEliminar: string | null = null;
   procesandoAlertas = false;
+
+  // Participaciones
+  participaciones$: Observable<Participacion[]>;
+  participacionesLoading$: Observable<boolean>;
+  formularioParticipacion = false;
+  participacionEditando: Participacion | null = null;
+  formParticipacion: FormGroup;
+
+  resultadosOpciones = [
+    'pendiente',
+    'seleccionado',
+    'finalista',
+    'no seleccionado',
+  ];
+  enlaces: string[] = [];
+  nuevoEnlace = '';
+  subiendoImagenParticipacion = false;
+  participacionesExpandidas = new Set<string>();
+  convocatoriasOpciones: any[] = [];
+  convocatoriasFiltradas: any[] = [];
+  mostrarSugerencias = false;
+  imagenesParticipacion: string[] = [];
+  imagenHover: string | null = null;
+  imagenExpandida: string | null = null;
+  maxImagenes = 5;
 
   constructor(
     private store: Store,
@@ -112,11 +152,10 @@ export class PerfilComponent implements OnInit {
       web: [''],
       redes: [''],
     });
+
     this.favoritos$ = this.store.select(selectFavoritos);
     this.favoritosLoading$ = this.store.select(selectFavoritosLoading);
 
-    this.alertas$ = this.store.select(selectAlertas);
-    this.alertasLoading$ = this.store.select(selectAlertasLoading);
     this.tieneFavoritosUrgentes$ = this.favoritos$.pipe(
       map((favoritos) => {
         const hoy = new Date();
@@ -130,6 +169,26 @@ export class PerfilComponent implements OnInit {
         });
       }),
     );
+
+    this.alertas$ = this.store.select(selectAlertas);
+    this.alertasLoading$ = this.store.select(selectAlertasLoading);
+
+    this.participaciones$ = this.store.select(selectParticipaciones);
+    this.participacionesLoading$ = this.store.select(
+      selectParticipacionesLoading,
+    );
+
+    this.formParticipacion = this.fb.group({
+      nombre_proyecto: ['', Validators.required],
+      convocatoria_nombre: ['', Validators.required],
+      convocatoria_id: [''],
+      institucion_nombre: ['', Validators.required],
+      lugar: ['', Validators.required],
+      descripcion_proyecto: ['', Validators.required],
+      resultado: ['', Validators.required],
+      anio: ['', Validators.required],
+      imagen_url: [''],
+    });
   }
 
   ngOnInit() {
@@ -165,7 +224,9 @@ export class PerfilComponent implements OnInit {
         }
       }
     });
+
     this.store.dispatch(cargarAlertas());
+    this.store.dispatch(cargarParticipaciones());
   }
 
   // Tabs
@@ -173,7 +234,7 @@ export class PerfilComponent implements OnInit {
     this.tabActiva = tab;
   }
 
-  // Edición
+  // Edición perfil
   toggleEditar() {
     this.editando = !this.editando;
     this.mensajeExito = '';
@@ -182,12 +243,10 @@ export class PerfilComponent implements OnInit {
     }
   }
 
-  // Helpers
   getApellidos(user: User): string {
     return (user as any).apellidos || '';
   }
 
-  // Disciplinas
   toggleDisciplina(d: string) {
     if (this.disciplinasSeleccionadas.includes(d)) {
       this.disciplinasSeleccionadas = this.disciplinasSeleccionadas.filter(
@@ -206,7 +265,6 @@ export class PerfilComponent implements OnInit {
     return this.disciplinasSeleccionadas.includes(d);
   }
 
-  // Guardar perfil
   guardarPerfil() {
     this.guardando = true;
     this.token$.pipe(take(1)).subscribe((token) => {
@@ -261,7 +319,6 @@ export class PerfilComponent implements OnInit {
   }
 
   // Favoritos
-
   eliminarFavorito(favoritoId: string) {
     this.store.dispatch(deleteFavorito({ favoritoId }));
   }
@@ -304,11 +361,9 @@ export class PerfilComponent implements OnInit {
   }
 
   // Alertas
-
   activarAlerta(favorito: Favorito) {
     this.favoritoSeleccionado = favorito;
     this.diasSeleccionados = [];
-
     this.store
       .select(selectAlertas)
       .pipe(take(1))
@@ -323,7 +378,6 @@ export class PerfilComponent implements OnInit {
           this.alertaExistente = false;
         }
       });
-
     this.modalAlertaAbierto = true;
   }
 
@@ -424,7 +478,8 @@ export class PerfilComponent implements OnInit {
     this.modalAlertaAbierto = true;
   }
 
-  abrirConfirmacion(tipo: 'favorito' | 'alerta', id: string) {
+  // Confirmación eliminación
+  abrirConfirmacion(tipo: 'favorito' | 'alerta' | 'participacion', id: string) {
     this.modalConfirmacion = tipo;
     this.itemAEliminar = id;
   }
@@ -437,6 +492,8 @@ export class PerfilComponent implements OnInit {
       this.store.dispatch(
         deleteAlertasByConvocatoria({ convocatoriaId: this.itemAEliminar }),
       );
+    } else if (this.modalConfirmacion === 'participacion') {
+      this.store.dispatch(deleteParticipacion({ id: this.itemAEliminar }));
     }
     this.cerrarConfirmacion();
   }
@@ -446,11 +503,151 @@ export class PerfilComponent implements OnInit {
     this.itemAEliminar = null;
   }
 
+  // Participaciones
+  abrirFormularioParticipacion(participacion?: Participacion) {
+    this.formularioParticipacion = true;
+    this.participacionEditando = participacion || null;
+    this.imagenesParticipacion = [];
+    this.enlaces = [];
+
+    if (participacion) {
+      this.formParticipacion.patchValue({
+        nombre_proyecto: participacion.nombre_proyecto || '',
+        convocatoria_nombre:
+          participacion.convocatoria?.titulo ||
+          participacion['convocatoria_nombre'] ||
+          '',
+        convocatoria_id: participacion.convocatoria_id || '',
+        institucion_nombre: participacion.institucion_nombre || '',
+        lugar: participacion.lugar || '',
+        descripcion_proyecto: participacion.descripcion_proyecto || '',
+        resultado: participacion.resultado || '',
+        anio: participacion['año'] || '',
+        imagen_url: participacion.imagen_url || '',
+      });
+      this.imagenesParticipacion = participacion.imagenes || [];
+      this.enlaces = participacion.enlaces || [];
+    } else {
+      this.formParticipacion.reset();
+    }
+  }
+  cerrarFormularioParticipacion() {
+    this.formularioParticipacion = false;
+    this.participacionEditando = null;
+    this.formParticipacion.reset();
+    this.imagenesParticipacion = [];
+  }
+
+  guardarParticipacion() {
+    const formData = this.formParticipacion.value;
+    const data: any = {
+      nombre_proyecto: formData.nombre_proyecto,
+      convocatoria_id: formData.convocatoria_id || null,
+      convocatoria_nombre: formData.convocatoria_nombre || null,
+      institucion_nombre: formData.institucion_nombre,
+      lugar: formData.lugar,
+      descripcion_proyecto: formData.descripcion_proyecto,
+      resultado: formData.resultado,
+      imagen_url: this.imagenesParticipacion[0] || null,
+      imagenes: this.imagenesParticipacion.filter((i) => i),
+      enlaces: this.enlaces.length > 0 ? this.enlaces : null,
+    };
+    data['año'] = formData.anio;
+
+    if (this.participacionEditando) {
+      this.store.dispatch(
+        updateParticipacion({ id: this.participacionEditando.id, data }),
+      );
+    } else {
+      this.store.dispatch(createParticipacion({ data }));
+    }
+    this.cerrarFormularioParticipacion();
+  }
+  agregarEnlace(input: HTMLInputElement) {
+    const url = input.value.trim();
+    if (url && !this.enlaces.includes(url)) {
+      this.enlaces = [...this.enlaces, url];
+    }
+    input.value = '';
+  }
+
+  eliminarEnlace(url: string) {
+    this.enlaces = this.enlaces.filter((e) => e !== url);
+  }
+
+  setResultado(r: string) {
+    const actual = this.formParticipacion.get('resultado')?.value;
+    this.formParticipacion.patchValue({ resultado: actual === r ? '' : r });
+  }
+
+  toggleParticipacion(id: string) {
+    if (this.participacionesExpandidas.has(id)) {
+      this.participacionesExpandidas.delete(id);
+    } else {
+      this.participacionesExpandidas.add(id);
+    }
+  }
+
+  isParticipacionExpandida(id: string): boolean {
+    return this.participacionesExpandidas.has(id);
+  }
+
+  subirImagenParticipacion(index: number) {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.onchange = (e: any) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      this.subiendoImagenParticipacion = true;
+      this.cloudinaryService.uploadImage(file).subscribe({
+        next: (url) => {
+          this.imagenesParticipacion[index] = url;
+          this.subiendoImagenParticipacion = false;
+        },
+        error: () => {
+          this.subiendoImagenParticipacion = false;
+        },
+      });
+    };
+    input.click();
+  }
+
+  get imagenesSlots(): number[] {
+    return Array.from({ length: this.maxImagenes }, (_, i) => i);
+  }
+  // trackBy
   trackByAlerta(index: number, grupo: any): string {
     return grupo.convocatoriaId;
   }
 
   trackByFavorito(index: number, favorito: Favorito): string {
     return favorito.id;
+  }
+
+  trackByParticipacion(index: number, participacion: Participacion): string {
+    return participacion.id;
+  }
+
+  buscarConvocatoria(event: Event) {
+    const texto = (event.target as HTMLInputElement).value;
+    this.store
+      .select(selectTodasConvocatorias)
+      .pipe(take(1))
+      .subscribe((convocatorias) => {
+        this.convocatoriasFiltradas = convocatorias
+          .filter((c) => c.titulo.toLowerCase().includes(texto.toLowerCase()))
+          .slice(0, 5);
+        this.mostrarSugerencias = this.convocatoriasFiltradas.length > 0;
+      });
+  }
+
+  seleccionarConvocatoria(c: any) {
+    this.formParticipacion.patchValue({
+      convocatoria_id: c.id,
+      convocatoria_nombre: c.titulo,
+      lugar: c.ciudad + (c.region ? ', ' + c.region : ''),
+    });
+    this.mostrarSugerencias = false;
   }
 }

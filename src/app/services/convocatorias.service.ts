@@ -8,6 +8,7 @@ import { Convocatoria } from '../store/convocatorias/convocatorias.state';
 })
 export class ConvocatoriasService {
   private apiUrl = 'http://127.0.0.1:8000/api';
+  //private apiUrl = 'http://192.168.0.22:8000/api';
 
   constructor(private http: HttpClient) {}
 

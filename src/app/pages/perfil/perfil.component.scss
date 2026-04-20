@@ -58,27 +58,41 @@
 
 // Sidebar
 .perfil-sidebar {
-  padding: 24px 16px;
+  padding: 16px;
   border-bottom: 1px solid $color-borde;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+  overflow: hidden;
 
   @media (min-width: 768px) {
     border-bottom: none;
     padding: 24px;
+    flex-direction: column;
   }
 }
 
 .avatar-placeholder {
   width: 100%;
+  min-width: 80px;
   aspect-ratio: 1;
   border: 1px solid $color-borde;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 32px;
-  margin-bottom: 16px;
+  font-size: 24px;
   color: $color-texto-secundario;
   position: relative;
   overflow: hidden;
+  flex-shrink: 0;
+
+  @media (min-width: 768px) {
+    width: 100%;
+    min-width: unset;
+    font-size: 32px;
+    margin-bottom: 0;
+  }
 
   &.editable {
     cursor: pointer;
@@ -91,7 +105,7 @@
 
 .avatar-img {
   width: 100%;
-  height: 100%;
+  height: auto;
   object-fit: cover;
   position: absolute;
   top: 0;
@@ -137,12 +151,19 @@
 .perfil-nav {
   display: flex;
   flex-direction: row;
-  gap: 16px;
+  flex: 1;
+  width: 100%;
   overflow-x: auto;
+  align-items: center;
+  justify-content: space-around;
+  -webkit-overflow-scrolling: touch;
 
   @media (min-width: 768px) {
     flex-direction: column;
-    gap: 0;
+    flex: unset;
+    width: 100%;
+    overflow-x: visible;
+    align-items: flex-start;
   }
 
   button {
@@ -152,9 +173,10 @@
     background: none;
     border: none;
     cursor: pointer;
-    padding: 8px 0;
+    padding: 8px;
     text-align: left;
     white-space: nowrap;
+    -webkit-appearance: none;
 
     span {
       color: $color-aviso;
@@ -163,6 +185,7 @@
     @media (min-width: 768px) {
       border-bottom: 1px solid $color-borde;
       padding: 12px 8px;
+      width: 100%;
 
       &:hover {
         color: $color-texto;
@@ -177,7 +200,6 @@
     }
   }
 }
-
 // Contenido
 .perfil-contenido {
   padding: 24px 16px;
@@ -244,7 +266,7 @@
 
   textarea {
     font-family: $fuente-mono;
-    font-size: 13px;
+    font-size: 14px;
     width: 100%;
     border: none;
     border-bottom: 1px solid $color-borde;
@@ -430,8 +452,12 @@ h2 {
   background: none;
   border: none;
   cursor: pointer;
-  text-decoration: underline;
+  text-decoration: none;
   padding: 0;
+
+  &:hover {
+    text-decoration: underline;
+  }
 }
 
 .favoritos-lista,
@@ -589,6 +615,8 @@ h2 {
   flex-direction: column;
   gap: 8px;
   align-items: flex-end;
+  height: 100%;
+  justify-content: space-between;
 }
 
 .btn-editar-alerta {
@@ -606,4 +634,498 @@ h2 {
   color: $color-texto-secundario;
   padding: 16px 0;
   font-style: italic;
+}
+
+// Participaciones
+.btn-nueva-participacion {
+  font-family: $fuente-mono;
+  font-size: 12px;
+  color: $color-texto;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: 24px;
+  text-decoration: underline;
+}
+
+.participacion-form {
+  margin-bottom: 32px;
+  padding-bottom: 32px;
+
+  h3 {
+    font-size: 14px;
+    font-weight: 400;
+    margin-bottom: 24px;
+  }
+}
+
+.resultado-opciones {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 8px 0;
+
+  @media (min-width: 768px) {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .resultado-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+
+    input[type="checkbox"] {
+      position: absolute;
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .checkbox {
+      width: 12px;
+      height: 12px;
+      min-width: 12px;
+      border: 1px solid $color-texto;
+      display: block;
+      flex-shrink: 0;
+
+      &.checked {
+        background: $color-texto;
+      }
+    }
+
+    .resultado-nombre {
+      font-size: 12px;
+    }
+  }
+}
+
+.resultado-label {
+  font-size: 11px;
+  color: $color-texto-secundario;
+  margin-top: 4px;
+}
+
+.form-acciones {
+  margin-top: 24px;
+
+  .btn-primary {
+    width: 100%;
+  }
+}
+
+.imagen-upload {
+  width: 100%;
+  height: 120px;
+  border: 1px dashed $color-borde;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 12px;
+  color: $color-texto-secundario;
+  overflow: hidden;
+
+  &:hover {
+    border-color: $color-texto;
+  }
+}
+
+.imagen-preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.enlaces-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.enlace-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 12px;
+
+  a {
+    color: $color-texto;
+    text-decoration: underline;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  button {
+    font-size: 16px;
+    color: $color-texto-secundario;
+    background: none;
+    border: none;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+}
+
+.enlace-input {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+
+  input {
+    flex: 1;
+    font-family: $fuente-mono;
+    font-size: 12px;
+    border: none;
+    border-bottom: 1px solid $color-borde;
+    padding: 4px 0;
+    background: transparent;
+  }
+
+  button {
+    font-size: 18px;
+    color: $color-texto;
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+}
+
+// Listado participaciones
+.participaciones-lista {
+  display: flex;
+  flex-direction: column;
+}
+
+.participacion-item {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+  padding: 16px 0;
+  border-bottom: 1px solid $color-borde;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  @media (min-width: 768px) {
+    grid-template-columns: 80px 1fr 120px;
+    column-gap: 24px;
+    align-items: start;
+  }
+}
+
+.participacion-fecha {
+  @media (min-width: 768px) {
+    grid-column: 1;
+    grid-row: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-self: stretch;
+  }
+
+  .dato-label {
+    margin-bottom: 4px;
+  }
+
+  .participacion-anio {
+    font-size: 13px;
+    font-weight: 500;
+  }
+}
+.dato-label {
+  font-size: 11px;
+  color: $color-texto-secundario;
+}
+
+.participacion-info {
+  @media (min-width: 768px) {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  h3 {
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 4px;
+  }
+
+  .participacion-convocatoria {
+    font-size: 12px;
+    color: $color-texto-secundario;
+    margin-bottom: 4px;
+  }
+
+  .participacion-descripcion {
+    font-size: 12px;
+    line-height: 1.8;
+    hyphens: auto;
+    color: $color-texto;
+
+    &.truncada {
+      display: -webkit-box;
+      -webkit-line-clamp: 7;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+  }
+}
+
+.participacion-resultado-acciones {
+  @media (min-width: 768px) {
+    @media (min-width: 768px) {
+      grid-column: 1;
+      grid-row: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-self: stretch;
+    }
+  }
+}
+
+.participacion-resultado {
+  @media (min-width: 768px) {
+    text-align: right;
+  }
+  .resultado-tag {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+}
+
+.participacion-acciones {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+
+  @media (min-width: 768px) {
+    align-items: flex-end;
+  }
+}
+
+.btn-ver-mas-participacion {
+  font-family: $fuente-mono;
+  font-size: 12px;
+  color: $color-texto-secundario;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  white-space: nowrap;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.participacion-detalle {
+  @media (min-width: 768px) {
+    grid-column: 2;
+    grid-row: 2;
+    padding-bottom: 8px;
+  }
+}
+
+.imagenes-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
+
+.imagen-slot {
+  height: 80px;
+  border: 1px dashed $color-borde;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 11px;
+  color: $color-texto-secundario;
+  overflow: hidden;
+  position: relative;
+
+  &:hover {
+    border-color: $color-texto;
+  }
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.imagenes-lista {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: row;
+  gap: 16px;
+  margin-top: 8px;
+  position: relative;
+}
+
+.imagen-lista-item {
+  cursor: pointer;
+
+  .imagen-label {
+    font-size: 12px;
+    text-decoration: underline;
+    color: $color-texto;
+  }
+
+  @media (min-width: 768px) {
+    display: inline-flex;
+    margin-right: 16px;
+  }
+}
+
+.imagenes-tabs {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.imagen-tab {
+  font-size: 12px;
+  text-decoration: underline;
+  cursor: pointer;
+  color: $color-texto;
+
+  &.activa {
+    color: $color-texto-secundario;
+    text-decoration: none;
+  }
+}
+
+.imagen-tab-contenido {
+  margin-top: 8px;
+  width: 100%;
+}
+
+.imagen-expandida-movil {
+  width: 100%;
+  height: auto;
+}
+
+.imagen-hover-flotante {
+  display: none;
+
+  @media (min-width: 768px) {
+    display: block;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 100;
+    pointer-events: none;
+    max-width: 400px;
+
+    img {
+      width: 100%;
+      height: auto;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    }
+  }
+}
+
+.btn-editar-participacion {
+  font-family: $fuente-mono;
+  font-size: 12px;
+  color: $color-texto;
+  background: $color-acento;
+  border: none;
+  cursor: pointer;
+  padding: 4px 8px;
+}
+
+.participacion-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  @media (min-width: 768px) {
+    display: none;
+  }
+}
+
+.participacion-fecha {
+  display: none;
+
+  @media (min-width: 768px) {
+    display: flex;
+    grid-column: 1;
+    grid-row: 1 / 3;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+    min-width: max-content;
+  }
+}
+
+.participacion-resultado-acciones {
+  display: none;
+
+  @media (min-width: 768px) {
+    display: flex;
+    grid-column: 3;
+    grid-row: 1 / 3;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+    align-items: flex-end;
+  }
+}
+.autocomplete-wrapper {
+  position: relative;
+}
+
+.sugerencias {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: $color-fondo;
+  border: 1px solid $color-borde;
+  border-top: none;
+  z-index: 10;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.sugerencia-item {
+  padding: 8px 12px;
+  font-size: 12px;
+  cursor: pointer;
+
+  &:hover {
+    background: $color-acento;
+  }
+}
+.enlaces-vista {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.enlace-vista {
+  font-size: 12px;
+  color: $color-texto;
+  text-decoration: underline;
 }

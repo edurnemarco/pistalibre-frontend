@@ -19,7 +19,7 @@
   width: 100%;
   display: block;
   font-family: $fuente-mono;
-  font-size: 14px;
+  font-size: 12px;
   color: $color-texto;
   background: none;
   border: none;
@@ -379,8 +379,6 @@
 
   .descripcion-completa {
     font-size: 12px;
-    text-align: justify;
-    text-justify: inter-word;
     hyphens: auto;
     line-height: 1.8;
     color: $color-texto;

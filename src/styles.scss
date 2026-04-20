@@ -1,7 +1,7 @@
 // Variables
 $color-fondo: #ffffff;
 $color-texto: #1a1a1a;
-$color-texto-secundario: #666666;
+$color-texto-secundario: #767676;
 $color-acento: #f9fcce; // #fcf9ce;
 $color-aviso: #256af4;
 $color-borde: #e0e0e0;
@@ -42,6 +42,7 @@ button {
   cursor: pointer;
   border: none;
   background: none;
+  color: $color-texto;
 }
 
 input,
@@ -69,4 +70,16 @@ textarea {
   padding: 0 16px;
   max-width: 1100px;
   margin: 0 auto;
+}
+
+.convocatoria-cerrada {
+  color: $color-texto-secundario;
+
+  h2,
+  h3,
+  p,
+  a,
+  span {
+    color: $color-texto-secundario !important;
+  }
 }

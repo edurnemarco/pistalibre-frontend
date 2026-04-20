@@ -17,6 +17,9 @@ import { favoritosReducer } from './store/favoritos/favoritos.reducer';
 import { AlertasEffects } from './store/alertas/alertas.effects';
 import { alertasReducer } from './store/alertas/alertas.reducer';
 
+import { ParticipacionesEffects } from './store/participaciones/participaciones.effects';
+import { participacionesReducer } from './store/participaciones/participaciones.reducer';
+
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
@@ -27,12 +30,14 @@ export const appConfig: ApplicationConfig = {
       convocatorias: convocatoriasReducer,
       favoritos: favoritosReducer,
       alertas: alertasReducer,
+      participaciones: participacionesReducer,
     }),
     provideEffects([
       AuthEffects,
       ConvocatoriasEffects,
       FavoritosEffects,
       AlertasEffects,
+      ParticipacionesEffects,
     ]),
     provideStoreDevtools({
       maxAge: 25,

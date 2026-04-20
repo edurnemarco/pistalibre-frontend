@@ -164,6 +164,7 @@
       <article
         *ngFor="let c of convocatoriasPaginadas$ | async"
         class="convocatoria-item"
+        [class.convocatoria-cerrada]="diasRestantes(c.fecha_limite) < 0"
         [attr.aria-label]="'Convocatoria: ' + c.titulo"
       >
         <div class="convocatoria-fecha">

@@ -9,14 +9,21 @@
     >
       {{ editando ? "cancelar" : "editar perfil" }}
     </button>
-    <!-- <button
+    <button
       class="btn-editar"
-      *ngIf="tabActiva === 'participaciones'"
-      (click)="nuevaParticipacion()"
+      *ngIf="tabActiva === 'participaciones' && !formularioParticipacion"
+      (click)="abrirFormularioParticipacion()"
     >
       + nueva participación
     </button>
-  --></div>
+    <button
+      class="btn-editar"
+      *ngIf="tabActiva === 'participaciones' && formularioParticipacion"
+      (click)="cerrarFormularioParticipacion()"
+    >
+      cancelar
+    </button>
+  </div>
   <hr aria-hidden="true" class="perfil-hr" />
   <div class="perfil-body">
     <!-- SIDEBAR -->
@@ -280,6 +287,9 @@
                 trackBy: trackByFavorito
               "
               class="favorito-item"
+              [class.convocatoria-cerrada]="
+                diasRestantes(f.convocatoria.fecha_limite) < 0
+              "
             >
               <div class="favorito-fecha">
                 <p class="dato-label">FECHA LÍMITE</p>
@@ -396,10 +406,417 @@
 
         <div *ngIf="procesandoAlertas" class="empty">actualizando...</div>
       </div>
+
       <!-- TAB: PARTICIPACIONES -->
+
       <div *ngIf="tabActiva === 'participaciones'">
-        <h2>participaciones</h2>
-        <p class="empty">próximamente</p>
+        <div *ngIf="participacionesLoading$ | async" class="empty">
+          cargando...
+        </div>
+
+        <div *ngIf="!(participacionesLoading$ | async)">
+          <!-- FORMULARIO NUEVA/EDITAR PARTICIPACIÓN -->
+          <div *ngIf="formularioParticipacion" class="participacion-form">
+            <form
+              [formGroup]="formParticipacion"
+              (ngSubmit)="guardarParticipacion()"
+              novalidate
+            >
+              <div class="field">
+                <label for="convocatoria_nombre">convocatoria*</label>
+                <div class="autocomplete-wrapper">
+                  <input
+                    id="convocatoria_nombre"
+                    type="text"
+                    formControlName="convocatoria_nombre"
+                    placeholder="busca o escribe el nombre de la convocatoria"
+                    (input)="buscarConvocatoria($event)"
+                    autocomplete="off"
+                  />
+                  <div class="sugerencias" *ngIf="mostrarSugerencias">
+                    <div
+                      *ngFor="let c of convocatoriasFiltradas"
+                      class="sugerencia-item"
+                      (click)="seleccionarConvocatoria(c)"
+                    >
+                      {{ c.titulo }}
+                    </div>
+                  </div>
+                  <span
+                    class="field-error"
+                    *ngIf="
+                      formParticipacion.get('convocatoria_nombre')?.invalid &&
+                      formParticipacion.get('convocatoria_nombre')?.touched
+                    "
+                    >obligatorio</span
+                  >
+                </div>
+              </div>
+
+              <div class="field">
+                <label for="nombre_proyecto">nombre del proyecto*</label>
+                <input
+                  id="nombre_proyecto"
+                  type="text"
+                  formControlName="nombre_proyecto"
+                  placeholder="nombre de tu obra o proyecto"
+                />
+                <span
+                  class="field-error"
+                  *ngIf="
+                    formParticipacion.get('nombre_proyecto')?.invalid &&
+                    formParticipacion.get('nombre_proyecto')?.touched
+                  "
+                  >obligatorio</span
+                >
+              </div>
+
+              <div class="field">
+                <label for="institucion_nombre">organizado por*</label>
+                <input
+                  id="institucion_nombre"
+                  type="text"
+                  formControlName="institucion_nombre"
+                  placeholder="institución, galería, colectivo..."
+                />
+                <span
+                  class="field-error"
+                  *ngIf="
+                    formParticipacion.get('institucion_nombre')?.invalid &&
+                    formParticipacion.get('institucion_nombre')?.touched
+                  "
+                  >obligatorio</span
+                >
+              </div>
+
+              <div class="field">
+                <label for="lugar">lugar*</label>
+                <input
+                  id="lugar"
+                  type="text"
+                  formControlName="lugar"
+                  placeholder="ciudad, región"
+                />
+                <span
+                  class="field-error"
+                  *ngIf="
+                    formParticipacion.get('lugar')?.invalid &&
+                    formParticipacion.get('lugar')?.touched
+                  "
+                  >obligatorio</span
+                >
+              </div>
+
+              <div class="field">
+                <label for="descripcion_proyecto">descripción*</label>
+                <textarea
+                  id="descripcion_proyecto"
+                  formControlName="descripcion_proyecto"
+                  rows="4"
+                  placeholder="describe tu proyecto"
+                ></textarea>
+                <span
+                  class="field-error"
+                  *ngIf="
+                    formParticipacion.get('descripcion_proyecto')?.invalid &&
+                    formParticipacion.get('descripcion_proyecto')?.touched
+                  "
+                  >obligatorio</span
+                >
+              </div>
+
+              <div class="field">
+                <label>resultado*</label>
+                <div class="resultado-opciones">
+                  <label
+                    *ngFor="let r of resultadosOpciones"
+                    class="resultado-item"
+                  >
+                    <input
+                      type="checkbox"
+                      style="
+                        position: absolute;
+                        opacity: 0;
+                        width: 0;
+                        height: 0;
+                      "
+                      [checked]="
+                        formParticipacion.get('resultado')?.value === r
+                      "
+                      (change)="setResultado(r)"
+                    />
+                    <span
+                      class="checkbox"
+                      [class.checked]="
+                        formParticipacion.get('resultado')?.value === r
+                      "
+                    ></span>
+                    <span class="resultado-nombre">{{ r }}</span>
+                  </label>
+                </div>
+                <span
+                  class="field-error"
+                  *ngIf="
+                    formParticipacion.get('resultado')?.invalid &&
+                    formParticipacion.get('resultado')?.touched
+                  "
+                  >obligatorio</span
+                >
+              </div>
+
+              <div class="field">
+                <label for="anio">año*</label>
+                <input
+                  id="anio"
+                  type="number"
+                  formControlName="anio"
+                  placeholder="2024"
+                />
+                <span
+                  class="field-error"
+                  *ngIf="
+                    formParticipacion.get('anio')?.invalid &&
+                    formParticipacion.get('anio')?.touched
+                  "
+                  >obligatorio</span
+                >
+              </div>
+
+              <div class="field">
+                <label>imágenes</label>
+                <div class="imagenes-grid">
+                  <div
+                    *ngFor="let slot of imagenesSlots; let i = index"
+                    class="imagen-slot"
+                    (click)="subirImagenParticipacion(i)"
+                    role="button"
+                    tabindex="0"
+                    (keydown.enter)="subirImagenParticipacion(i)"
+                  >
+                    <img
+                      *ngIf="imagenesParticipacion[i]"
+                      [src]="imagenesParticipacion[i]"
+                      [alt]="'imagen ' + (i + 1)"
+                      class="imagen-preview"
+                    />
+                    <span *ngIf="!imagenesParticipacion[i]">{{
+                      subiendoImagenParticipacion ? "..." : "imagen " + (i + 1)
+                    }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="field">
+                <label>enlaces de interés</label>
+                <div class="enlaces-lista">
+                  <div *ngFor="let e of enlaces" class="enlace-item">
+                    <a [href]="e" target="_blank" rel="noopener noreferrer">{{
+                      e
+                    }}</a>
+                    <button
+                      type="button"
+                      (click)="eliminarEnlace(e)"
+                      aria-label="eliminar enlace"
+                    >
+                      ×
+                    </button>
+                  </div>
+                </div>
+                <div class="enlace-input">
+                  <input
+                    #enlaceInput
+                    type="url"
+                    placeholder="https://..."
+                    (keydown.enter)="
+                      agregarEnlace(enlaceInput); $event.preventDefault()
+                    "
+                  />
+                  <button type="button" (click)="agregarEnlace(enlaceInput)">
+                    +
+                  </button>
+                </div>
+              </div>
+
+              <div class="form-acciones">
+                <button
+                  type="submit"
+                  class="btn-primary"
+                  [disabled]="formParticipacion.invalid"
+                >
+                  {{
+                    participacionEditando
+                      ? "guardar cambios"
+                      : "añadir participación"
+                  }}
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- LISTADO -->
+          <div *ngIf="!formularioParticipacion">
+            <div *ngIf="(participaciones$ | async)?.length === 0" class="empty">
+              no tienes participaciones registradas
+            </div>
+
+            <div class="participaciones-lista">
+              <article
+                *ngFor="
+                  let p of participaciones$ | async;
+                  trackBy: trackByParticipacion
+                "
+                class="participacion-item"
+              >
+                <!-- COLUMNA 1: AÑO + VER MÁS (solo desktop) -->
+                <div class="participacion-fecha">
+                  <div>
+                    <p class="dato-label">AÑO</p>
+                    <p>{{ p["año"] || "—" }}</p>
+                  </div>
+                  <button
+                    class="btn-ver-mas-participacion"
+                    (click)="toggleParticipacion(p.id)"
+                  >
+                    {{
+                      isParticipacionExpandida(p.id)
+                        ? "- ver menos"
+                        : "+ ver más"
+                    }}
+                  </button>
+                </div>
+
+                <!-- COLUMNA 2: INFO -->
+                <div class="participacion-info">
+                  <p class="dato-label">CONVOCATORIA</p>
+                  <p>
+                    {{
+                      p["convocatoria_nombre"] || p.convocatoria?.titulo || "—"
+                    }}
+                  </p>
+
+                  <p class="dato-label" style="margin-top: 12px">CENTRO</p>
+                  <p>{{ p.institucion_nombre || "—" }}</p>
+
+                  <p class="dato-label" style="margin-top: 12px">TÍTULO</p>
+                  <h3>{{ p.nombre_proyecto || "—" }}</h3>
+
+                  <p class="dato-label" style="margin-top: 12px">DESCRIPCIÓN</p>
+                  <p
+                    class="participacion-descripcion"
+                    [class.truncada]="!isParticipacionExpandida(p.id)"
+                  >
+                    {{ p.descripcion_proyecto || "—" }}
+                  </p>
+
+                  <ng-container *ngIf="isParticipacionExpandida(p.id)">
+                    <p class="dato-label" style="margin-top: 12px">LUGAR</p>
+                    <p>{{ p.lugar || "—" }}</p>
+
+                    <p class="dato-label" style="margin-top: 12px">
+                      ENLACES DE INTERÉS
+                    </p>
+                    <ng-container *ngIf="p.enlaces?.length; else sinEnlaces">
+                      <div class="enlaces-vista">
+                        <a
+                          *ngFor="let e of p.enlaces"
+                          [href]="e"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          class="enlace-vista"
+                          >{{ e }}</a
+                        >
+                      </div>
+                    </ng-container>
+                    <ng-template #sinEnlaces><p>—</p></ng-template>
+
+                    <ng-container *ngIf="p.imagenes?.length">
+                      <p class="dato-label" style="margin-top: 12px">
+                        IMÁGENES
+                      </p>
+                      <div class="imagenes-tabs">
+                        <span
+                          *ngFor="let img of p.imagenes; let i = index"
+                          class="imagen-tab"
+                          [class.activa]="imagenExpandida === img"
+                          (click)="
+                            imagenExpandida =
+                              imagenExpandida === img ? null : img
+                          "
+                          (mouseenter)="imagenHover = img"
+                          (mouseleave)="imagenHover = null"
+                        >
+                          imagen {{ i + 1 }}
+                        </span>
+                      </div>
+                      <div class="imagen-tab-contenido" *ngIf="imagenExpandida">
+                        <img
+                          [src]="imagenExpandida"
+                          alt="imagen proyecto"
+                          class="imagen-expandida-movil"
+                        />
+                      </div>
+                      <div class="imagen-hover-flotante" *ngIf="imagenHover">
+                        <img [src]="imagenHover" alt="preview imagen" />
+                      </div>
+                    </ng-container>
+                  </ng-container>
+                </div>
+
+                <!-- COLUMNA 3: RESULTADO + ACCIONES (solo desktop) -->
+                <div class="participacion-resultado-acciones">
+                  <div class="participacion-resultado">
+                    <p class="dato-label">RESULTADO</p>
+                    <p class="resultado-tag" [class]="p.resultado">
+                      {{ p.resultado || "—" }}
+                    </p>
+                  </div>
+                  <div class="participacion-acciones">
+                    <button
+                      class="btn-editar-participacion"
+                      (click)="abrirFormularioParticipacion(p)"
+                    >
+                      editar
+                    </button>
+                    <button
+                      class="btn-eliminar"
+                      (click)="abrirConfirmacion('participacion', p.id)"
+                    >
+                      eliminar
+                    </button>
+                  </div>
+                </div>
+
+                <!-- FOOTER MÓVIL: VER MÁS + ACCIONES -->
+                <div class="participacion-footer">
+                  <button
+                    class="btn-ver-mas-participacion"
+                    (click)="toggleParticipacion(p.id)"
+                  >
+                    {{
+                      isParticipacionExpandida(p.id)
+                        ? "- ver menos"
+                        : "+ ver más"
+                    }}
+                  </button>
+                  <div class="participacion-acciones">
+                    <button
+                      class="btn-editar-participacion"
+                      (click)="abrirFormularioParticipacion(p)"
+                    >
+                      editar
+                    </button>
+                    <button
+                      class="btn-eliminar"
+                      (click)="abrirConfirmacion('participacion', p.id)"
+                    >
+                      eliminar
+                    </button>
+                  </div>
+                </div>
+              </article>
+            </div>
+          </div>
+        </div>
       </div>
     </main>
   </div>
