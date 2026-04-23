@@ -24,6 +24,11 @@ import {
 
 import { take } from 'rxjs/operators';
 import {
+  ConvocatoriasService,
+  ParticipantePublico,
+} from '../../services/convocatorias.service';
+import { selectUserTipo } from '../../store/auth/auth.selectors';
+import {
   addFavorito,
   cargarFavoritos,
   deleteFavorito,
@@ -32,6 +37,7 @@ import {
   selectFavoritoId,
   selectIsFavorito,
 } from '../../store/favoritos/favoritos.selectors';
+
 @Component({
   selector: 'app-oportunidades',
   standalone: true,
@@ -77,11 +83,18 @@ export class OportunidadesComponent implements OnInit {
   mesesOpciones$: Observable<{ valor: string; label: string }[]>;
   mesSeleccionado = '';
   anioSeleccionado = '';
-  constructor(private store: Store) {
+  participantesMap: Record<string, ParticipantePublico[]> = {};
+  participantesLoading: Record<string, boolean> = {};
+  userTipo$: Observable<string | undefined>;
+  constructor(
+    private store: Store,
+    private convocatoriasService: ConvocatoriasService,
+  ) {
     this.convocatorias$ = this.store.select(selectConvocatoriasFiltradas);
     this.loading$ = this.store.select(selectConvocatoriasLoading);
     this.filtros$ = this.store.select(selectFiltros);
     this.isAuthenticated$ = this.store.select(selectIsAuthenticated);
+    this.userTipo$ = this.store.select(selectUserTipo);
     this.convocatoriasPaginadas$ = combineLatest([
       this.convocatorias$,
       this.paginaActual$,
@@ -144,7 +157,9 @@ export class OportunidadesComponent implements OnInit {
     if (
       !target.closest('.filtros-fondo') &&
       !target.closest('.btn-ver-mas') &&
-      !target.closest('.btn-guardar')
+      !target.closest('.btn-guardar') &&
+      !target.closest('.conv-titulo-link') &&
+      !target.closest('.institucion-link')
     ) {
       this.filtrosAbiertos = false;
     }
@@ -216,12 +231,14 @@ export class OportunidadesComponent implements OnInit {
       this.convocatoriasExpandidas.delete(id);
     } else {
       this.convocatoriasExpandidas.add(id);
+      this.loadParticipantes(id);
     }
   }
 
   isExpanded(id: string): boolean {
     return this.convocatoriasExpandidas.has(id);
   }
+
   isFavorito(convocatoriaId: string): Observable<boolean> {
     return this.store.select(selectIsFavorito(convocatoriaId));
   }
@@ -238,6 +255,7 @@ export class OportunidadesComponent implements OnInit {
         }
       });
   }
+
   diasRestantes(fechaLimite: string): number {
     const hoy = new Date();
     const fecha = new Date(fechaLimite);
@@ -251,11 +269,43 @@ export class OportunidadesComponent implements OnInit {
       year: 'numeric',
     });
   }
+
   onCheckboxFocus(event: FocusEvent) {
     const target = event.target as HTMLElement;
     target.parentElement?.scrollIntoView({
       block: 'nearest',
       behavior: 'smooth',
     });
+  }
+
+  loadParticipantes(convocatoriaId: string): void {
+    if (this.participantesMap[convocatoriaId] !== undefined) return;
+    this.participantesLoading[convocatoriaId] = true;
+    this.convocatoriasService.getParticipantes(convocatoriaId).subscribe({
+      next: (data) => {
+        this.participantesMap[convocatoriaId] = data;
+        this.participantesLoading[convocatoriaId] = false;
+      },
+      error: () => {
+        this.participantesMap[convocatoriaId] = [];
+        this.participantesLoading[convocatoriaId] = false;
+      },
+    });
+  }
+
+  getParticipantes(id: string): ParticipantePublico[] {
+    return this.participantesMap[id] || [];
+  }
+
+  getParticipantesTexto(
+    id: string,
+  ): { nombre: string; anio: number; usuarioId: string | null }[] {
+    return (this.participantesMap[id] || []).map((p) => ({
+      nombre: p.usuario
+        ? `${p.usuario.nombre} ${p.usuario.apellidos}`.trim()
+        : 'Participante',
+      anio: p.año,
+      usuarioId: p.usuario?.id || null,
+    }));
   }
 }

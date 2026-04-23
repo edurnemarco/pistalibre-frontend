@@ -1,0 +1,134 @@
+@use "../../../styles" as *;
+@use "../perfil/perfil.component.scss";
+
+.inst-stats {
+  display: grid;
+  grid-template-columns: 1fr 1px 1fr 1px 1fr;
+  gap: 0;
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+.stat-item {
+  padding: 16px 8px;
+
+  .stat-numero {
+    font-size: 24px;
+    font-weight: 400;
+    margin-bottom: 4px;
+  }
+
+  .stat-label {
+    font-size: 11px;
+    color: $color-texto-secundario;
+  }
+}
+
+.stat-separador {
+  background: $color-borde;
+  width: 1px;
+}
+
+.conv-lista {
+  display: flex;
+  flex-direction: column;
+}
+
+.conv-lista-header {
+  display: none;
+  text-transform: uppercase;
+
+  @media (min-width: 768px) {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr 80px;
+    gap: 16px;
+    padding: 8px 0;
+    border-bottom: 1px solid $color-borde;
+    font-size: 11px;
+    color: $color-texto-secundario;
+  }
+}
+
+.conv-item {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  padding: 16px 0;
+  border-bottom: 1px solid $color-borde;
+  align-items: start;
+
+  .btn-editar-acento {
+    width: fit-content;
+    align-self: flex-end;
+  }
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  @media (min-width: 768px) {
+    grid-template-columns: 2fr 1fr 1fr 1fr 80px;
+    gap: 16px;
+  }
+}
+
+.conv-item-acciones {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+
+  @media (min-width: 768px) {
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: flex-between;
+  }
+}
+
+.btn-eliminar-conv {
+  font-family: $fuente-mono;
+  font-size: 12px;
+  color: $color-texto-secundario;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.conv-nombre {
+  p {
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .conv-fecha-pub {
+    font-size: 12px;
+    color: $color-texto-secundario;
+    font-weight: 400;
+    margin-top: 4px;
+  }
+}
+
+.conv-disciplina {
+  font-size: 13px;
+}
+
+.conv-estado {
+  font-size: 13px;
+  text-transform: lowercase;
+
+  &--publicada {
+    color: $color-texto;
+  }
+  &--pendiente {
+    color: $color-aviso;
+  }
+  &--cerrada {
+    color: $color-texto-secundario;
+  }
+}

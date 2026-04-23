@@ -183,14 +183,29 @@
 
         <div class="convocatoria-info">
           <p class="col-titulo">información</p>
-          <h2>{{ c.titulo }}</h2>
+          <h2>
+            <a
+              [routerLink]="['/convocatorias', c.id]"
+              class="conv-titulo-link"
+              >{{ c.titulo }}</a
+            >
+          </h2>
           <a
-            *ngIf="c.institucion"
-            [routerLink]="['/instituciones', c.institucion.id]"
-            class="institucion-link"
+            *ngIf="c.institucion_id"
+            [routerLink]="['/instituciones', c.institucion_id]"
+            class="web-link"
           >
-            {{ c.institucion?.nombre }}
+            {{ c.institucion?.nombre || c.institucion_nombre }}
           </a>
+          <span
+            *ngIf="!c.institucion_id && c.institucion_nombre?.length"
+            class="institucion-nombre"
+          >
+            {{ c.institucion_nombre }}
+          </span>
+          <span *ngIf="!c.institucion" class="institucion-nombre">
+            {{ c.institucion_nombre }}
+          </span>
           <p *ngIf="c.tipo" class="tipo">Tipo: {{ c.tipo }}</p>
           <div *ngIf="c.disciplinas?.length" class="disciplinas">
             <span *ngFor="let d of c.disciplinas" class="disciplina-tag">{{
@@ -240,7 +255,10 @@
             {{ isExpanded(c.id) ? "- ver menos" : "+ ver más" }}
           </button>
           <button
-            *ngIf="isAuthenticated$ | async"
+            *ngIf="
+              (isAuthenticated$ | async) &&
+              (userTipo$ | async) !== 'institucion'
+            "
             class="btn-guardar"
             [class.guardado]="isFavorito(c.id) | async"
             (click)="toggleFavorito(c.id)"
@@ -249,14 +267,54 @@
                 ? 'eliminar de favoritos'
                 : 'guardar en favoritos'
             "
+            [attr.aria-pressed]="isFavorito(c.id) | async"
           >
-            {{ (isFavorito(c.id) | async) ? "guardado" : "guardar" }}
+            <ng-container *ngIf="isFavorito(c.id) | async; else noGuardado">
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 14 14"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <polyline
+                  points="2,7 6,11 12,3"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </ng-container>
+            <ng-template #noGuardado>guardar</ng-template>
           </button>
         </div>
 
         <!-- PANEL DESPLEGABLE -->
         <div class="convocatoria-detalle" *ngIf="isExpanded(c.id)">
           <p class="descripcion-completa">{{ c.descripcion }}</p>
+
+          <p
+            class="descripcion-completa participantes-anteriores"
+            *ngIf="!participantesLoading[c.id]"
+          >
+            participantes anteriores:
+            <ng-container *ngIf="getParticipantes(c.id).length === 0">
+              todavía no hay participantes registrados.
+            </ng-container>
+            <ng-container
+              *ngFor="let p of getParticipantesTexto(c.id); let last = last"
+            >
+              <a
+                *ngIf="p.usuarioId"
+                [routerLink]="['/artista', p.usuarioId]"
+                class="participante-link"
+                >{{ p.nombre }}</a
+              >
+              <span *ngIf="!p.usuarioId">{{ p.nombre }}</span>
+              <span> ({{ p.anio }})</span><span *ngIf="!last">, </span>
+            </ng-container>
+          </p>
         </div>
       </article>
     </div>

@@ -1,0 +1,158 @@
+@use "../../../styles" as *;
+
+.conv-page {
+  display: flex;
+  flex-direction: column;
+}
+
+.conv-header {
+  padding: 16px;
+
+  @media (min-width: 768px) {
+    padding: 16px 32px;
+  }
+
+  h1 {
+    font-size: 14px;
+    font-weight: 400;
+    margin: 8px 0 4px 0;
+
+    @media (min-width: 768px) {
+      font-size: 14px;
+    }
+  }
+}
+
+.conv-header-meta {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 4px;
+}
+
+.conv-tipo {
+  font-size: 11px;
+  color: $color-texto-secundario;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.conv-estado {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: $color-texto;
+
+  &.cerrada {
+    color: $color-texto-secundario;
+  }
+}
+
+.conv-institucion {
+  font-size: 12px;
+  color: $color-texto;
+  text-decoration: underline;
+}
+
+.perfil-hr {
+  border: none;
+  border-top: 1px solid $color-borde;
+  margin: 0 16px;
+
+  @media (min-width: 768px) {
+    margin: 0 32px;
+  }
+}
+
+.conv-body {
+  display: grid;
+  grid-template-columns: 1fr;
+  padding: 24px 16px;
+  gap: 32px;
+
+  @media (min-width: 768px) {
+    grid-template-columns: 200px 1fr;
+    padding: 24px 32px;
+    gap: 48px;
+    align-items: start;
+  }
+}
+
+.conv-aside {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.dato-grupo {
+  border-bottom: 1px solid $color-borde;
+  padding-bottom: 5px;
+
+  .dato-label {
+    font-size: 11px;
+    color: $color-texto-secundario;
+    margin-bottom: 6px;
+    letter-spacing: 0.05em;
+  }
+
+  p {
+    font-size: 13px;
+  }
+}
+
+.dias-restantes {
+  font-size: 12px;
+  color: $color-texto-secundario;
+  margin-top: 4px;
+
+  &.urgente {
+    color: $color-aviso;
+  }
+  &.cerrada {
+    font-style: italic;
+  }
+}
+
+.btn-web-oficial {
+  font-size: 12px;
+  color: $color-texto;
+  text-decoration: none;
+  margin-top: 8px;
+  display: block;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.conv-contenido {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.conv-descripcion {
+  font-size: 12px;
+  line-height: 1.8;
+  hyphens: auto;
+  max-width: 700px;
+}
+
+.participantes-anteriores {
+  color: $color-texto-secundario;
+}
+
+.participante-link {
+  color: $color-texto;
+  text-decoration: underline;
+
+  &:hover {
+    text-decoration: none;
+  }
+}
+
+.loading,
+.error {
+  padding: 48px 32px;
+  color: $color-texto-secundario;
+  font-size: 13px;
+}

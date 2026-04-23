@@ -43,6 +43,10 @@
   border: none;
   cursor: pointer;
   text-decoration: underline;
+
+  &:hover {
+    text-decoration: none;
+  }
 }
 
 // Body con sidebar y contenido
@@ -425,12 +429,15 @@ h2 {
 
 .favorito-acciones {
   display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: flex-end;
-  gap: 0;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
 
   @media (min-width: 768px) {
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: space-between;
     align-self: stretch;
   }
 }
@@ -448,15 +455,15 @@ h2 {
 .btn-eliminar {
   font-family: $fuente-mono;
   font-size: 12px;
-  color: $color-texto-secundario;
+  color: $color-texto;
   background: none;
   border: none;
   cursor: pointer;
-  text-decoration: none;
+  text-decoration: underline;
   padding: 0;
 
   &:hover {
-    text-decoration: underline;
+    text-decoration: none;
   }
 }
 
@@ -1044,7 +1051,7 @@ h2 {
   }
 }
 
-.btn-editar-participacion {
+.btn-editar-acento {
   font-family: $fuente-mono;
   font-size: 12px;
   color: $color-texto;

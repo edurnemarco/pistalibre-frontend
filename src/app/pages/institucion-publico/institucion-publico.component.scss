@@ -1,0 +1,161 @@
+@use "../../../styles" as *;
+@use "../perfil/perfil.component.scss";
+
+.perfil-dados {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+
+  .dato-grupo {
+    width: 100%;
+
+    a.web-link {
+      text-decoration: underline;
+
+      &:hover {
+        text-decoration: none;
+      }
+    }
+  }
+}
+
+.conv-publica-lista {
+  display: flex;
+  flex-direction: column;
+}
+
+.conv-publica-item {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  padding: 16px 0;
+  border-bottom: 1px solid $color-borde;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  @media (min-width: 768px) {
+    grid-template-columns: 120px 1fr auto;
+    align-items: start;
+  }
+
+  &--cerrada {
+    h2,
+    p,
+    span,
+    a {
+      color: $color-texto-secundario;
+    }
+  }
+}
+
+.conv-publica-fecha {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-self: stretch;
+
+  .fecha-grupo {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .web-link {
+    text-decoration: underline;
+    color: $color-texto;
+    font-size: 12px;
+    margin-top: auto;
+
+    &:hover {
+      text-decoration: none;
+    }
+  }
+}
+
+.conv-publica-info {
+  h2 {
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 4px;
+  }
+
+  .conv-tipo {
+    font-size: 12px;
+    margin-bottom: 4px;
+  }
+
+  .conv-lugar {
+    font-size: 12px;
+    margin-top: 4px;
+  }
+}
+
+.disciplinas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 4px 0;
+}
+
+.disciplina-tag {
+  font-size: 11px;
+  border: 1px solid $color-borde;
+  padding: 2px 6px;
+}
+
+.conv-publica-acciones {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+
+  @media (min-width: 768px) {
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: space-between;
+    align-self: stretch;
+  }
+}
+
+.btn-guardar {
+  font-family: $fuente-mono;
+  font-size: 12px;
+  color: $color-texto;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+  min-width: 50px;
+  text-align: right;
+
+  &:hover {
+    text-decoration: none;
+  }
+
+  &.guardado {
+    color: $color-texto;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+.btn-alerta {
+  font-family: $fuente-mono;
+  font-size: 12px;
+  color: $color-texto;
+  background: $color-acento;
+  border: none;
+  cursor: pointer;
+  padding: 4px 8px;
+}
+
+.institucion-alerta-global {
+  margin: 16px 0;
+}

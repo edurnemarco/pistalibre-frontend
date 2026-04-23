@@ -1,0 +1,85 @@
+@use "../../../styles" as *;
+@use "../perfil/perfil.component.scss";
+
+.conv-lista {
+  display: flex;
+  flex-direction: column;
+}
+
+.conv-item {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 16px;
+  padding: 16px 0;
+  border-bottom: 1px solid $color-borde;
+  align-items: start;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.conv-nombre {
+  p {
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 4px;
+  }
+
+  .conv-fecha-pub {
+    font-size: 11px;
+    color: $color-texto-secundario;
+    font-weight: 400;
+  }
+
+  .inactivo {
+    color: $color-aviso;
+  }
+
+  .web-link {
+    font-size: 12px;
+    color: $color-texto;
+    text-decoration: none;
+    display: inline-block;
+    margin-top: 4px;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+.conv-acciones {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-end;
+}
+
+.btn-aprobar {
+  font-family: $fuente-mono;
+  font-size: 12px;
+  color: $color-texto;
+  background: $color-acento;
+  border: none;
+  cursor: pointer;
+  padding: 4px 8px;
+}
+
+.btn-eliminar-conv {
+  font-family: $fuente-mono;
+  font-size: 12px;
+  color: $color-texto-secundario;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.placeholder {
+  color: $color-texto-secundario;
+}

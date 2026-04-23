@@ -1,0 +1,124 @@
+<div class="conv-page" *ngIf="!loading && !error && convocatoria">
+  <div class="conv-header">
+    <div class="conv-header-meta">
+      <span class="conv-tipo">{{ convocatoria.tipo }}</span>
+      <span
+        class="conv-estado"
+        [class.cerrada]="diasRestantes(convocatoria.fecha_limite) < 0"
+      >
+        {{
+          diasRestantes(convocatoria.fecha_limite) >= 0 ? "abierta" : "cerrada"
+        }}
+      </span>
+    </div>
+    <h1>{{ convocatoria.titulo }}</h1>
+    <a
+      *ngIf="convocatoria.institucion"
+      [routerLink]="['/instituciones', convocatoria.institucion.id]"
+      class="web-link"
+      >{{ convocatoria.institucion.nombre }}</a
+    >
+    <span
+      *ngIf="!convocatoria.institucion && convocatoria.institucion_nombre"
+      class="conv-institucion"
+      >{{ convocatoria.institucion_nombre }}</span
+    >
+  </div>
+  <hr class="perfil-hr" />
+
+  <div class="conv-body">
+    <!-- COLUMNA IZQUIERDA: fechas y datos rápidos -->
+    <aside class="conv-aside">
+      <div class="dato-grupo">
+        <p class="dato-label">FECHA LÍMITE</p>
+        <p>{{ formatFecha(convocatoria.fecha_limite) }}</p>
+        <p
+          class="dias-restantes"
+          [class.urgente]="
+            diasRestantes(convocatoria.fecha_limite) <= 7 &&
+            diasRestantes(convocatoria.fecha_limite) >= 0
+          "
+          [class.cerrada]="diasRestantes(convocatoria.fecha_limite) < 0"
+        >
+          {{
+            diasRestantes(convocatoria.fecha_limite) >= 0
+              ? diasRestantes(convocatoria.fecha_limite) + " días"
+              : "cerrada"
+          }}
+        </p>
+      </div>
+      <div class="dato-grupo" *ngIf="convocatoria.fecha_inicio">
+        <p class="dato-label">FECHA INICIO</p>
+        <p>{{ formatFecha(convocatoria.fecha_inicio) }}</p>
+      </div>
+      <div
+        class="dato-grupo"
+        *ngIf="convocatoria.ciudad || convocatoria.region"
+      >
+        <p class="dato-label">LUGAR</p>
+        <p>
+          {{ convocatoria.ciudad
+          }}{{ convocatoria.ciudad && convocatoria.region ? ", " : ""
+          }}{{ convocatoria.region }}
+        </p>
+      </div>
+      <div class="dato-grupo" *ngIf="convocatoria.dotacion">
+        <p class="dato-label">DOTACIÓN</p>
+        <p>{{ convocatoria.dotacion }}€</p>
+      </div>
+      <div class="dato-grupo" *ngIf="convocatoria.duracion">
+        <p class="dato-label">DURACIÓN</p>
+        <p>{{ convocatoria.duracion }}</p>
+      </div>
+      <div class="dato-grupo" *ngIf="convocatoria.disciplinas?.length">
+        <p class="dato-label">DISCIPLINAS</p>
+        <p>{{ convocatoria.disciplinas.join(", ") }}</p>
+      </div>
+      <a
+        *ngIf="convocatoria.url_original"
+        [href]="convocatoria.url_original"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="web-link"
+      >
+        web oficial ↗
+      </a>
+    </aside>
+
+    <!-- COLUMNA DERECHA: descripción y participantes -->
+    <main class="conv-contenido">
+      <div class="dato-grupo" *ngIf="convocatoria.descripcion">
+        <p class="dato-label">DESCRIPCIÓN</p>
+        <p class="conv-descripcion">{{ convocatoria.descripcion }}</p>
+      </div>
+      <div class="dato-grupo" *ngIf="convocatoria.requisitos">
+        <p class="dato-label">REQUISITOS</p>
+        <p class="conv-descripcion">{{ convocatoria.requisitos }}</p>
+      </div>
+
+      <!-- PARTICIPANTES -->
+      <div
+        class="conv-descripcion participantes-anteriores"
+        *ngIf="participantes.length >= 0"
+      >
+        participantes anteriores:
+        <ng-container *ngIf="participantes.length === 0">
+          todavía no hay participantes registrados.
+        </ng-container>
+        <ng-container *ngFor="let p of participantes; let last = last">
+          <a
+            *ngIf="p.usuarioId"
+            [routerLink]="['/artista', p.usuarioId]"
+            class="participante-link"
+            >{{ p.nombre }}</a
+          >
+          <span *ngIf="!p.usuarioId">{{ p.nombre }}</span>
+          <span> ({{ p.anio }})</span><span *ngIf="!last">, </span>
+        </ng-container>
+      </div>
+    </main>
+  </div>
+</div>
+
+<div *ngIf="loading" class="loading">cargando...</div>
+<div *ngIf="error" class="error">no se pudo cargar la convocatoria.</div>

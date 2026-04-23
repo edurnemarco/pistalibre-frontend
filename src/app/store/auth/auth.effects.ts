@@ -42,6 +42,8 @@ export class AuthEffects {
         tap(({ user }) => {
           if (user.tipo === 'admin') {
             this.router.navigate(['/admin']);
+          } else if (user.tipo === 'institucion') {
+            this.router.navigate(['/institucion-dashboard']);
           } else {
             this.router.navigate(['/oportunidades']);
           }
@@ -99,7 +101,13 @@ export class AuthEffects {
     () =>
       this.actions$.pipe(
         ofType(AuthActions.registerSuccess),
-        tap(() => this.router.navigate(['/oportunidades'])),
+        tap(({ user }) => {
+          if (user.tipo === 'institucion') {
+            this.router.navigate(['/institucion-dashboard']);
+          } else {
+            this.router.navigate(['/oportunidades']);
+          }
+        }),
       ),
     { dispatch: false },
   );

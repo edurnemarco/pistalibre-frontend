@@ -34,5 +34,12 @@ export class AppComponent implements OnInit {
       .subscribe(() => {
         this.store.dispatch(cargarFavoritos());
       });
+
+    //    document.addEventListener('mousedown', () => {
+    //       document.body.classList.add('usando-raton');
+    //    });
+    //    document.addEventListener('keydown', () => {
+    //      document.body.classList.remove('usando-raton');
+    //    });
   }
 }

@@ -1,0 +1,347 @@
+<div class="perfil-page">
+  <div class="perfil-header-bar">
+    <h1>panel de administración</h1>
+  </div>
+  <hr class="perfil-hr" />
+
+  <div class="perfil-body">
+    <!-- SIDEBAR -->
+    <aside class="perfil-sidebar">
+      <nav class="perfil-nav">
+        <button
+          [class.activa]="tabActiva === 'pendientes'"
+          (click)="setTab('pendientes')"
+        >
+          pendientes de revisión
+          <span *ngIf="pendientes.length > 0"
+            >&nbsp;({{ pendientes.length }})</span
+          >
+        </button>
+        <button
+          [class.activa]="tabActiva === 'nueva'"
+          (click)="setTab('nueva')"
+        >
+          nueva convocatoria
+        </button>
+        <button
+          [class.activa]="tabActiva === 'usuarios'"
+          (click)="setTab('usuarios')"
+        >
+          usuarios
+        </button>
+      </nav>
+    </aside>
+
+    <!-- CONTENIDO -->
+    <main class="perfil-contenido">
+      <div *ngIf="mensajeExito" class="mensaje-exito">{{ mensajeExito }}</div>
+
+      <!-- TAB: PENDIENTES -->
+      <div *ngIf="tabActiva === 'pendientes'">
+        <div *ngIf="loading" class="empty">cargando...</div>
+        <div *ngIf="!loading && pendientes.length === 0" class="empty">
+          no hay convocatorias pendientes de revisión
+        </div>
+
+        <div class="conv-lista">
+          <div class="conv-item" *ngFor="let c of pendientes">
+            <div class="conv-nombre">
+              <p>{{ c.titulo }}</p>
+              <p class="conv-fecha-pub">
+                {{ c.institucion_nombre || c.institucion?.nombre || "—" }} ·
+                enviada el {{ formatFecha(c.created_at) }}
+              </p>
+              <p class="conv-fecha-pub">
+                {{ c.tipo }} · {{ c.ciudad
+                }}{{ c.region ? ", " + c.region : "" }}
+              </p>
+              <a
+                *ngIf="c.url_original"
+                [href]="c.url_original"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="web-link"
+              >
+                ver original ↗
+              </a>
+            </div>
+            <div class="conv-acciones">
+              <button class="btn-aprobar" (click)="aprobar(c.id)">
+                publicar
+              </button>
+              <button class="btn-eliminar-conv" (click)="rechazar(c.id)">
+                rechazar
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB: NUEVA CONVOCATORIA -->
+      <div *ngIf="tabActiva === 'nueva'">
+        <form
+          [formGroup]="formConvocatoria"
+          (ngSubmit)="guardarConvocatoria()"
+          novalidate
+        >
+          <div class="field">
+            <label>título*</label>
+            <input
+              type="text"
+              formControlName="titulo"
+              placeholder="nombre de la convocatoria"
+            />
+            <span
+              class="field-error"
+              *ngIf="
+                formConvocatoria.get('titulo')?.invalid &&
+                formConvocatoria.get('titulo')?.touched
+              "
+              >obligatorio</span
+            >
+          </div>
+
+          <div class="field">
+            <label>descripción*</label>
+            <textarea formControlName="descripcion" rows="5"></textarea>
+            <span
+              class="field-error"
+              *ngIf="
+                formConvocatoria.get('descripcion')?.invalid &&
+                formConvocatoria.get('descripcion')?.touched
+              "
+              >obligatorio</span
+            >
+          </div>
+
+          <div class="field">
+            <label>institución organizadora</label>
+            <input
+              type="text"
+              formControlName="institucion_nombre"
+              placeholder="nombre del centro o institución"
+            />
+          </div>
+
+          <div class="field">
+            <label>tipo*</label>
+            <div
+              class="desplegable"
+              (click)="tiposAbiertos = !tiposAbiertos"
+              tabindex="0"
+              (keydown.enter)="tiposAbiertos = !tiposAbiertos"
+              role="button"
+            >
+              <span [class.placeholder]="!formConvocatoria.get('tipo')?.value">
+                {{ formConvocatoria.get("tipo")?.value || "selecciona tipo" }}
+              </span>
+              <span>{{ tiposAbiertos ? "∧" : "∨" }}</span>
+            </div>
+            <div *ngIf="tiposAbiertos" class="desplegable-opciones">
+              <div
+                *ngFor="let t of tiposOpciones"
+                class="disciplina-item"
+                (click)="toggleTipo(t)"
+                tabindex="0"
+                (keydown.enter)="toggleTipo(t)"
+                role="option"
+              >
+                <span
+                  class="checkbox"
+                  [class.checked]="formConvocatoria.get('tipo')?.value === t"
+                ></span>
+                <span>{{ t }}</span>
+              </div>
+            </div>
+            <span
+              class="field-error"
+              *ngIf="
+                formConvocatoria.get('tipo')?.invalid &&
+                formConvocatoria.get('tipo')?.touched
+              "
+            >
+              obligatorio
+            </span>
+          </div>
+
+          <div class="field">
+            <label>disciplinas</label>
+            <div
+              class="desplegable"
+              (click)="disciplinasAbiertas = !disciplinasAbiertas"
+              tabindex="0"
+              (keydown.enter)="disciplinasAbiertas = !disciplinasAbiertas"
+              role="button"
+            >
+              <span [class.placeholder]="disciplinasSeleccionadas.length === 0">
+                {{
+                  disciplinasSeleccionadas.length > 0
+                    ? disciplinasSeleccionadas.join(", ")
+                    : "selecciona disciplinas"
+                }}
+              </span>
+              <span>{{ disciplinasAbiertas ? "∧" : "∨" }}</span>
+            </div>
+            <div *ngIf="disciplinasAbiertas" class="desplegable-opciones">
+              <div
+                *ngFor="let d of disciplinasOpciones"
+                class="disciplina-item"
+                (click)="toggleDisciplina(d)"
+                tabindex="0"
+                (keydown.enter)="toggleDisciplina(d)"
+                role="option"
+                [attr.aria-selected]="isDisciplinaSelected(d)"
+              >
+                <span
+                  class="checkbox"
+                  [class.checked]="isDisciplinaSelected(d)"
+                ></span>
+                <span>{{ d }}</span>
+              </div>
+            </div>
+          </div>
+          <div class="field">
+            <label>línea curatorial</label>
+            <div
+              class="desplegable"
+              (click)="lineaAbierta = !lineaAbierta"
+              [attr.aria-expanded]="lineaAbierta"
+              tabindex="0"
+              (keydown.enter)="lineaAbierta = !lineaAbierta"
+              role="button"
+            >
+              <span>{{
+                lineaSeleccionada.length > 0
+                  ? lineaSeleccionada.join(", ")
+                  : "selecciona línea curatorial"
+              }}</span>
+              <span>{{ lineaAbierta ? "∧" : "∨" }}</span>
+            </div>
+            <div *ngIf="lineaAbierta" class="desplegable-opciones">
+              <div
+                *ngFor="let l of lineaOpciones"
+                class="disciplina-item"
+                (click)="toggleLineaConv(l)"
+                tabindex="0"
+                (keydown.enter)="toggleLineaConv(l)"
+                role="option"
+                [attr.aria-selected]="isLineaSelected(l)"
+              >
+                <span
+                  class="checkbox"
+                  [class.checked]="isLineaSelected(l)"
+                ></span>
+                <span>{{ l }}</span>
+              </div>
+              <div class="disciplina-item disciplina-custom">
+                <span class="checkbox"></span>
+                <input
+                  #lineaConvInput
+                  type="text"
+                  placeholder="otra..."
+                  (keydown.enter)="agregarLineaConv(lineaConvInput)"
+                  (blur)="agregarLineaConv(lineaConvInput)"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>fecha de inicio</label>
+            <input type="date" formControlName="fecha_inicio" />
+          </div>
+
+          <div class="field">
+            <label>fecha límite*</label>
+            <input type="date" formControlName="fecha_limite" />
+            <span
+              class="field-error"
+              *ngIf="
+                formConvocatoria.get('fecha_limite')?.invalid &&
+                formConvocatoria.get('fecha_limite')?.touched
+              "
+              >obligatorio</span
+            >
+          </div>
+
+          <div class="field">
+            <label>dotación (€)</label>
+            <input type="number" formControlName="dotacion" placeholder="0" />
+          </div>
+
+          <div class="field">
+            <label>duración</label>
+            <input
+              type="text"
+              formControlName="duracion"
+              placeholder="ej: 3 meses"
+            />
+          </div>
+
+          <div class="field">
+            <label>requisitos</label>
+            <textarea formControlName="requisitos" rows="3"></textarea>
+          </div>
+
+          <div class="field">
+            <label>ciudad</label>
+            <input type="text" formControlName="ciudad" />
+          </div>
+
+          <div class="field">
+            <label>región</label>
+            <input type="text" formControlName="region" />
+          </div>
+
+          <div class="field">
+            <label>país</label>
+            <input type="text" formControlName="pais" />
+          </div>
+
+          <div class="field">
+            <label>url original</label>
+            <input
+              type="url"
+              formControlName="url_original"
+              placeholder="https://"
+            />
+          </div>
+
+          <div class="form-acciones">
+            <button
+              type="submit"
+              class="btn-primary"
+              [disabled]="formConvocatoria.invalid"
+            >
+              publicar convocatoria
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- TAB: USUARIOS -->
+      <div *ngIf="tabActiva === 'usuarios'">
+        <div class="conv-lista">
+          <div class="conv-item" *ngFor="let u of usuarios">
+            <div class="conv-nombre">
+              <p>{{ u.nombre }} {{ u.apellidos }}</p>
+              <p class="conv-fecha-pub">{{ u.email }} · {{ u.tipo }}</p>
+              <p class="conv-fecha-pub" [class.inactivo]="!u.activo">
+                {{ u.activo ? "activo" : "desactivado" }}
+              </p>
+            </div>
+            <div class="conv-acciones">
+              <button
+                *ngIf="u.activo"
+                class="btn-eliminar-conv"
+                (click)="desactivarUsuario(u.id)"
+              >
+                desactivar
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>

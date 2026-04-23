@@ -45,16 +45,23 @@ button {
   color: $color-texto;
 }
 
+.web-link {
+  text-decoration: underline;
+
+  &:hover {
+    text-decoration: none;
+  }
+}
+
 input,
 select,
 textarea {
   font-family: $fuente-mono;
-  font-size: 14px;
+  font-size: 13px;
   width: 100%;
   border: none;
   border-bottom: 1px solid $color-borde;
   padding: 8px 4px;
-  outline: none;
   background: transparent;
 }
 
@@ -64,6 +71,11 @@ textarea {
   font-size: 14px;
   width: 100%;
   text-align: center;
+
+  &:disabled {
+    color: $color-texto-secundario;
+    cursor: not-allowed;
+  }
 }
 
 .container {
@@ -82,4 +94,42 @@ textarea {
   span {
     color: $color-texto-secundario !important;
   }
+}
+
+span.field-error {
+  color: $color-aviso;
+  font-size: 11px;
+}
+
+.conv-titulo-link {
+  color: inherit;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+// Navegación por teclado
+* {
+  outline: none;
+}
+
+*:focus-visible {
+  outline: 2px solid $color-aviso;
+  outline-offset: 2px;
+}
+
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid $color-aviso;
+  outline-offset: 0;
+  border-bottom-color: $color-texto;
+}
+
+.resultado-item input[type="checkbox"]:focus-visible + .checkbox,
+.dias-check input[type="checkbox"]:focus-visible + .checkbox {
+  outline: 2px solid $color-aviso;
+  outline-offset: 2px;
 }

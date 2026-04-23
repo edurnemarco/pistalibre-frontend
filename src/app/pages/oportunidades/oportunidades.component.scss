@@ -226,7 +226,8 @@
   @media (min-width: 768px) {
     grid-template-columns: 0.5fr 2fr 1fr 0.5fr;
     grid-template-rows: auto auto;
-    gap: 24px;
+    column-gap: 24px;
+    row-gap: 0;
     align-items: start;
   }
 }
@@ -327,7 +328,6 @@
 
   @media (min-width: 768px) {
     grid-column: 1 / -1;
-    grid-row: 2;
   }
 }
 
@@ -349,6 +349,7 @@
   font-family: $fuente-mono;
   font-size: 12px;
   color: $color-texto;
+  min-width: 50px;
   background: none;
   border: none;
   cursor: pointer;
@@ -360,10 +361,16 @@
     outline-offset: 2px;
   }
 
+  svg {
+    display: block;
+    margin-left: auto;
+  }
+
   &.guardado {
-    color: $color-texto-secundario;
+    color: $color-texto;
     text-decoration: none;
     cursor: pointer;
+    font-size: 16px;
   }
 }
 
@@ -374,7 +381,7 @@
   @media (min-width: 768px) {
     grid-column: 2 / 3;
     grid-row: 2;
-    padding: 0 0 16px 0;
+    margin-top: 10px;
   }
 
   .descripcion-completa {
@@ -415,5 +422,19 @@
   &:focus-visible {
     outline: 2px solid $color-texto;
     outline-offset: 2px;
+  }
+}
+
+.participantes-anteriores {
+  margin-top: 10px;
+  color: $color-texto-secundario;
+}
+
+.participante-link {
+  color: $color-texto;
+  text-decoration: underline;
+
+  &:hover {
+    color: $color-texto-secundario;
   }
 }

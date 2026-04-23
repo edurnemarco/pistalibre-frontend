@@ -36,6 +36,7 @@ export interface Convocatoria {
   fuente_id: string | null;
   created_at: string;
   updated_at: string;
+  institucion_nombre?: string | null;
 }
 
 export interface FiltrosConvocatorias {

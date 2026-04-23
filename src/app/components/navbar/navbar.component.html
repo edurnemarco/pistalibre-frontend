@@ -20,13 +20,35 @@
     <div class="nav-bottom">
       <a routerLink="/oportunidades">oportunidades</a>
       <ng-container *ngIf="isAuthenticated$ | async">
-        <ng-container *ngIf="userTipo$ | async as tipo">
-          <a routerLink="/perfil">mi perfil</a>
-          <a *ngIf="tipo === 'institucion'" routerLink="/publicar">publicar</a>
-        </ng-container>
+        <a
+          [routerLink]="
+            (userTipo$ | async) === 'institucion'
+              ? '/institucion-dashboard'
+              : (userTipo$ | async) === 'admin'
+                ? '/admin'
+                : '/perfil'
+          "
+        >
+          mi perfil<span
+            *ngIf="
+              (userTipo$ | async) === 'artista' &&
+              (tieneFavoritosUrgentes$ | async)
+            "
+            class="notif-asterisco"
+            aria-label="tienes convocatorias urgentes"
+          >
+            &nbsp;*
+          </span>
+        </a>
+        <a
+          *ngIf="(userTipo$ | async) === 'institucion'"
+          routerLink="/institucion-dashboard"
+          [queryParams]="tabNueva"
+          >publicar</a
+        >
       </ng-container>
       <ng-container *ngIf="!(isAuthenticated$ | async)">
-        <a routerLink="/publicar">publicar</a>
+        <a routerLink="/login">publicar</a>
       </ng-container>
     </div>
   </div>
@@ -43,23 +65,37 @@
       <a routerLink="/oportunidades">oportunidades</a>
       <ng-container *ngIf="isAuthenticated$ | async; else guestDesktop">
         <ng-container *ngIf="userTipo$ | async as tipo">
-          <a routerLink="/perfil">
+          <a
+            [routerLink]="
+              tipo === 'institucion'
+                ? '/institucion-dashboard'
+                : tipo === 'admin'
+                  ? '/admin'
+                  : '/perfil'
+            "
+          >
             mi perfil<span
-              *ngIf="tieneFavoritosUrgentes$ | async"
+              *ngIf="tipo === 'artista' && (tieneFavoritosUrgentes$ | async)"
               class="notif-asterisco"
               aria-label="tienes convocatorias urgentes"
             >
-              &nbsp;*</span
-            >
+              &nbsp;*
+            </span>
           </a>
-          <a *ngIf="tipo === 'institucion'" routerLink="/publicar">publicar</a>
+          <a
+            *ngIf="tipo === 'institucion'"
+            routerLink="/institucion-dashboard"
+            [queryParams]="tabNueva"
+            .
+            >publicar</a
+          >
           <button (click)="onLogout()" aria-label="cerrar sesión">
             cerrar sesión
           </button>
         </ng-container>
       </ng-container>
       <ng-template #guestDesktop>
-        <a routerLink="/publicar">publicar</a>
+        <a routerLink="/login">publicar</a>
         <a routerLink="/login">iniciar sesión</a>
       </ng-template>
     </div>

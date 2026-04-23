@@ -1,0 +1,255 @@
+<div class="perfil-page" *ngIf="!loading && !error && institucion">
+  <div class="perfil-header-bar">
+    <h1>{{ institucion.nombre }}</h1>
+    <button
+      class="btn-alerta"
+      *ngIf="
+        (isAuthenticated$ | async) && (userTipo$ | async) !== 'institucion'
+      "
+      (click)="abrirModalAlertaInstitucion()"
+    >
+      activar alertas del centro
+    </button>
+  </div>
+  <hr class="perfil-hr" />
+
+  <div class="perfil-body">
+    <!-- SIDEBAR -->
+    <aside class="perfil-sidebar">
+      <div class="avatar-placeholder">
+        <img
+          *ngIf="institucion.avatar_url"
+          [src]="institucion.avatar_url"
+          alt="logo institución"
+          class="avatar-img"
+        />
+        <span *ngIf="!institucion.avatar_url">{{
+          institucion.nombre?.charAt(0)
+        }}</span>
+      </div>
+    </aside>
+
+    <!-- CONTENIDO -->
+    <main class="perfil-contenido">
+      <!-- INFORMACIÓN -->
+      <div class="perfil-datos">
+        <div
+          class="dato-grupo dato-grupo--full"
+          *ngIf="institucion.descripcion"
+        >
+          <p class="dato-label">DESCRIPCIÓN</p>
+          <p>{{ institucion.descripcion }}</p>
+        </div>
+        <div
+          class="dato-grupo dato-grupo--full"
+          *ngIf="institucion.linea_curatorial?.length"
+        >
+          <p class="dato-label">LÍNEA CURATORIAL</p>
+          <p>
+            {{
+              institucion.linea_curatorial?.join
+                ? institucion.linea_curatorial.join(", ")
+                : institucion.linea_curatorial
+            }}
+          </p>
+        </div>
+        <div
+          class="dato-grupo"
+          *ngIf="institucion.ciudad || institucion.region"
+        >
+          <p class="dato-label">UBICACIÓN</p>
+          <p>
+            {{ institucion.ciudad
+            }}{{ institucion.ciudad && institucion.region ? ", " : ""
+            }}{{ institucion.region }}
+          </p>
+        </div>
+        <div class="dato-grupo" *ngIf="institucion.web">
+          <p class="dato-label">WEB</p>
+          <a
+            [href]="institucion.web"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="web-link"
+            >{{ institucion.web }}</a
+          >
+        </div>
+      </div>
+
+      <p class="dato-label" style="margin: 24px 0 16px 0">CONVOCATORIAS</p>
+
+      <div
+        *ngIf="
+          convocatoriasAbiertas.length === 0 &&
+          convocatoriasCerradas.length === 0
+        "
+        class="empty"
+      >
+        no hay convocatorias publicadas todavía
+      </div>
+      <div class="conv-publica-lista">
+        <!-- ABIERTAS -->
+        <article
+          *ngFor="let c of convocatoriasAbiertas"
+          class="conv-publica-item"
+        >
+          <div class="conv-publica-fecha">
+            <p class="dato-label">FECHA LÍMITE</p>
+            <p>{{ formatFecha(c.fecha_limite) }}</p>
+            <a
+              *ngIf="c.url_original"
+              [href]="c.url_original"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="web-link"
+            >
+              web oficial ↗
+            </a>
+          </div>
+
+          <div class="conv-publica-info">
+            <h2>
+              <a
+                [routerLink]="['/convocatorias', c.id]"
+                class="conv-titulo-link"
+                >{{ c.titulo }}</a
+              >
+            </h2>
+            <p *ngIf="c.tipo" class="conv-tipo">{{ c.tipo }}</p>
+            <div *ngIf="c.disciplinas?.length" class="disciplinas">
+              <span *ngFor="let d of c.disciplinas" class="disciplina-tag">{{
+                d
+              }}</span>
+            </div>
+            <p *ngIf="c.ciudad || c.region" class="conv-lugar">
+              {{ c.ciudad }}{{ c.ciudad && c.region ? ", " : "" }}{{ c.region }}
+            </p>
+          </div>
+
+          <div
+            class="conv-publica-acciones"
+            *ngIf="
+              (isAuthenticated$ | async) &&
+              (userTipo$ | async) !== 'institucion'
+            "
+          >
+            <button class="btn-alerta" (click)="abrirModalAlerta(c)">
+              {{
+                (hasAlerta(c.id) | async) ? "editar alerta" : "activar alerta"
+              }}
+            </button>
+            <button
+              class="btn-guardar"
+              [class.guardado]="isFavorito(c.id) | async"
+              (click)="toggleFavorito(c.id)"
+              [attr.aria-label]="
+                (isFavorito(c.id) | async)
+                  ? 'eliminar de favoritos'
+                  : 'guardar en favoritos'
+              "
+            >
+              <ng-container *ngIf="isFavorito(c.id) | async; else noGuardado">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                  <polyline
+                    points="2,7 6,11 12,3"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </ng-container>
+              <ng-template #noGuardado>guardar</ng-template>
+            </button>
+          </div>
+        </article>
+
+        <!-- CERRADAS -->
+        <article
+          *ngFor="let c of convocatoriasCerradas"
+          class="conv-publica-item conv-publica-item--cerrada"
+        >
+          <div class="conv-publica-fecha">
+            <p class="dato-label">FECHA LÍMITE</p>
+            <p>{{ formatFecha(c.fecha_limite) }}</p>
+            <a
+              *ngIf="c.url_original"
+              [href]="c.url_original"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="web-link"
+            >
+              web oficial ↗
+            </a>
+          </div>
+          <div class="conv-publica-info">
+            <h2>
+              <a
+                [routerLink]="['/convocatorias', c.id]"
+                class="conv-titulo-link"
+                >{{ c.titulo }}</a
+              >
+            </h2>
+            <p *ngIf="c.tipo" class="conv-tipo">{{ c.tipo }}</p>
+            <div *ngIf="c.disciplinas?.length" class="disciplinas">
+              <span *ngFor="let d of c.disciplinas" class="disciplina-tag">{{
+                d
+              }}</span>
+            </div>
+            <p *ngIf="c.ciudad || c.region" class="conv-lugar">
+              {{ c.ciudad }}{{ c.ciudad && c.region ? ", " : "" }}{{ c.region }}
+            </p>
+          </div>
+        </article>
+      </div>
+
+      <!-- MODAL ALERTA -->
+      <div
+        class="modal-overlay"
+        *ngIf="modalAlertaAbierto"
+        (click)="cerrarModal()"
+        role="dialog"
+        aria-modal="true"
+      >
+        <div class="modal" (click)="$event.stopPropagation()">
+          <h3>{{ alertaExistente ? "editar alertas" : "activar alertas" }}</h3>
+          <p *ngIf="convocatoriaSeleccionada">
+            {{ convocatoriaSeleccionada.titulo }}
+          </p>
+          <p class="modal-subtitulo">
+            selecciona cuándo quieres recibir avisos
+          </p>
+          <div class="dias-opciones">
+            <label *ngFor="let dias of opcionesAlerta" class="dias-check">
+              <input
+                type="checkbox"
+                [checked]="diasSeleccionados.includes(dias)"
+                (change)="toggleDiasAlerta(dias)"
+              />
+              <span
+                class="checkbox"
+                [class.checked]="diasSeleccionados.includes(dias)"
+              ></span>
+              <span>{{ dias }} días antes</span>
+            </label>
+          </div>
+          <div class="modal-acciones">
+            <button
+              class="btn-primary"
+              (click)="confirmarAlerta()"
+              [disabled]="diasSeleccionados.length === 0"
+            >
+              {{ alertaExistente ? "actualizar alertas" : "activar alertas" }}
+            </button>
+            <button class="btn-cancelar" (click)="cerrarModal()">
+              cancelar
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<div *ngIf="loading" class="loading">cargando...</div>
+<div *ngIf="error" class="error">no se pudo cargar el perfil.</div>

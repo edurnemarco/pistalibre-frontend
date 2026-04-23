@@ -24,6 +24,7 @@ export class NavbarComponent {
   user$: Observable<User | null>;
   userTipo$: Observable<string | undefined>;
   tieneFavoritosUrgentes$: Observable<boolean>;
+  tabNueva = { tab: 'nueva' };
 
   constructor(private store: Store<{ auth: AuthState }>) {
     this.isAuthenticated$ = this.store.select(selectIsAuthenticated);

@@ -1,0 +1,30 @@
+@use "../../../styles" as *;
+@use "../perfil/perfil.component.scss";
+
+.perfil-sidebar {
+  align-items: flex-start;
+
+  nav,
+  .perfil-datos-sidebar {
+    display: none;
+  }
+}
+.perfil-datos {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+
+  .dato-grupo {
+    width: 100%;
+
+    a {
+      font-size: 13px;
+      color: $color-texto;
+      text-decoration: underline;
+    }
+
+    p {
+      font-size: 13px;
+    }
+  }
+}

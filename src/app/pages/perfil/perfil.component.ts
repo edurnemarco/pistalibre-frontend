@@ -6,6 +6,7 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { filter, map, take } from 'rxjs/operators';
@@ -24,6 +25,7 @@ import {
 import { updateUserSuccess } from '../../store/auth/auth.actions';
 import { selectToken, selectUser } from '../../store/auth/auth.selectors';
 import { User } from '../../store/auth/auth.state';
+import { cargarConvocatorias } from '../../store/convocatorias/convocatorias.actions';
 import { selectTodasConvocatorias } from '../../store/convocatorias/convocatorias.selectors';
 import {
   cargarFavoritos,
@@ -45,10 +47,11 @@ import {
   selectParticipacionesLoading,
 } from '../../store/participaciones/participaciones.selectors';
 import { Participacion } from '../../store/participaciones/participaciones.state';
+
 @Component({
   selector: 'app-perfil',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink],
   templateUrl: './perfil.component.html',
   styleUrl: './perfil.component.scss',
 })
@@ -151,6 +154,7 @@ export class PerfilComponent implements OnInit {
       pais: [''],
       web: [''],
       redes: [''],
+      mostrar_email: [false],
     });
 
     this.favoritos$ = this.store.select(selectFavoritos);
@@ -213,6 +217,7 @@ export class PerfilComponent implements OnInit {
           pais: user.pais || '',
           web: user.web || '',
           redes: user.redes || '',
+          mostrar_email: (user as any).mostrar_email || false,
         });
         const disciplinas = (user as any).disciplinas;
         if (Array.isArray(disciplinas)) {
@@ -227,6 +232,7 @@ export class PerfilComponent implements OnInit {
 
     this.store.dispatch(cargarAlertas());
     this.store.dispatch(cargarParticipaciones());
+    this.store.dispatch(cargarConvocatorias());
   }
 
   // Tabs
@@ -630,6 +636,8 @@ export class PerfilComponent implements OnInit {
   }
 
   buscarConvocatoria(event: Event) {
+    this.formParticipacion.patchValue({ convocatoria_id: '' });
+
     const texto = (event.target as HTMLInputElement).value;
     this.store
       .select(selectTodasConvocatorias)

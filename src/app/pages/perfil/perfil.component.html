@@ -264,6 +264,30 @@
               </div>
             </div>
           </div>
+          <div class="field">
+            <label>email público</label>
+            <div class="resultado-opciones">
+              <label class="resultado-item">
+                <input
+                  type="checkbox"
+                  style="position: absolute; opacity: 0; width: 0; height: 0"
+                  [checked]="form.get('mostrar_email')?.value"
+                  (change)="
+                    form.patchValue({
+                      mostrar_email: !form.get('mostrar_email')?.value,
+                    })
+                  "
+                />
+                <span
+                  class="checkbox"
+                  [class.checked]="form.get('mostrar_email')?.value"
+                ></span>
+                <span class="resultado-nombre"
+                  >mostrar mi email en mi perfil público</span
+                >
+              </label>
+            </div>
+          </div>
 
           <button type="submit" class="btn-primary" [disabled]="guardando">
             {{ guardando ? "guardando..." : "guardar cambios" }}
@@ -313,7 +337,13 @@
               </div>
 
               <div class="favorito-info">
-                <h3>{{ f.convocatoria.titulo }}</h3>
+                <h3>
+                  <a
+                    [routerLink]="['/convocatorias', f.convocatoria_id]"
+                    class="conv-titulo-link"
+                    >{{ f.convocatoria.titulo }}</a
+                  >
+                </h3>
                 <p class="tipo">{{ f.convocatoria.tipo }}</p>
                 <p class="lugar">
                   {{ f.convocatoria.ciudad }}, {{ f.convocatoria.region }}
@@ -368,7 +398,13 @@
             [class.urgente]="diasRestantes(grupo.fechaLimite) <= 7"
           >
             <div class="alerta-info">
-              <h3>{{ grupo.titulo }}</h3>
+              <h3>
+                <a
+                  [routerLink]="['/convocatorias', grupo.convocatoriaId]"
+                  class="conv-titulo-link"
+                  >{{ grupo.titulo }}</a
+                >
+              </h3>
               <p class="alerta-ciudad">
                 {{ grupo.ciudad }}, {{ grupo.region }}
               </p>
@@ -742,11 +778,20 @@
                             imagenExpandida =
                               imagenExpandida === img ? null : img
                           "
+                          (keydown.enter)="
+                            imagenExpandida =
+                              imagenExpandida === img ? null : img
+                          "
+                          (keydown.space)="
+                            imagenExpandida =
+                              imagenExpandida === img ? null : img;
+                            $event.preventDefault()
+                          "
                           (mouseenter)="imagenHover = img"
                           (mouseleave)="imagenHover = null"
+                          tabindex="0"
+                          >imagen {{ i + 1 }}</span
                         >
-                          imagen {{ i + 1 }}
-                        </span>
                       </div>
                       <div class="imagen-tab-contenido" *ngIf="imagenExpandida">
                         <img
@@ -772,7 +817,7 @@
                   </div>
                   <div class="participacion-acciones">
                     <button
-                      class="btn-editar-participacion"
+                      class="btn-editar-acento"
                       (click)="abrirFormularioParticipacion(p)"
                     >
                       editar
@@ -800,7 +845,7 @@
                   </button>
                   <div class="participacion-acciones">
                     <button
-                      class="btn-editar-participacion"
+                      class="btn-editar-acento"
                       (click)="abrirFormularioParticipacion(p)"
                     >
                       editar
