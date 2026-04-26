@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -15,7 +15,7 @@ import { selectFavoritos } from '../../store/favoritos/favoritos.selectors';
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [RouterLink, CommonModule],
+  imports: [RouterLink, CommonModule, RouterLinkActive],
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.scss',
 })
@@ -26,7 +26,10 @@ export class NavbarComponent {
   tieneFavoritosUrgentes$: Observable<boolean>;
   tabNueva = { tab: 'nueva' };
 
-  constructor(private store: Store<{ auth: AuthState }>) {
+  constructor(
+    private store: Store<{ auth: AuthState }>,
+    private router: Router,
+  ) {
     this.isAuthenticated$ = this.store.select(selectIsAuthenticated);
     this.user$ = this.store.select(selectUser);
     this.userTipo$ = this.store.select(selectUserTipo);
@@ -46,5 +49,16 @@ export class NavbarComponent {
   }
   onLogout() {
     this.store.dispatch(logout());
+  }
+  get isPublicarActivo(): boolean {
+    return this.router.url.includes('tab=nueva');
+  }
+
+  get isPerfilInstitucionActivo(): boolean {
+    return (
+      this.router.url === '/institucion-dashboard' ||
+      (this.router.url.includes('/institucion-dashboard') &&
+        !this.router.url.includes('tab=nueva'))
+    );
   }
 }

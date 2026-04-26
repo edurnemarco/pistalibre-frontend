@@ -82,8 +82,21 @@
               }}</span>
             </p>
 
-            <p class="dato-label" style="margin-top: 12px">CENTRO</p>
-            <p>{{ p.institucion_nombre || "—" }}</p>
+            <p class="dato-label" style="margin-top: 12px">ORGANIZADO POR</p>
+            <p>
+              <a
+                *ngIf="getInstitucionId(p.institucion_nombre)"
+                [routerLink]="[
+                  '/instituciones',
+                  getInstitucionId(p.institucion_nombre),
+                ]"
+                class="conv-titulo-link"
+                >{{ p.institucion_nombre }}</a
+              >
+              <span *ngIf="!getInstitucionId(p.institucion_nombre)">{{
+                p.institucion_nombre || "—"
+              }}</span>
+            </p>
 
             <p class="dato-label" style="margin-top: 12px">TÍTULO</p>
             <h3>{{ p.nombre_proyecto || "—" }}</h3>

@@ -1,64 +1,63 @@
-# PistalibreFrontend
+# Pistalibre — Frontend
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.19.
+Frontend Angular de Pistalibre, plataforma web de convocatorias artísticas para conectar artistas e instituciones culturales.
 
-## Development server
+## Requisitos previos
 
-To start a local development server, run:
+- Node.js 18 o superior
+- Angular CLI 19: `npm install -g @angular/cli`
+- Backend Laravel arrancado en `http://127.0.0.1:8000`
 
-```bash
-ng serve
-```
+## Instalación
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+1. Descomprimir el proyecto y acceder a la carpeta
 
-## Code scaffolding
+   cd pistalibre-frontend
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+2. Instalar dependencias
 
-```bash
-ng generate component component-name
-```
+   npm install
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+3. Configurar la URL de la API
 
-```bash
-ng generate --help
-```
+   Abrir `src/environments/environment.development.ts` y verificar que la URL apunta al backend:
 
-## Building
+   export const environment = {
+   production: false,
+   apiUrl: 'http://127.0.0.1:8000/api'
+   };
 
-To build the project run:
+4. Arrancar el servidor de desarrollo
 
-```bash
-ng build
-```
+   ng serve
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+   La aplicación queda disponible en http://localhost:4200.
 
-## Running unit tests
+## Usuarios de prueba
 
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+- Artista: ane@pistalibre.com / password123
+- Institución: tramaestudio@gmail.com / tramatrama
+- Admin: admin@pistalibre.com / admin123
 
-```bash
-ng test
-```
+## Estructura del proyecto
 
-## Running end-to-end tests
+src/
+app/
+components/ → navbar, footer
+pages/ → oportunidades, login, register, perfil, admin...
+services/ → llamadas a la API REST
+store/ → estado global con NgRx
+guards/ → authGuard, guestGuard
+directives/ → scroll-reveal
+environments/ → URLs de entorno
+styles.scss → variables y estilos globales
 
-For end-to-end (e2e) testing, run:
+## Notas
 
-```bash
-ng e2e
-```
+- El backend Laravel debe estar corriendo antes de arrancar el frontend.
+- El token de autenticación se guarda en localStorage y persiste entre sesiones.
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
-
-## Repositorios relacionados
+## Repositorio relacionado
 
 - Backend Laravel: https://github.com/edurnemarco/pistalibre-api
 

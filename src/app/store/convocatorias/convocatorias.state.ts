@@ -47,6 +47,7 @@ export interface FiltrosConvocatorias {
   estado: string;
   mes: string;
   anio: string;
+  dia: string;
 }
 
 export interface ConvocatoriasState {
@@ -64,6 +65,7 @@ export const initialFiltros: FiltrosConvocatorias = {
   estado: '',
   mes: '',
   anio: '',
+  dia: '',
 };
 
 export const initialConvocatoriasState: ConvocatoriasState = {

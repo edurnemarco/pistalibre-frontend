@@ -70,7 +70,7 @@
           (click)="setTab('favoritos')"
           [attr.aria-selected]="tabActiva === 'favoritos'"
         >
-          favoritos<span
+          guardadas<span
             *ngIf="tieneFavoritosUrgentes$ | async"
             aria-label="tienes convocatorias urgentes"
           >
@@ -316,7 +316,7 @@
               "
             >
               <div class="favorito-fecha">
-                <p class="dato-label">FECHA LÍMITE</p>
+                <p class="dato-label">ABIERTA HASTA</p>
                 <p>{{ formatFecha(f.convocatoria.fecha_limite) }}</p>
                 <p
                   class="dias-restantes"
@@ -509,20 +509,36 @@
 
               <div class="field">
                 <label for="institucion_nombre">organizado por*</label>
-                <input
-                  id="institucion_nombre"
-                  type="text"
-                  formControlName="institucion_nombre"
-                  placeholder="institución, galería, colectivo..."
-                />
-                <span
-                  class="field-error"
-                  *ngIf="
-                    formParticipacion.get('institucion_nombre')?.invalid &&
-                    formParticipacion.get('institucion_nombre')?.touched
-                  "
-                  >obligatorio</span
-                >
+                <div class="autocomplete-wrapper">
+                  <input
+                    id="institucion_nombre"
+                    type="text"
+                    formControlName="institucion_nombre"
+                    placeholder="institución, galería, colectivo..."
+                    (input)="buscarInstitucion($event)"
+                    autocomplete="off"
+                  />
+                  <div
+                    class="sugerencias"
+                    *ngIf="mostrarSugerenciasInstitucion"
+                  >
+                    <div
+                      *ngFor="let inst of institucionesFiltradas"
+                      class="sugerencia-item"
+                      (click)="seleccionarInstitucion(inst)"
+                    >
+                      {{ inst.nombre }}
+                    </div>
+                  </div>
+                  <span
+                    class="field-error"
+                    *ngIf="
+                      formParticipacion.get('institucion_nombre')?.invalid &&
+                      formParticipacion.get('institucion_nombre')?.touched
+                    "
+                    >obligatorio</span
+                  >
+                </div>
               </div>
 
               <div class="field">
@@ -556,45 +572,6 @@
                   *ngIf="
                     formParticipacion.get('descripcion_proyecto')?.invalid &&
                     formParticipacion.get('descripcion_proyecto')?.touched
-                  "
-                  >obligatorio</span
-                >
-              </div>
-
-              <div class="field">
-                <label>resultado*</label>
-                <div class="resultado-opciones">
-                  <label
-                    *ngFor="let r of resultadosOpciones"
-                    class="resultado-item"
-                  >
-                    <input
-                      type="checkbox"
-                      style="
-                        position: absolute;
-                        opacity: 0;
-                        width: 0;
-                        height: 0;
-                      "
-                      [checked]="
-                        formParticipacion.get('resultado')?.value === r
-                      "
-                      (change)="setResultado(r)"
-                    />
-                    <span
-                      class="checkbox"
-                      [class.checked]="
-                        formParticipacion.get('resultado')?.value === r
-                      "
-                    ></span>
-                    <span class="resultado-nombre">{{ r }}</span>
-                  </label>
-                </div>
-                <span
-                  class="field-error"
-                  *ngIf="
-                    formParticipacion.get('resultado')?.invalid &&
-                    formParticipacion.get('resultado')?.touched
                   "
                   >obligatorio</span
                 >

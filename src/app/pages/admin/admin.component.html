@@ -62,7 +62,33 @@
                 rel="noopener noreferrer"
                 class="web-link"
               >
-                ver original ↗
+                web oficial
+                <svg
+                  class="icon-external"
+                  width="12"
+                  height="12"
+                  viewBox="0 0 20 20"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <line
+                    x1="6"
+                    y1="14"
+                    x2="16"
+                    y2="4"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    stroke-linecap="square"
+                  />
+                  <polyline
+                    points="9,4 16,4 16,11"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    stroke-linecap="square"
+                    stroke-linejoin="miter"
+                  />
+                </svg>
               </a>
             </div>
             <div class="conv-acciones">
@@ -210,7 +236,7 @@
               (keydown.enter)="lineaAbierta = !lineaAbierta"
               role="button"
             >
-              <span>{{
+              <span [class.placeholder]="lineaSeleccionada.length === 0">{{
                 lineaSeleccionada.length > 0
                   ? lineaSeleccionada.join(", ")
                   : "selecciona línea curatorial"

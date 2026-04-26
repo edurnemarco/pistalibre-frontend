@@ -11,6 +11,9 @@
       activar alertas del centro
     </button>
   </div>
+
+  <div *ngIf="loading" class="loading">cargando...</div>
+  <div *ngIf="error" class="error">no se pudo cargar el perfil.</div>
   <hr class="perfil-hr" />
 
   <div class="perfil-body">
@@ -94,7 +97,7 @@
           class="conv-publica-item"
         >
           <div class="conv-publica-fecha">
-            <p class="dato-label">FECHA LÍMITE</p>
+            <p class="dato-label">ABIERTA HASTA</p>
             <p>{{ formatFecha(c.fecha_limite) }}</p>
             <a
               *ngIf="c.url_original"
@@ -103,7 +106,33 @@
               rel="noopener noreferrer"
               class="web-link"
             >
-              web oficial ↗
+              web oficial
+              <svg
+                class="icon-external"
+                width="12"
+                height="12"
+                viewBox="0 0 20 20"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <line
+                  x1="6"
+                  y1="14"
+                  x2="16"
+                  y2="4"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="square"
+                />
+                <polyline
+                  points="9,4 16,4 16,11"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="square"
+                  stroke-linejoin="miter"
+                />
+              </svg>
             </a>
           </div>
 
@@ -170,7 +199,7 @@
           class="conv-publica-item conv-publica-item--cerrada"
         >
           <div class="conv-publica-fecha">
-            <p class="dato-label">FECHA LÍMITE</p>
+            <p class="dato-label">ABIERTA HASTA</p>
             <p>{{ formatFecha(c.fecha_limite) }}</p>
             <a
               *ngIf="c.url_original"
@@ -179,7 +208,33 @@
               rel="noopener noreferrer"
               class="web-link"
             >
-              web oficial ↗
+              web oficial
+              <svg
+                class="icon-external"
+                width="12"
+                height="12"
+                viewBox="0 0 20 20"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <line
+                  x1="6"
+                  y1="14"
+                  x2="16"
+                  y2="4"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="square"
+                />
+                <polyline
+                  points="9,4 16,4 16,11"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="square"
+                  stroke-linejoin="miter"
+                />
+              </svg>
             </a>
           </div>
           <div class="conv-publica-info">
@@ -250,6 +305,3 @@
     </main>
   </div>
 </div>
-
-<div *ngIf="loading" class="loading">cargando...</div>
-<div *ngIf="error" class="error">no se pudo cargar el perfil.</div>

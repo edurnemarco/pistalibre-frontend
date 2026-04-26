@@ -404,6 +404,29 @@
               placeholder="https://"
             />
           </div>
+          <div class="field">
+            <label>imágenes</label>
+            <div class="imagenes-grid">
+              <div
+                *ngFor="let slot of imagenesConvocatoriaSlots; let i = index"
+                class="imagen-slot"
+                (click)="subirImagenConvocatoria(i)"
+                role="button"
+                tabindex="0"
+                (keydown.enter)="subirImagenConvocatoria(i)"
+              >
+                <img
+                  *ngIf="imagenesConvocatoria[i]"
+                  [src]="imagenesConvocatoria[i]"
+                  [alt]="'imagen ' + (i + 1)"
+                  class="imagen-preview"
+                />
+                <span *ngIf="!imagenesConvocatoria[i]">{{
+                  subiendoImagenConvocatoria ? "..." : "imagen " + (i + 1)
+                }}</span>
+              </div>
+            </div>
+          </div>
 
           <div class="form-acciones">
             <button
@@ -433,10 +456,7 @@
             <p class="dato-label">DESCRIPCIÓN</p>
             <p>{{ institucion.descripcion || "—" }}</p>
           </div>
-          <div class="dato-grupo dato-grupo--full">
-            <p class="dato-label">LÍNEA CURATORIAL</p>
-            <p>{{ institucion.linea_curatorial || "—" }}</p>
-          </div>
+
           <div class="dato-grupo">
             <p class="dato-label">UBICACIÓN</p>
             <p>
@@ -475,14 +495,6 @@
               id="inst-desc"
               formControlName="descripcion"
               rows="4"
-            ></textarea>
-          </div>
-          <div class="field">
-            <label for="inst-linea">línea curatorial</label>
-            <textarea
-              id="inst-linea"
-              formControlName="linea_curatorial"
-              rows="3"
             ></textarea>
           </div>
           <div class="field">

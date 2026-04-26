@@ -72,6 +72,11 @@ export const selectConvocatoriasFiltradas = createSelector(
           return false;
       }
 
+      if (filtros.dia) {
+        if (new Date(c.fecha_limite).getDate().toString() !== filtros.dia)
+          return false;
+      }
+
       return true;
     });
 

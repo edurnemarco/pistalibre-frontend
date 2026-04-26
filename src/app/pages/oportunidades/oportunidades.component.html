@@ -78,36 +78,64 @@
         </div>
 
         <div class="filtro-grupo">
-          <p class="filtro-label" id="fecha-label">fecha límite</p>
-          <div class="select-wrapper">
-            <select
-              aria-label="filtrar por mes"
-              [(ngModel)]="mesSeleccionado"
-              (ngModelChange)="onMesChange($event)"
+          <p class="filtro-label" id="fecha-label">abierto hasta</p>
+
+          <!-- MES -->
+          <div class="filtro-desplegable">
+            <button
+              class="filtro-desplegable-toggle"
+              (click)="mesAbierto = !mesAbierto"
             >
-              <option value="">mes</option>
-              <option
+              <span>{{ filtros.mes ? "mes " + filtros.mes : "mes" }}</span>
+              <span>{{ mesAbierto ? "∧" : "∨" }}</span>
+            </button>
+            <div *ngIf="mesAbierto" class="filtro-desplegable-panel">
+              <label
                 *ngFor="let m of (mesesOpciones$ | async) || []"
-                [value]="m.valor"
+                class="filtro-item"
               >
-                {{ m.label }}
-              </option>
-            </select>
+                <input
+                  type="checkbox"
+                  class="checkbox-hidden"
+                  [checked]="filtros.mes === m.valor"
+                  (change)="onMesChange(m.valor)"
+                />
+                <span
+                  class="checkbox"
+                  [class.checked]="filtros.mes === m.valor"
+                ></span>
+                <span>{{ m.label }}</span>
+              </label>
+            </div>
           </div>
-          <div class="select-wrapper">
-            <select
-              aria-label="filtrar por año"
-              [(ngModel)]="anioSeleccionado"
-              (ngModelChange)="onAnioChange($event)"
+
+          <!-- AÑO -->
+          <div class="filtro-desplegable">
+            <button
+              class="filtro-desplegable-toggle"
+              (click)="anioAbierto = !anioAbierto"
             >
-              <option value="">año</option>
-              <option
+              <span>{{ filtros.anio || "año" }}</span>
+              <span>{{ anioAbierto ? "∧" : "∨" }}</span>
+            </button>
+            <div *ngIf="anioAbierto" class="filtro-desplegable-panel">
+              <label
                 *ngFor="let a of (aniosOpciones$ | async) || []"
-                [value]="a"
+                class="filtro-item"
               >
-                {{ a }}
-              </option>
-            </select>
+                <input
+                  type="checkbox"
+                  class="checkbox-hidden"
+                  [checked]="filtros.anio === a"
+                  (change)="onAnioChange(a)"
+                />
+                <span
+                  class="checkbox"
+                  [class.checked]="filtros.anio === a"
+                ></span>
+                <span>{{ a }}</span>
+              </label>
+            </div>
           </div>
         </div>
 
@@ -162,13 +190,17 @@
 
     <div class="convocatorias-lista">
       <article
-        *ngFor="let c of convocatoriasPaginadas$ | async"
+        *ngFor="
+          let c of convocatoriasPaginadas$ | async;
+          trackBy: trackByConvocatoria
+        "
         class="convocatoria-item"
         [class.convocatoria-cerrada]="diasRestantes(c.fecha_limite) < 0"
         [attr.aria-label]="'Convocatoria: ' + c.titulo"
+        appScrollReveal
       >
         <div class="convocatoria-fecha">
-          <p class="col-titulo">fecha límite</p>
+          <p class="col-titulo">ABIERTA HASTA</p>
           <p class="fecha-limite">{{ formatFecha(c.fecha_limite) }}</p>
           <a
             *ngIf="c.url_original"
@@ -177,12 +209,38 @@
             rel="noopener noreferrer"
             class="web-link"
           >
-            web oficial ↗
+            web oficial
+            <svg
+              class="icon-external"
+              width="12"
+              height="12"
+              viewBox="0 0 20 20"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <line
+                x1="6"
+                y1="14"
+                x2="16"
+                y2="4"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="square"
+              />
+              <polyline
+                points="9,4 16,4 16,11"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="square"
+                stroke-linejoin="miter"
+              />
+            </svg>
           </a>
         </div>
 
         <div class="convocatoria-info">
-          <p class="col-titulo">información</p>
+          <p class="col-titulo">INFORMACIÓN</p>
           <h2>
             <a
               [routerLink]="['/convocatorias', c.id]"
@@ -219,10 +277,10 @@
         </div>
 
         <div class="convocatoria-oferta">
-          <p class="col-titulo">lo que ofrece</p>
+          <p class="col-titulo">LO QUE OFRECE</p>
           <p *ngIf="c.dotacion">Dotación: {{ c.dotacion }}€</p>
-          <p *ngIf="c.beneficios?.dotacion_detalle && !c.dotacion">
-            Dotación: {{ c.beneficios?.dotacion_detalle }}
+          <p *ngIf="!c.dotacion && dotacionCorta(c)">
+            {{ dotacionCorta(c) }}
           </p>
           <p *ngIf="c.beneficios?.estudio">
             Estudio: {{ c.beneficios?.estudio }}
@@ -236,7 +294,7 @@
         </div>
 
         <div class="convocatoria-lugar">
-          <p class="col-titulo">lugar</p>
+          <p class="col-titulo">LUGAR</p>
           <p class="ciudad">{{ c.ciudad }}</p>
           <p class="region">{{ c.region }}</p>
         </div>
@@ -293,7 +351,12 @@
         <!-- PANEL DESPLEGABLE -->
         <div class="convocatoria-detalle" *ngIf="isExpanded(c.id)">
           <p class="descripcion-completa">{{ c.descripcion }}</p>
-
+          <p
+            class="descripcion-completa participantes-anteriores"
+            *ngIf="dotacionLarga(c)"
+          >
+            Dotación detallada: {{ dotacionLarga(c) }}
+          </p>
           <p
             class="descripcion-completa participantes-anteriores"
             *ngIf="!participantesLoading[c.id]"

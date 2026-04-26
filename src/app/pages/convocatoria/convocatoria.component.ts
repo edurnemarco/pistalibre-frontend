@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-convocatoria',
@@ -11,7 +12,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
   styleUrl: './convocatoria.component.scss',
 })
 export class ConvocatoriaComponent implements OnInit {
-  private apiUrl = 'http://127.0.0.1:8000/api';
+  private apiUrl = environment.apiUrl;
 
   convocatoria: any = null;
   loading = true;

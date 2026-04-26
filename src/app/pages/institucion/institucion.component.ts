@@ -66,7 +66,7 @@ export class InstitucionComponent implements OnInit {
     'medio ambiente',
     'ruralidades',
     'comunidades',
-    'sexualidad',
+    'sexualidades',
     'teorías queer',
     'amistad',
     'tecnología',
@@ -103,12 +103,20 @@ export class InstitucionComponent implements OnInit {
 
   tiposAbiertos = false;
 
+  imagenesConvocatoria: string[] = [];
+  subiendoImagenConvocatoria = false;
+  maxImagenesConvocatoria = 5;
+
   get convocatoriasPublicadas(): number {
     return this.convocatorias.filter((c) => c.estado === 'publicada').length;
   }
 
   get convocatoriasPendientes(): number {
     return this.convocatorias.filter((c) => c.estado === 'pendiente').length;
+  }
+
+  get imagenesConvocatoriaSlots(): number[] {
+    return Array.from({ length: this.maxImagenesConvocatoria }, (_, i) => i);
   }
 
   get convocatoriasActivas(): number {
@@ -174,6 +182,8 @@ export class InstitucionComponent implements OnInit {
     this.route.queryParams.subscribe((params) => {
       if (params['tab']) {
         this.tabActiva = params['tab'];
+      } else {
+        this.tabActiva = 'convocatorias';
       }
     });
   }
@@ -182,6 +192,7 @@ export class InstitucionComponent implements OnInit {
     this.tabActiva = tab;
     this.convocatoriaEditando = null;
     this.mensajeExito = '';
+    this.imagenesConvocatoria = [];
   }
 
   toggleEditar() {
@@ -251,6 +262,7 @@ export class InstitucionComponent implements OnInit {
     });
     this.disciplinasSeleccionadas = conv.disciplinas || [];
     this.lineaSeleccionada = conv.linea_curatorial || [];
+    this.imagenesConvocatoria = conv.imagenes || [];
   }
   guardarConvocatoria() {
     const data = {
@@ -260,6 +272,7 @@ export class InstitucionComponent implements OnInit {
       disciplinas: this.disciplinasSeleccionadas,
       linea_curatorial: this.lineaSeleccionada,
       pais: this.formConvocatoria.value.pais || this.institucion.pais || 'ES',
+      imagenes: this.imagenesConvocatoria.filter((i) => i),
     };
     if (this.convocatoriaEditando) {
       this.convocatoriasService
@@ -371,5 +384,26 @@ export class InstitucionComponent implements OnInit {
       this.lineaSeleccionada = [...this.lineaSeleccionada, l];
     }
     input.value = '';
+  }
+
+  subirImagenConvocatoria(index: number) {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.onchange = (e: any) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      this.subiendoImagenConvocatoria = true;
+      this.cloudinaryService.uploadImage(file).subscribe({
+        next: (url) => {
+          this.imagenesConvocatoria[index] = url;
+          this.subiendoImagenConvocatoria = false;
+        },
+        error: () => {
+          this.subiendoImagenConvocatoria = false;
+        },
+      });
+    };
+    input.click();
   }
 }

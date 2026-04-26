@@ -85,7 +85,7 @@
 
 .dato-grupo {
   border-bottom: 1px solid $color-borde;
-  padding-bottom: 5px;
+  padding-bottom: 10px;
 
   .dato-label {
     font-size: 11px;
@@ -95,7 +95,7 @@
   }
 
   p {
-    font-size: 13px;
+    font-size: 12px;
   }
 }
 
@@ -138,7 +138,8 @@
 }
 
 .participantes-anteriores {
-  color: $color-texto-secundario;
+  color: $color-texto;
+  font-size: 12px;
 }
 
 .participante-link {

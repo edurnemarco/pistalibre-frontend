@@ -23,6 +23,7 @@ import {
 } from '../../store/convocatorias/convocatorias.state';
 
 import { take } from 'rxjs/operators';
+import { ScrollRevealDirective } from '../../directives/scroll-reveal.directive';
 import {
   ConvocatoriasService,
   ParticipantePublico,
@@ -41,7 +42,13 @@ import {
 @Component({
   selector: 'app-oportunidades',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink, FormsModule],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    RouterLink,
+    FormsModule,
+    ScrollRevealDirective,
+  ],
   templateUrl: './oportunidades.component.html',
   styleUrl: './oportunidades.component.scss',
 })
@@ -74,10 +81,11 @@ export class OportunidadesComponent implements OnInit {
     'diseño',
     'escritura',
     'multidisciplinar',
+    'arquitectura',
   ].sort((a, b) => a.localeCompare(b, 'es'));
 
-  tiposOpciones = ['convocatoria', 'residencia', 'beca', 'concurso'];
-  estadosOpciones = ['abierta', 'próximamente', 'cerrada'];
+  tiposOpciones = ['ayuda', 'beca', 'concurso', 'premio', 'residencia'];
+  estadosOpciones = ['abierta', 'cerrada'];
   convocatoriasExpandidas = new Set<string>();
   aniosOpciones$: Observable<string[]>;
   mesesOpciones$: Observable<{ valor: string; label: string }[]>;
@@ -86,6 +94,9 @@ export class OportunidadesComponent implements OnInit {
   participantesMap: Record<string, ParticipantePublico[]> = {};
   participantesLoading: Record<string, boolean> = {};
   userTipo$: Observable<string | undefined>;
+  mesAbierto = false;
+  anioAbierto = false;
+  paginaVersion = 0;
   constructor(
     private store: Store,
     private convocatoriasService: ConvocatoriasService,
@@ -117,6 +128,7 @@ export class OportunidadesComponent implements OnInit {
     this.paginas$ = this.totalPaginas$.pipe(
       map((total) => Array.from({ length: total }, (_, i) => i + 1)),
     );
+
     this.mesesOpciones$ = this.store.select(selectTodasConvocatorias).pipe(
       map((convocatorias) => {
         const mesesNombres = [
@@ -220,10 +232,12 @@ export class OportunidadesComponent implements OnInit {
     this.store.dispatch(limpiarFiltros());
     this.paginaActual$.next(1);
   }
-
   irAPagina(pagina: number) {
+    this.paginaVersion++;
     this.paginaActual$.next(pagina);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    }, 50);
   }
 
   toggleExpansion(id: string) {
@@ -293,6 +307,10 @@ export class OportunidadesComponent implements OnInit {
     });
   }
 
+  trackByConvocatoria(index: number, c: Convocatoria): string {
+    return c.id + '_' + this.paginaVersion;
+  }
+
   getParticipantes(id: string): ParticipantePublico[] {
     return this.participantesMap[id] || [];
   }
@@ -307,5 +325,19 @@ export class OportunidadesComponent implements OnInit {
       anio: p.año,
       usuarioId: p.usuario?.id || null,
     }));
+  }
+
+  dotacionCorta(conv: any): string | null {
+    const detalle = conv.beneficios?.dotacion_detalle;
+    if (!detalle) return null;
+    if (detalle.length <= 300) return detalle;
+    return null;
+  }
+
+  dotacionLarga(conv: any): string | null {
+    const detalle = conv.beneficios?.dotacion_detalle;
+    if (!detalle) return null;
+    if (detalle.length > 300) return detalle;
+    return null;
   }
 }

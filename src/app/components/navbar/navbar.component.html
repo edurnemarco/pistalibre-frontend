@@ -3,7 +3,7 @@
   <div class="nav-mobile">
     <div class="nav-top">
       <a
-        routerLink="/oportunidades"
+        routerLink="/convocatorias"
         class="nav-logo"
         aria-label="Pistalibre - ir a inicio"
         >pistalibre</a
@@ -14,38 +14,39 @@
         </button>
       </ng-container>
       <ng-template #guestTopMobile>
-        <a routerLink="/login">iniciar sesión</a>
+        <a routerLink="/login" routerLinkActive="active">iniciar sesión</a>
       </ng-template>
     </div>
     <div class="nav-bottom">
-      <a routerLink="/oportunidades">oportunidades</a>
+      <a routerLink="/convocatorias" routerLinkActive="active">convocatorias</a>
       <ng-container *ngIf="isAuthenticated$ | async">
-        <a
-          [routerLink]="
-            (userTipo$ | async) === 'institucion'
-              ? '/institucion-dashboard'
-              : (userTipo$ | async) === 'admin'
-                ? '/admin'
-                : '/perfil'
-          "
-        >
-          mi perfil<span
-            *ngIf="
-              (userTipo$ | async) === 'artista' &&
-              (tieneFavoritosUrgentes$ | async)
-            "
-            class="notif-asterisco"
-            aria-label="tienes convocatorias urgentes"
+        <ng-container *ngIf="userTipo$ | async as tipo">
+          <a
+            *ngIf="tipo !== 'institucion'"
+            routerLinkActive="active"
+            [routerLink]="tipo === 'admin' ? '/admin' : '/perfil'"
           >
-            &nbsp;*
-          </span>
-        </a>
-        <a
-          *ngIf="(userTipo$ | async) === 'institucion'"
-          routerLink="/institucion-dashboard"
-          [queryParams]="tabNueva"
-          >publicar</a
-        >
+            mi perfil<span
+              *ngIf="tipo === 'artista' && (tieneFavoritosUrgentes$ | async)"
+              class="notif-asterisco"
+              aria-label="tienes convocatorias urgentes"
+              >&nbsp;*</span
+            >
+          </a>
+          <ng-container *ngIf="tipo === 'institucion'">
+            <a
+              routerLink="/institucion-dashboard"
+              [class.active]="isPerfilInstitucionActivo"
+              >mi perfil</a
+            >
+            <a
+              routerLink="/institucion-dashboard"
+              [queryParams]="tabNueva"
+              [class.active]="isPublicarActivo"
+              >publicar</a
+            >
+          </ng-container>
+        </ng-container>
       </ng-container>
       <ng-container *ngIf="!(isAuthenticated$ | async)">
         <a routerLink="/login">publicar</a>
@@ -56,39 +57,40 @@
   <!-- DESKTOP -->
   <div class="nav-desktop">
     <a
-      routerLink="/oportunidades"
+      routerLink="/convocatorias"
       class="nav-logo"
       aria-label="Pistalibre - ir a inicio"
       >pistalibre</a
     >
     <div class="nav-links">
-      <a routerLink="/oportunidades">oportunidades</a>
+      <a routerLink="/convocatorias" routerLinkActive="active">convocatorias</a>
       <ng-container *ngIf="isAuthenticated$ | async; else guestDesktop">
         <ng-container *ngIf="userTipo$ | async as tipo">
           <a
-            [routerLink]="
-              tipo === 'institucion'
-                ? '/institucion-dashboard'
-                : tipo === 'admin'
-                  ? '/admin'
-                  : '/perfil'
-            "
+            *ngIf="tipo !== 'institucion'"
+            routerLinkActive="active"
+            [routerLink]="tipo === 'admin' ? '/admin' : '/perfil'"
           >
             mi perfil<span
               *ngIf="tipo === 'artista' && (tieneFavoritosUrgentes$ | async)"
               class="notif-asterisco"
               aria-label="tienes convocatorias urgentes"
+              >&nbsp;*</span
             >
-              &nbsp;*
-            </span>
           </a>
-          <a
-            *ngIf="tipo === 'institucion'"
-            routerLink="/institucion-dashboard"
-            [queryParams]="tabNueva"
-            .
-            >publicar</a
-          >
+          <ng-container *ngIf="tipo === 'institucion'">
+            <a
+              routerLink="/institucion-dashboard"
+              [class.active]="isPerfilInstitucionActivo"
+              >mi perfil</a
+            >
+            <a
+              routerLink="/institucion-dashboard"
+              [queryParams]="tabNueva"
+              [class.active]="isPublicarActivo"
+              >publicar</a
+            >
+          </ng-container>
           <button (click)="onLogout()" aria-label="cerrar sesión">
             cerrar sesión
           </button>
@@ -96,7 +98,7 @@
       </ng-container>
       <ng-template #guestDesktop>
         <a routerLink="/login">publicar</a>
-        <a routerLink="/login">iniciar sesión</a>
+        <a routerLink="/login" routerLinkActive="active">iniciar sesión</a>
       </ng-template>
     </div>
   </div>

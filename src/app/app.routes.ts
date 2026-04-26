@@ -12,8 +12,8 @@ import { PerfilComponent } from './pages/perfil/perfil.component';
 import { RegisterComponent } from './pages/register/register.component';
 
 export const routes: Routes = [
-  { path: '', redirectTo: 'oportunidades', pathMatch: 'full' },
-  { path: 'oportunidades', component: OportunidadesComponent },
+  { path: '', redirectTo: 'convocatorias', pathMatch: 'full' },
+  { path: 'convocatorias', component: OportunidadesComponent },
   { path: 'login', component: LoginComponent, canActivate: [guestGuard] },
   { path: 'register', component: RegisterComponent, canActivate: [guestGuard] },
   { path: 'perfil', component: PerfilComponent, canActivate: [authGuard] },
@@ -26,5 +26,5 @@ export const routes: Routes = [
   { path: 'instituciones/:id', component: InstitucionPublicoComponent },
   { path: 'convocatorias/:id', component: ConvocatoriaComponent },
   { path: 'admin', component: AdminComponent, canActivate: [authGuard] },
-  { path: '**', redirectTo: 'oportunidades' },
+  { path: '**', redirectTo: 'convocatorias' },
 ];

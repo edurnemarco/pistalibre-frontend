@@ -47,10 +47,17 @@ button {
 
 .web-link {
   text-decoration: underline;
+  font-size: 13px;
 
   &:hover {
     text-decoration: none;
   }
+}
+
+.icon-external {
+  display: inline-block;
+  vertical-align: middle;
+  margin-left: 4px;
 }
 
 input,
@@ -108,6 +115,35 @@ span.field-error {
   &:hover {
     text-decoration: underline;
   }
+}
+
+.scroll-hidden {
+  opacity: 0;
+  transform: translateY(32px);
+  transition:
+    opacity 0.5s ease,
+    transform 0.5s ease;
+}
+
+.scroll-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-up {
+  animation: slideUp 0.4s ease forwards;
+  animation-fill-mode: both;
 }
 
 // Navegación por teclado

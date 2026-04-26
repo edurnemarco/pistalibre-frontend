@@ -9,6 +9,7 @@ import {
 } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { Store } from '@ngrx/store';
+import { environment } from '../../../environments/environment';
 @Component({
   selector: 'app-admin',
   standalone: true,
@@ -17,7 +18,7 @@ import { Store } from '@ngrx/store';
   styleUrl: './admin.component.scss',
 })
 export class AdminComponent implements OnInit {
-  private apiUrl = 'http://127.0.0.1:8000/api';
+  private apiUrl = environment.apiUrl;
 
   tabActiva: 'pendientes' | 'nueva' | 'usuarios' = 'pendientes';
 

@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-
+import { environment } from '../../../environments/environment';
 @Component({
   selector: 'app-perfil-publico',
   standalone: true,
@@ -11,7 +11,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
   styleUrl: './perfil-publico.component.scss',
 })
 export class PerfilPublicoComponent implements OnInit {
-  private apiUrl = 'http://127.0.0.1:8000/api';
+  private apiUrl = environment.apiUrl;
 
   usuario: any = null;
   participaciones: any[] = [];
@@ -21,6 +21,8 @@ export class PerfilPublicoComponent implements OnInit {
   participacionesExpandidas = new Set<string>();
   imagenExpandida: string | null = null;
   imagenHover: string | null = null;
+
+  institucionesMap: Record<string, string> = {};
 
   constructor(
     private route: ActivatedRoute,
@@ -34,6 +36,14 @@ export class PerfilPublicoComponent implements OnInit {
       this.loading = false;
       return;
     }
+
+    this.http.get<any[]>(`${this.apiUrl}/instituciones`).subscribe({
+      next: (instituciones) => {
+        instituciones.forEach((inst) => {
+          this.institucionesMap[inst.nombre.toLowerCase()] = inst.id;
+        });
+      },
+    });
 
     this.http.get<any>(`${this.apiUrl}/usuarios/${id}`).subscribe({
       next: (user) => {
@@ -72,5 +82,9 @@ export class PerfilPublicoComponent implements OnInit {
       month: 'short',
       year: 'numeric',
     });
+  }
+
+  getInstitucionId(nombre: string): string | null {
+    return this.institucionesMap[nombre?.toLowerCase()] || null;
   }
 }

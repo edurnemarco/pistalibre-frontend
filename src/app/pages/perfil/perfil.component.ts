@@ -10,6 +10,7 @@ import { RouterLink } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { filter, map, take } from 'rxjs/operators';
+import { environment } from '../../../environments/environment';
 import { CloudinaryService } from '../../services/cloudinary.service';
 import { PerfilService } from '../../services/perfil.service';
 import {
@@ -136,6 +137,9 @@ export class PerfilComponent implements OnInit {
   imagenExpandida: string | null = null;
   maxImagenes = 5;
 
+  institucionesFiltradas: any[] = [];
+  mostrarSugerenciasInstitucion = false;
+  institucionSeleccionadaId: string | null = null;
   constructor(
     private store: Store,
     private fb: FormBuilder,
@@ -622,6 +626,35 @@ export class PerfilComponent implements OnInit {
   get imagenesSlots(): number[] {
     return Array.from({ length: this.maxImagenes }, (_, i) => i);
   }
+
+  buscarInstitucion(event: Event) {
+    this.institucionSeleccionadaId = null;
+    const texto = (event.target as HTMLInputElement).value;
+    if (!texto || texto.length < 2) {
+      this.mostrarSugerenciasInstitucion = false;
+      return;
+    }
+
+    this.token$.pipe(take(1)).subscribe((token) => {
+      if (!token) return;
+      fetch(`${environment.apiUrl}/instituciones?search=${texto}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+        .then((r) => r.json())
+        .then((data) => {
+          this.institucionesFiltradas = data.slice(0, 5);
+          this.mostrarSugerenciasInstitucion =
+            this.institucionesFiltradas.length > 0;
+        });
+    });
+  }
+
+  seleccionarInstitucion(inst: any) {
+    this.institucionSeleccionadaId = inst.id;
+    this.formParticipacion.patchValue({ institucion_nombre: inst.nombre });
+    this.mostrarSugerenciasInstitucion = false;
+  }
+
   // trackBy
   trackByAlerta(index: number, grupo: any): string {
     return grupo.convocatoriaId;

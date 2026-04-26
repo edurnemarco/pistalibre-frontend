@@ -27,10 +27,14 @@
   <hr class="perfil-hr" />
 
   <div class="conv-body">
-    <!-- COLUMNA IZQUIERDA: fechas y datos rápidos -->
+    <!-- COLUMNA IZQUIERDA -->
     <aside class="conv-aside">
+      <div class="dato-grupo" *ngIf="convocatoria.fecha_inicio">
+        <p class="dato-label">FECHA INICIO</p>
+        <p>{{ formatFecha(convocatoria.fecha_inicio) }}</p>
+      </div>
       <div class="dato-grupo">
-        <p class="dato-label">FECHA LÍMITE</p>
+        <p class="dato-label">ABIERTA HASTA</p>
         <p>{{ formatFecha(convocatoria.fecha_limite) }}</p>
         <p
           class="dias-restantes"
@@ -47,10 +51,7 @@
           }}
         </p>
       </div>
-      <div class="dato-grupo" *ngIf="convocatoria.fecha_inicio">
-        <p class="dato-label">FECHA INICIO</p>
-        <p>{{ formatFecha(convocatoria.fecha_inicio) }}</p>
-      </div>
+
       <div
         class="dato-grupo"
         *ngIf="convocatoria.ciudad || convocatoria.region"
@@ -81,11 +82,37 @@
         rel="noopener noreferrer"
         class="web-link"
       >
-        web oficial ↗
+        web oficial
+        <svg
+          class="icon-external"
+          width="12"
+          height="12"
+          viewBox="0 0 20 20"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <line
+            x1="6"
+            y1="14"
+            x2="16"
+            y2="4"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linecap="square"
+          />
+          <polyline
+            points="9,4 16,4 16,11"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linecap="square"
+            stroke-linejoin="miter"
+          />
+        </svg>
       </a>
     </aside>
 
-    <!-- COLUMNA DERECHA: descripción y participantes -->
+    <!-- COLUMNA DERECHA -->
     <main class="conv-contenido">
       <div class="dato-grupo" *ngIf="convocatoria.descripcion">
         <p class="dato-label">DESCRIPCIÓN</p>
@@ -94,6 +121,32 @@
       <div class="dato-grupo" *ngIf="convocatoria.requisitos">
         <p class="dato-label">REQUISITOS</p>
         <p class="conv-descripcion">{{ convocatoria.requisitos }}</p>
+      </div>
+      <div class="dato-grupo" *ngIf="convocatoria.beneficios">
+        <p class="dato-label">LO QUE OFRECE</p>
+        <p class="conv-descripcion">
+          <ng-container *ngIf="convocatoria.dotacion"
+            >Dotación: {{ convocatoria.dotacion }}€.
+          </ng-container>
+          <ng-container *ngIf="convocatoria.beneficios?.dotacion_detalle"
+            >{{ convocatoria.beneficios.dotacion_detalle }}<br />
+          </ng-container>
+          <ng-container *ngIf="convocatoria.beneficios?.estudio"
+            >Estudio: {{ convocatoria.beneficios.estudio }}<br />
+          </ng-container>
+          <ng-container *ngIf="convocatoria.beneficios?.alojamiento"
+            >Alojamiento: {{ convocatoria.beneficios.alojamiento }}<br />
+          </ng-container>
+          <ng-container *ngIf="convocatoria.beneficios?.manutencion"
+            >Manutención: {{ convocatoria.beneficios.manutencion }}<br />
+          </ng-container>
+          <ng-container *ngIf="convocatoria.beneficios?.produccion"
+            >Producción: {{ convocatoria.beneficios.produccion }}<br />
+          </ng-container>
+          <ng-container *ngIf="convocatoria.beneficios?.otros"
+            >{{ convocatoria.beneficios.otros }}
+          </ng-container>
+        </p>
       </div>
 
       <!-- PARTICIPANTES -->

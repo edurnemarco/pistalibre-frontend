@@ -5,6 +5,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { take } from 'rxjs/operators';
+import { environment } from '../../../environments/environment';
 import {
   cargarAlertas,
   createAlerta,
@@ -36,7 +37,7 @@ import {
   styleUrl: './institucion-publico.component.scss',
 })
 export class InstitucionPublicoComponent implements OnInit {
-  private apiUrl = 'http://127.0.0.1:8000/api';
+  private apiUrl = environment.apiUrl;
 
   institucion: any = null;
   loading = true;

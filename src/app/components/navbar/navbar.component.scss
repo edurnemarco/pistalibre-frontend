@@ -91,6 +91,10 @@ span.notif-asterisco {
       text-decoration: underline;
     }
 
+    &.active {
+      text-decoration: underline;
+    }
+
     @media (min-width: 768px) {
       font-size: 14px;
     }
