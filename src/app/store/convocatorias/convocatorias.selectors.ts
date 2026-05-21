@@ -41,10 +41,10 @@ export const selectConvocatoriasFiltradas = createSelector(
       }
 
       if (filtros.ciudad) {
-        if (
-          !c.ciudad.toLowerCase().includes(filtros.ciudad.toLowerCase()) &&
-          !c.region.toLowerCase().includes(filtros.ciudad.toLowerCase())
-        )
+        const ciudad = c.ciudad?.toLowerCase() || '';
+        const region = c.region?.toLowerCase() || '';
+        const busqueda = filtros.ciudad.toLowerCase();
+        if (!ciudad.includes(busqueda) && !region.includes(busqueda))
           return false;
       }
 

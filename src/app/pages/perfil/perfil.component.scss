@@ -382,28 +382,28 @@ h2 {
 
 .favorito-fecha {
   .dato-label {
-    font-size: 11px;
+    font-size: 12px;
     color: $color-texto-secundario;
     margin-bottom: 4px;
   }
 
   p {
-    font-size: 13px;
-  }
-}
-
-.dias-restantes {
-  font-size: 12px;
-  color: $color-texto-secundario;
-  margin-top: 4px;
-
-  &.urgente {
-    color: $color-aviso;
+    font-size: 12px;
   }
 
-  &.cerrada {
+  .dias-restantes {
+    font-size: 12px;
     color: $color-texto-secundario;
-    font-style: italic;
+    margin-top: 4px;
+
+    &.urgente {
+      color: $color-aviso;
+    }
+
+    &.cerrada {
+      color: $color-texto-secundario;
+      font-style: italic;
+    }
   }
 }
 
@@ -416,13 +416,13 @@ h2 {
 
   .tipo {
     font-size: 12px;
-    color: $color-texto-secundario;
+    color: $color-texto;
     margin-bottom: 4px;
   }
 
   .lugar {
     font-size: 12px;
-    color: $color-texto-secundario;
+    color: $color-texto;
   }
 }
 
@@ -444,11 +444,26 @@ h2 {
 .btn-alerta {
   font-family: $fuente-mono;
   font-size: 12px;
-  color: $color-texto;
-  background: $color-acento;
-  border: none;
+  background: none;
+  border: 1px solid $color-texto;
+  padding: 6px 12px;
   cursor: pointer;
-  padding: 4px 8px;
+  color: $color-texto;
+
+  &:hover {
+    background: $color-acento;
+  }
+
+  &--activa {
+    background: $color-acento;
+    border: none;
+    padding: 7px 13px;
+
+    &:hover {
+      border: 1px solid $color-texto;
+      padding: 6px 12px;
+    }
+  }
 }
 
 .btn-eliminar {
@@ -466,12 +481,52 @@ h2 {
   }
 }
 
-.favoritos-lista,
-.alertas-lista {
-  .favorito-item:first-child,
-  .alerta-item:first-child {
+.favoritos-lista {
+  .favorito-item:first-child {
     padding-top: 0;
   }
+}
+
+.dias-restantes-bloque {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.dias-numero {
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1;
+  color: $color-texto;
+
+  &.urgente {
+    color: $color-aviso;
+  }
+}
+
+.dias-label {
+  font-size: 11px;
+  color: $color-texto-secundario;
+}
+
+.favorito-cerrada {
+  font-size: 12px;
+  color: $color-texto-secundario;
+  margin-top: 8px;
+}
+
+.favorito-tipo,
+.favorito-lugar {
+  font-size: 12px;
+  color: $color-texto;
+}
+
+.favorito-fecha-texto {
+  font-size: 12px;
+  color: $color-texto;
+  line-height: 2;
 }
 
 // Modal
@@ -563,83 +618,6 @@ h2 {
   text-decoration: underline;
   padding: 0;
   text-align: center;
-}
-
-// Alertas
-.alerta-item {
-  display: grid;
-  grid-template-columns: 1fr auto auto;
-  gap: 16px;
-  padding: 16px 0;
-  border-bottom: 1px solid $color-borde;
-  align-items: start;
-
-  &:last-child {
-    border-bottom: none;
-  }
-
-  &.urgente {
-    .dias-numero {
-      color: $color-aviso;
-    }
-  }
-}
-
-.alerta-info {
-  h3 {
-    font-size: 13px;
-    font-weight: 500;
-    margin-bottom: 4px;
-  }
-
-  .alerta-ciudad,
-  .alerta-fecha,
-  .alerta-avisos {
-    font-size: 12px;
-    color: $color-texto-secundario;
-    margin-top: 2px;
-  }
-}
-
-.alerta-dias {
-  text-align: center;
-  min-width: 48px;
-
-  .dias-numero {
-    font-size: 16px;
-    font-weight: 500;
-  }
-
-  .dias-label {
-    font-size: 11px;
-    color: $color-texto-secundario;
-  }
-}
-
-.alerta-acciones {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  align-items: flex-end;
-  height: 100%;
-  justify-content: space-between;
-}
-
-.btn-editar-alerta {
-  font-family: $fuente-mono;
-  font-size: 12px;
-  color: $color-texto;
-  background: none;
-  border: none;
-  cursor: pointer;
-  text-decoration: underline;
-  padding: 0;
-}
-.alerta-actualizando {
-  font-size: 12px;
-  color: $color-texto-secundario;
-  padding: 16px 0;
-  font-style: italic;
 }
 
 // Participaciones

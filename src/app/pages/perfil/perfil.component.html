@@ -61,33 +61,25 @@
         <button
           [class.activa]="tabActiva === 'perfil'"
           (click)="setTab('perfil')"
-          [attr.aria-selected]="tabActiva === 'perfil'"
+          [attr.aria-pressed]="tabActiva === 'perfil'"
         >
           mi perfil
         </button>
         <button
           [class.activa]="tabActiva === 'favoritos'"
           (click)="setTab('favoritos')"
-          [attr.aria-selected]="tabActiva === 'favoritos'"
+          [attr.aria-pressed]="tabActiva === 'favoritos'"
         >
           guardadas<span
             *ngIf="tieneFavoritosUrgentes$ | async"
             aria-label="tienes convocatorias urgentes"
+            >&nbsp;*</span
           >
-            &nbsp;*</span
-          >
-        </button>
-        <button
-          [class.activa]="tabActiva === 'alertas'"
-          (click)="setTab('alertas')"
-          [attr.aria-selected]="tabActiva === 'alertas'"
-        >
-          alertas
         </button>
         <button
           [class.activa]="tabActiva === 'participaciones'"
           (click)="setTab('participaciones')"
-          [attr.aria-selected]="tabActiva === 'participaciones'"
+          [attr.aria-pressed]="tabActiva === 'participaciones'"
         >
           participaciones
         </button>
@@ -317,22 +309,28 @@
             >
               <div class="favorito-fecha">
                 <p class="dato-label">ABIERTA HASTA</p>
-                <p>{{ formatFecha(f.convocatoria.fecha_limite) }}</p>
-                <p
-                  class="dias-restantes"
-                  [class.urgente]="
-                    diasRestantes(f.convocatoria.fecha_limite) <= 7 &&
-                    diasRestantes(f.convocatoria.fecha_limite) >= 0
-                  "
-                  [class.cerrada]="
-                    diasRestantes(f.convocatoria.fecha_limite) < 0
-                  "
+                <p class="favorito-fecha-texto">
+                  {{ formatFecha(f.convocatoria.fecha_limite) }}
+                </p>
+                <div
+                  class="dias-restantes-bloque"
+                  *ngIf="diasRestantes(f.convocatoria.fecha_limite) >= 0"
                 >
-                  {{
-                    diasRestantes(f.convocatoria.fecha_limite) >= 0
-                      ? diasRestantes(f.convocatoria.fecha_limite) + " días"
-                      : "cerrada"
-                  }}
+                  <span
+                    class="dias-numero"
+                    [class.urgente]="
+                      diasRestantes(f.convocatoria.fecha_limite) <= 7
+                    "
+                  >
+                    {{ diasRestantes(f.convocatoria.fecha_limite) }}
+                  </span>
+                  <p class="dias-label">días</p>
+                </div>
+                <p
+                  class="favorito-cerrada"
+                  *ngIf="diasRestantes(f.convocatoria.fecha_limite) < 0"
+                >
+                  cerrada
                 </p>
               </div>
 
@@ -341,11 +339,12 @@
                   <a
                     [routerLink]="['/convocatorias', f.convocatoria_id]"
                     class="conv-titulo-link"
-                    >{{ f.convocatoria.titulo }}</a
                   >
+                    {{ f.convocatoria.titulo }}
+                  </a>
                 </h3>
-                <p class="tipo">{{ f.convocatoria.tipo }}</p>
-                <p class="lugar">
+                <p class="favorito-tipo">{{ f.convocatoria.tipo }}</p>
+                <p class="favorito-lugar">
                   {{ f.convocatoria.ciudad }}, {{ f.convocatoria.region }}
                 </p>
               </div>
@@ -354,6 +353,9 @@
                 <button
                   *ngIf="diasRestantes(f.convocatoria.fecha_limite) >= 0"
                   class="btn-alerta"
+                  [class.btn-alerta--activa]="
+                    hasAlerta(f.convocatoria_id) | async
+                  "
                   (click)="activarAlerta(f)"
                   aria-label="gestionar alerta"
                 >
@@ -377,70 +379,6 @@
             </article>
           </div>
         </div>
-      </div>
-
-      <!-- TAB: ALERTAS -->
-      <div *ngIf="tabActiva === 'alertas'">
-        <div
-          *ngIf="(alertas$ | async)?.length === 0 && !procesandoAlertas"
-          class="empty"
-        >
-          no tienes alertas activas
-        </div>
-
-        <div class="alertas-lista" *ngIf="!procesandoAlertas">
-          <article
-            *ngFor="
-              let grupo of alertasPorConvocatoria$ | async;
-              trackBy: trackByAlerta
-            "
-            class="alerta-item"
-            [class.urgente]="diasRestantes(grupo.fechaLimite) <= 7"
-          >
-            <div class="alerta-info">
-              <h3>
-                <a
-                  [routerLink]="['/convocatorias', grupo.convocatoriaId]"
-                  class="conv-titulo-link"
-                  >{{ grupo.titulo }}</a
-                >
-              </h3>
-              <p class="alerta-ciudad">
-                {{ grupo.ciudad }}, {{ grupo.region }}
-              </p>
-              <p class="alerta-fecha">
-                cierra {{ formatFecha(grupo.fechaLimite) }}
-              </p>
-              <p class="alerta-avisos">
-                avisos: {{ ordenarDias(grupo.diasAntes).join(", ") }} días antes
-              </p>
-            </div>
-
-            <div class="alerta-dias">
-              <p class="dias-numero">{{ diasRestantes(grupo.fechaLimite) }}</p>
-              <p class="dias-label">días</p>
-            </div>
-
-            <div class="alerta-acciones">
-              <button
-                class="btn-alerta"
-                (click)="editarAlertaGrupo(grupo)"
-                aria-label="editar alertas"
-              >
-                editar
-              </button>
-              <button
-                class="btn-eliminar"
-                (click)="abrirConfirmacion('alerta', grupo.convocatoriaId)"
-                aria-label="eliminar alertas"
-              >
-                eliminar
-              </button>
-            </div>
-          </article>
-        </div>
-
-        <div *ngIf="procesandoAlertas" class="empty">actualizando...</div>
       </div>
 
       <!-- TAB: PARTICIPACIONES -->
@@ -849,8 +787,13 @@
     (click)="cerrarModal()"
     role="dialog"
     aria-modal="true"
+    aria-labelledby="modal-alerta-titulo"
   >
-    <div class="modal" (click)="$event.stopPropagation()">
+    <div
+      class="modal"
+      (click)="$event.stopPropagation()"
+      (keydown)="onModalKeydown($event)"
+    >
       <h3>{{ alertaExistente ? "editar alertas" : "activar alertas" }}</h3>
       <p *ngIf="favoritoSeleccionado">
         {{ favoritoSeleccionado.convocatoria.titulo }}
@@ -858,7 +801,10 @@
       <p class="modal-subtitulo">selecciona cuándo quieres recibir avisos</p>
 
       <div class="dias-opciones">
-        <label *ngFor="let dias of opcionesAlerta" class="dias-check">
+        <label
+          *ngFor="let dias of opcionesAlertaFiltradas()"
+          class="dias-check"
+        >
           <input
             type="checkbox"
             [checked]="diasSeleccionados.includes(dias)"
@@ -873,12 +819,14 @@
       </div>
 
       <div class="modal-acciones">
-        <button
-          class="btn-primary"
-          (click)="confirmarAlerta()"
-          [disabled]="diasSeleccionados.length === 0"
-        >
-          {{ alertaExistente ? "actualizar alertas" : "activar alertas" }}
+        <button class="btn-primary" (click)="confirmarAlerta()">
+          {{
+            diasSeleccionados.length === 0
+              ? "desactivar alerta"
+              : alertaExistente
+                ? "actualizar alertas"
+                : "activar alertas"
+          }}
         </button>
         <button class="btn-cancelar" (click)="cerrarModal()">cancelar</button>
       </div>
@@ -890,8 +838,13 @@
     (click)="cerrarConfirmacion()"
     role="dialog"
     aria-modal="true"
+    aria-labelledby="modal-confirmacion-titulo"
   >
-    <div class="modal" (click)="$event.stopPropagation()">
+    <div
+      class="modal"
+      (click)="$event.stopPropagation()"
+      (keydown)="onModalKeydown($event)"
+    >
       <h3>¿estás segura?</h3>
       <p *ngIf="modalConfirmacion === 'favorito'">
         Se eliminará esta convocatoria de tus favoritos.

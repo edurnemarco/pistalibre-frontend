@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { AfterViewChecked, Component, OnInit } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
@@ -48,7 +48,6 @@ import {
   selectParticipacionesLoading,
 } from '../../store/participaciones/participaciones.selectors';
 import { Participacion } from '../../store/participaciones/participaciones.state';
-
 @Component({
   selector: 'app-perfil',
   standalone: true,
@@ -56,13 +55,14 @@ import { Participacion } from '../../store/participaciones/participaciones.state
   templateUrl: './perfil.component.html',
   styleUrl: './perfil.component.scss',
 })
-export class PerfilComponent implements OnInit {
+export class PerfilComponent implements OnInit, AfterViewChecked {
+  private modalAbierto = false;
   // Observables del store
   user$: Observable<User | null>;
   token$: Observable<string | null>;
 
   // Estado de la UI
-  tabActiva: 'perfil' | 'favoritos' | 'alertas' | 'participaciones' = 'perfil';
+  tabActiva: 'perfil' | 'favoritos' | 'participaciones' = 'perfil';
   editando = false;
   guardando = false;
   mensajeExito = '';
@@ -140,6 +140,7 @@ export class PerfilComponent implements OnInit {
   institucionesFiltradas: any[] = [];
   mostrarSugerenciasInstitucion = false;
   institucionSeleccionadaId: string | null = null;
+  private elementoAntesDeLModal: HTMLElement | null = null;
   constructor(
     private store: Store,
     private fb: FormBuilder,
@@ -240,7 +241,7 @@ export class PerfilComponent implements OnInit {
   }
 
   // Tabs
-  setTab(tab: 'perfil' | 'favoritos' | 'alertas' | 'participaciones') {
+  setTab(tab: 'perfil' | 'favoritos' | 'participaciones') {
     this.tabActiva = tab;
   }
 
@@ -372,23 +373,26 @@ export class PerfilComponent implements OnInit {
 
   // Alertas
   activarAlerta(favorito: Favorito) {
+    this.elementoAntesDeLModal = document.activeElement as HTMLElement;
     this.favoritoSeleccionado = favorito;
     this.diasSeleccionados = [];
+    this.alertaExistente = false;
+
     this.store
       .select(selectAlertas)
       .pipe(take(1))
       .subscribe((alertas) => {
+        console.log('todas las alertas:', alertas);
+        console.log('buscando convocatoria_id:', favorito.convocatoria_id);
         const alertasConvocatoria = alertas.filter(
           (a) => a.convocatoria_id === favorito.convocatoria_id,
         );
         if (alertasConvocatoria.length > 0) {
           this.alertaExistente = true;
           this.diasSeleccionados = alertasConvocatoria.map((a) => a.dias_antes);
-        } else {
-          this.alertaExistente = false;
         }
+        this.modalAlertaAbierto = true; // ← mueve aquí
       });
-    this.modalAlertaAbierto = true;
   }
 
   cerrarModal() {
@@ -396,6 +400,10 @@ export class PerfilComponent implements OnInit {
     this.favoritoSeleccionado = null;
     this.diasSeleccionados = [];
     this.alertaExistente = false;
+    setTimeout(() => {
+      this.elementoAntesDeLModal?.focus();
+      this.elementoAntesDeLModal = null;
+    }, 50);
   }
 
   toggleDiasAlerta(dias: number) {
@@ -411,14 +419,20 @@ export class PerfilComponent implements OnInit {
   }
 
   confirmarAlerta() {
-    if (!this.favoritoSeleccionado || this.diasSeleccionados.length === 0)
-      return;
+    if (!this.favoritoSeleccionado) return;
 
     const convocatoriaId = this.favoritoSeleccionado.convocatoria_id;
     const diasACrear = [...this.diasSeleccionados];
 
     this.procesandoAlertas = true;
     this.store.dispatch(deleteAlertasByConvocatoria({ convocatoriaId }));
+
+    if (diasACrear.length === 0) {
+      // Si no hay días seleccionados, solo elimina y cierra
+      setTimeout(() => (this.procesandoAlertas = false), 500);
+      this.cerrarModal();
+      return;
+    }
 
     setTimeout(() => {
       diasACrear.forEach((dias, index) => {
@@ -427,15 +441,21 @@ export class PerfilComponent implements OnInit {
             createAlerta({ convocatoriaId, diasAntes: dias }),
           );
           if (index === diasACrear.length - 1) {
-            setTimeout(() => {
-              this.procesandoAlertas = false;
-            }, 300);
+            setTimeout(() => (this.procesandoAlertas = false), 300);
           }
         }, index * 300);
       });
     }, 500);
 
     this.cerrarModal();
+  }
+
+  opcionesAlertaFiltradas(): number[] {
+    if (!this.favoritoSeleccionado) return this.opcionesAlerta;
+    const diasRestantes = this.diasRestantes(
+      this.favoritoSeleccionado.convocatoria.fecha_limite,
+    );
+    return this.opcionesAlerta.filter((d) => d < diasRestantes);
   }
 
   hasAlerta(convocatoriaId: string): Observable<boolean> {
@@ -690,5 +710,46 @@ export class PerfilComponent implements OnInit {
       lugar: c.ciudad + (c.region ? ', ' + c.region : ''),
     });
     this.mostrarSugerencias = false;
+  }
+
+  // modal
+  ngAfterViewChecked() {
+    if (this.modalAlertaAbierto && !this.modalAbierto) {
+      this.modalAbierto = true;
+      setTimeout(() => {
+        const modal = document.querySelector('.modal') as HTMLElement;
+        if (modal) {
+          const focusable = modal.querySelector(
+            'button, input, [tabindex]',
+          ) as HTMLElement;
+          focusable?.focus();
+        }
+      }, 0);
+    }
+    if (!this.modalAlertaAbierto && !this.modalConfirmacion) {
+      this.modalAbierto = false;
+    }
+  }
+
+  onModalKeydown(event: KeyboardEvent) {
+    if (event.key !== 'Tab') return;
+    const modal = document.querySelector('.modal') as HTMLElement;
+    const focusables = Array.from(
+      modal.querySelectorAll('button, input, [tabindex]:not([tabindex="-1"])'),
+    ) as HTMLElement[];
+    const first = focusables[0];
+    const last = focusables[focusables.length - 1];
+
+    if (event.shiftKey) {
+      if (document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      }
+    } else {
+      if (document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    }
   }
 }
