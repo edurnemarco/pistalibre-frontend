@@ -30,14 +30,14 @@
   grid-area: nombre;
 
   p {
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 500;
     margin-bottom: 4px;
   }
 
   .conv-fecha-pub {
-    font-size: 11px;
-    color: $color-texto-secundario;
+    font-size: 12px;
+    color: $color-texto;
     font-weight: 400;
   }
 }
@@ -56,7 +56,7 @@
   padding-top: 8px;
 
   .conv-fecha-pub {
-    font-size: 11px;
+    font-size: 12px;
     color: $color-texto;
     font-weight: 400;
     margin-bottom: 4px;
