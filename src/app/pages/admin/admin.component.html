@@ -55,46 +55,65 @@
                 {{ c.tipo }} · {{ c.ciudad
                 }}{{ c.region ? ", " + c.region : "" }}
               </p>
-              <a
-                *ngIf="c.url_original"
-                [href]="c.url_original"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="web-link"
-              >
-                web oficial
-                <svg
-                  class="icon-external"
-                  width="12"
-                  height="12"
-                  viewBox="0 0 20 20"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
+              <button class="btn-ver-mas" (click)="c._expanded = !c._expanded">
+                {{ c._expanded ? "- ver menos" : "+ ver más" }}
+              </button>
+              <div *ngIf="c._expanded" class="conv-detalle-admin">
+                <p class="conv-fecha-pub" *ngIf="c.fecha_limite">
+                  fecha límite: {{ formatFecha(c.fecha_limite) }}
+                </p>
+                <p class="conv-fecha-pub" *ngIf="c.dotacion">
+                  dotación: {{ c.dotacion }}€
+                </p>
+                <p class="conv-fecha-pub" *ngIf="c.disciplinas?.length">
+                  disciplinas: {{ c.disciplinas.join(", ") }}
+                </p>
+                <p class="conv-fecha-pub" *ngIf="c.descripcion">
+                  {{ c.descripcion }}
+                </p>
+                <a
+                  *ngIf="c.url_original"
+                  [href]="c.url_original"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="web-link"
                 >
-                  <line
-                    x1="6"
-                    y1="14"
-                    x2="16"
-                    y2="4"
-                    stroke="currentColor"
-                    stroke-width="1.5"
-                    stroke-linecap="square"
-                  />
-                  <polyline
-                    points="9,4 16,4 16,11"
+                  web oficial
+                  <svg
+                    class="icon-external"
+                    width="12"
+                    height="12"
+                    viewBox="0 0 20 20"
                     fill="none"
-                    stroke="currentColor"
-                    stroke-width="1.5"
-                    stroke-linecap="square"
-                    stroke-linejoin="miter"
-                  />
-                </svg>
-              </a>
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <line
+                      x1="6"
+                      y1="14"
+                      x2="16"
+                      y2="4"
+                      stroke="currentColor"
+                      stroke-width="1.5"
+                      stroke-linecap="square"
+                    />
+                    <polyline
+                      points="9,4 16,4 16,11"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.5"
+                      stroke-linecap="square"
+                      stroke-linejoin="miter"
+                    />
+                  </svg>
+                </a>
+              </div>
             </div>
             <div class="conv-acciones">
               <button class="btn-aprobar" (click)="aprobar(c.id)">
                 publicar
               </button>
+            </div>
+            <div class="conv-acciones-bottom">
               <button class="btn-eliminar-conv" (click)="rechazar(c.id)">
                 rechazar
               </button>
