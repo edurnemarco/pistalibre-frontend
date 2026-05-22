@@ -9,7 +9,10 @@
 .conv-item {
   display: grid;
   grid-template-columns: 1fr auto;
-  grid-template-rows: auto auto;
+  grid-template-areas:
+    "nombre acciones"
+    "detalle detalle"
+    "footer footer";
   gap: 8px 16px;
   padding: 16px 0;
   border-bottom: 1px solid $color-borde;
@@ -18,13 +21,14 @@
   &:first-child {
     padding-top: 0;
   }
-
   &:last-child {
     border-bottom: none;
   }
 }
 
 .conv-nombre {
+  grid-area: nombre;
+
   p {
     font-size: 13px;
     font-weight: 500;
@@ -37,17 +41,12 @@
     font-weight: 400;
   }
 
-  .inactivo {
-    color: $color-aviso;
-  }
-
   .web-link {
     font-size: 12px;
     color: $color-texto;
     text-decoration: none;
     display: inline-block;
     margin-top: 4px;
-
     &:hover {
       text-decoration: underline;
     }
@@ -55,17 +54,29 @@
 }
 
 .conv-acciones {
+  grid-area: acciones;
   display: flex;
   flex-direction: column;
   gap: 8px;
   align-items: flex-end;
-  grid-column: 2;
-  grid-row: 1;
 }
 
-.conv-acciones-bottom {
-  grid-column: 1;
-  grid-row: 2;
+.conv-detalle-admin {
+  grid-area: detalle;
+
+  .conv-fecha-pub {
+    font-size: 11px;
+    color: $color-texto;
+    font-weight: 400;
+    margin-bottom: 4px;
+  }
+}
+
+.conv-footer {
+  grid-area: footer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   padding-top: 4px;
 }
 
@@ -88,14 +99,9 @@
   cursor: pointer;
   padding: 0;
   text-decoration: underline;
-
   &:hover {
     text-decoration: none;
   }
-}
-
-.placeholder {
-  color: $color-texto-secundario;
 }
 
 .btn-ver-mas {
@@ -106,18 +112,11 @@
   border: none;
   cursor: pointer;
   padding: 0;
-  margin-top: 6px;
-  display: block;
-
   &:hover {
     text-decoration: underline;
   }
 }
 
-.conv-detalle-admin {
-  margin-top: 8px;
-
-  .conv-fecha-pub {
-    color: $color-texto;
-  }
+.placeholder {
+  color: $color-texto-secundario;
 }
