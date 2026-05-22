@@ -45,20 +45,27 @@
 
         <div class="conv-lista">
           <div class="conv-item" *ngFor="let c of pendientes">
-            <div class="conv-nombre">
-              <p>{{ c.titulo }}</p>
-              <p class="conv-fecha-pub">
-                {{ c.institucion_nombre || c.institucion?.nombre || "—" }} ·
-                enviada el {{ formatFecha(c.created_at) }}
-              </p>
-              <p class="conv-fecha-pub">
-                {{ c.tipo }} · {{ c.ciudad
-                }}{{ c.region ? ", " + c.region : "" }}
-              </p>
-              <button class="btn-ver-mas" (click)="c._expanded = !c._expanded">
-                {{ c._expanded ? "- ver menos" : "+ ver más" }}
-              </button>
-              <div *ngIf="c._expanded" class="conv-detalle-admin">
+            <div class="conv-item" *ngFor="let c of pendientes">
+              <div class="conv-nombre">
+                <p>{{ c.titulo }}</p>
+                <p class="conv-fecha-pub">
+                  {{ c.institucion_nombre || c.institucion?.nombre || "—" }} ·
+                  enviada el {{ formatFecha(c.created_at) }}
+                </p>
+                <p class="conv-fecha-pub">
+                  {{ c.tipo }} · {{ c.ciudad
+                  }}{{ c.region ? ", " + c.region : "" }}
+                </p>
+              </div>
+              <div class="conv-acciones">
+                <button class="btn-aprobar" (click)="aprobar(c.id)">
+                  publicar
+                </button>
+                <button class="btn-eliminar-conv" (click)="rechazar(c.id)">
+                  rechazar
+                </button>
+              </div>
+              <div class="conv-detalle-admin" *ngIf="c._expanded">
                 <p class="conv-fecha-pub" *ngIf="c.fecha_limite">
                   fecha límite: {{ formatFecha(c.fecha_limite) }}
                 </p>
@@ -107,16 +114,14 @@
                   </svg>
                 </a>
               </div>
-            </div>
-            <div class="conv-acciones">
-              <button class="btn-aprobar" (click)="aprobar(c.id)">
-                publicar
-              </button>
-            </div>
-            <div class="conv-acciones-bottom">
-              <button class="btn-eliminar-conv" (click)="rechazar(c.id)">
-                rechazar
-              </button>
+              <div class="conv-footer">
+                <button
+                  class="btn-ver-mas"
+                  (click)="c._expanded = !c._expanded"
+                >
+                  {{ c._expanded ? "- ver menos" : "+ ver más" }}
+                </button>
+              </div>
             </div>
           </div>
         </div>

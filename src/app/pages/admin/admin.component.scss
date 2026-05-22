@@ -11,9 +11,9 @@
   grid-template-columns: 1fr auto;
   grid-template-areas:
     "nombre acciones"
-    "detalle detalle"
+    "detalle acciones"
     "footer footer";
-  gap: 8px 16px;
+  gap: 0 16px;
   padding: 16px 0;
   border-bottom: 1px solid $color-borde;
   align-items: start;
@@ -40,6 +40,27 @@
     color: $color-texto-secundario;
     font-weight: 400;
   }
+}
+
+.conv-acciones {
+  grid-area: acciones;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-end;
+  align-self: stretch;
+}
+
+.conv-detalle-admin {
+  grid-area: detalle;
+  padding-top: 8px;
+
+  .conv-fecha-pub {
+    font-size: 11px;
+    color: $color-texto;
+    font-weight: 400;
+    margin-bottom: 4px;
+  }
 
   .web-link {
     font-size: 12px;
@@ -53,31 +74,9 @@
   }
 }
 
-.conv-acciones {
-  grid-area: acciones;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  align-items: flex-end;
-}
-
-.conv-detalle-admin {
-  grid-area: detalle;
-
-  .conv-fecha-pub {
-    font-size: 11px;
-    color: $color-texto;
-    font-weight: 400;
-    margin-bottom: 4px;
-  }
-}
-
 .conv-footer {
   grid-area: footer;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-top: 4px;
+  padding-top: 6px;
 }
 
 .btn-aprobar {
