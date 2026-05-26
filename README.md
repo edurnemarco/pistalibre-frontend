@@ -2,65 +2,49 @@
 
 Frontend Angular de Pistalibre, plataforma web de convocatorias artísticas para conectar artistas e instituciones culturales.
 
-## Requisitos previos
+## URL de producción
 
-- Node.js 18 o superior
-- Angular CLI 19: `npm install -g @angular/cli`
-- Backend Laravel arrancado en `http://127.0.0.1:8000`
+https://pistalibre-frontend.vercel.app
 
-## Instalación
+## Repositorios
 
-1. Descomprimir el proyecto y acceder a la carpeta
+- Backend: https://github.com/edurnemarco/pistalibre-api
+- Frontend: https://github.com/edurnemarco/pistalibre-frontend
 
-   cd pistalibre-frontend
+## Requisitos
 
-2. Instalar dependencias
+Node.js 22
+npm
 
+## Instalación en local
+
+1. Instalar dependencias
    npm install
-
-3. Configurar la URL de la API
-
-   Abrir `src/environments/environment.development.ts` y verificar que la URL apunta al backend:
-
-   export const environment = {
-   production: false,
-   apiUrl: 'http://127.0.0.1:8000/api'
-   };
-
-4. Arrancar el servidor de desarrollo
-
+2. Arrancar el servidor de desarrollo
    ng serve
 
-   La aplicación queda disponible en http://localhost:4200.
+La aplicación queda disponible en http://localhost:4200.
+Por defecto apunta al backend local http://127.0.0.1:8000/api. Para apuntar al backend de producción editar
+src/environments/environment.development.ts:
 
-## Usuarios de prueba
+typescriptexport const environment = {
+production: false,
+apiUrl: 'https://pistalibre-backend.onrender.com/api',
+};
 
-- Artista: ane@pistalibre.com / password123
-- Institución: tramaestudio@gmail.com / tramatrama
-- Admin: admin@pistalibre.com / admin123
+## Build de producción
 
-## Estructura del proyecto
+ng build --configuration production
 
-src/
-app/
-components/ → navbar, footer
-pages/ → oportunidades, login, register, perfil, admin...
-services/ → llamadas a la API REST
-store/ → estado global con NgRx
-guards/ → authGuard, guestGuard
-directives/ → scroll-reveal
-environments/ → URLs de entorno
-styles.scss → variables y estilos globales
+El resultado se genera en dist/pistalibre-frontend/browser.
 
-## Notas
+## Despliegue en producción
 
-- El backend Laravel debe estar corriendo antes de arrancar el frontend.
-- El token de autenticación se guarda en localStorage y persiste entre sesiones.
+El frontend está desplegado en Vercel. Se redespliega automáticamente con cada push a la rama main. La configuración de build en Vercel es:
 
-## Repositorio relacionado
+Build Command: ng build --configuration production
+Output Directory: dist/pistalibre-frontend/browser
 
-- Backend Laravel: https://github.com/edurnemarco/pistalibre-api
+## Variable de entorno en Vercel:
 
-## Autor
-
-Edurne Marco — TFM Máster Universitario en Desarrollo de sitios y aplicaciones web, UOC 2026
+NG_APP_API_URL=https://pistalibre-backend.onrender.com
