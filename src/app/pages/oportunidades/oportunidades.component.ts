@@ -247,7 +247,9 @@ export class OportunidadesComponent implements OnInit {
       .pipe(take(1))
       .subscribe((filtros) => {
         const nuevoMes = filtros.mes === valor ? '' : valor;
-        this.store.dispatch(actualizarFiltros({ filtros: { mes: nuevoMes } }));
+        this.store.dispatch(
+          actualizarFiltros({ filtros: { mes: nuevoMes, dia: '' } }),
+        );
         this.paginaActual$.next(1);
       });
   }
@@ -263,6 +265,24 @@ export class OportunidadesComponent implements OnInit {
         );
         this.paginaActual$.next(1);
       });
+  }
+
+  getMesLabel(valor: string): string {
+    const meses = [
+      'enero',
+      'febrero',
+      'marzo',
+      'abril',
+      'mayo',
+      'junio',
+      'julio',
+      'agosto',
+      'septiembre',
+      'octubre',
+      'noviembre',
+      'diciembre',
+    ];
+    return meses[parseInt(valor) - 1] || valor;
   }
 
   limpiarFiltros() {

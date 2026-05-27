@@ -61,37 +61,33 @@ export const selectConvocatoriasFiltradas = createSelector(
         )
           return false;
       }
-
-      if (filtros.mes) {
-        const mesNum = parseInt(filtros.mes);
-        const anio = filtros.anio
-          ? parseInt(filtros.anio)
-          : new Date().getFullYear();
-        const fechaLimite = new Date(anio, mesNum, 0);
+      if (filtros.mes || filtros.anio || filtros.dia) {
         const hoy = new Date();
-        if (
-          new Date(c.fecha_limite) > fechaLimite ||
-          new Date(c.fecha_limite) < hoy
-        )
-          return false;
-      }
+        const anio = filtros.anio ? parseInt(filtros.anio) : null;
+        const mesNum = filtros.mes ? parseInt(filtros.mes) : null;
+        const diaNum = filtros.dia ? parseInt(filtros.dia) : null;
 
-      if (filtros.anio) {
-        const anio = parseInt(filtros.anio);
-        const fechaLimiteAnio = new Date(anio, 11, 31); // último día del año seleccionado
-        const hoy = new Date();
-        if (
-          new Date(c.fecha_limite) > fechaLimiteAnio ||
-          new Date(c.fecha_limite) < hoy
-        )
-          return false;
-      }
+        // Calcular fecha límite máxima según los filtros aplicados
+        let fechaMaxima: Date;
 
-      if (filtros.dia) {
-        if (new Date(c.fecha_limite).getDate().toString() !== filtros.dia)
-          return false;
-      }
+        if (mesNum && diaNum) {
+          // Día + mes (+ año opcional)
+          const anioFinal = anio || new Date().getFullYear();
+          fechaMaxima = new Date(anioFinal, mesNum - 1, diaNum, 23, 59, 59);
+        } else if (mesNum) {
+          // Solo mes (+ año opcional)
+          const anioFinal = anio || new Date().getFullYear();
+          fechaMaxima = new Date(anioFinal, mesNum, 0, 23, 59, 59); // último día del mes
+        } else if (anio) {
+          // Solo año
+          fechaMaxima = new Date(anio, 11, 31, 23, 59, 59);
+        } else {
+          fechaMaxima = new Date(9999, 11, 31);
+        }
 
+        const fechaConv = new Date(c.fecha_limite);
+        if (fechaConv > fechaMaxima || fechaConv < hoy) return false;
+      }
       return true;
     });
 

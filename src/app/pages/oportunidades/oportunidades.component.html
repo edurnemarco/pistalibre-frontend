@@ -114,7 +114,7 @@
               class="filtro-desplegable-toggle"
               (click)="mesAbierto = !mesAbierto"
             >
-              <span>{{ filtros.mes ? "mes " + filtros.mes : "mes" }}</span>
+              <span>{{ filtros.mes ? getMesLabel(filtros.mes) : "mes" }}</span>
               <span>{{ mesAbierto ? "∧" : "∨" }}</span>
             </button>
             <div *ngIf="mesAbierto" class="filtro-desplegable-panel">
