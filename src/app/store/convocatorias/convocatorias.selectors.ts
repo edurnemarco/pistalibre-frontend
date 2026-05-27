@@ -64,11 +64,26 @@ export const selectConvocatoriasFiltradas = createSelector(
 
       if (filtros.mes) {
         const mesNum = parseInt(filtros.mes);
-        if (new Date(c.fecha_limite).getMonth() + 1 !== mesNum) return false;
+        const anio = filtros.anio
+          ? parseInt(filtros.anio)
+          : new Date().getFullYear();
+        const fechaLimite = new Date(anio, mesNum, 0);
+        const hoy = new Date();
+        if (
+          new Date(c.fecha_limite) > fechaLimite ||
+          new Date(c.fecha_limite) < hoy
+        )
+          return false;
       }
 
       if (filtros.anio) {
-        if (new Date(c.fecha_limite).getFullYear().toString() !== filtros.anio)
+        const anio = parseInt(filtros.anio);
+        const fechaLimiteAnio = new Date(anio, 11, 31); // último día del año seleccionado
+        const hoy = new Date();
+        if (
+          new Date(c.fecha_limite) > fechaLimiteAnio ||
+          new Date(c.fecha_limite) < hoy
+        )
           return false;
       }
 

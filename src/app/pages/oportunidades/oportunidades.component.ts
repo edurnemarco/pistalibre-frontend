@@ -97,6 +97,8 @@ export class OportunidadesComponent implements OnInit {
   mesAbierto = false;
   anioAbierto = false;
   paginaVersion = 0;
+  diaAbierto = false;
+  diasOpciones$: Observable<string[]>;
   constructor(
     private store: Store,
     private convocatoriasService: ConvocatoriasService,
@@ -161,6 +163,15 @@ export class OportunidadesComponent implements OnInit {
           .sort();
       }),
     );
+
+    this.diasOpciones$ = this.store.select(selectTodasConvocatorias).pipe(
+      map((convocatorias) => {
+        return convocatorias
+          .map((c) => new Date(c.fecha_limite).getDate().toString())
+          .filter((v, i, a) => a.indexOf(v) === i)
+          .sort((a, b) => parseInt(a) - parseInt(b));
+      }),
+    );
   }
 
   @HostListener('document:click', ['$event'])
@@ -219,13 +230,38 @@ export class OportunidadesComponent implements OnInit {
     this.paginaActual$.next(1);
   }
 
-  onMesChange(valor: string) {
-    this.store.dispatch(actualizarFiltros({ filtros: { mes: valor } }));
-    this.paginaActual$.next(1);
+  onDiaChange(valor: string) {
+    this.store
+      .select(selectFiltros)
+      .pipe(take(1))
+      .subscribe((filtros) => {
+        const nuevoDia = filtros.dia === valor ? '' : valor;
+        this.store.dispatch(actualizarFiltros({ filtros: { dia: nuevoDia } }));
+        this.paginaActual$.next(1);
+      });
   }
+  onMesChange(valor: string) {
+    this.store
+      .select(selectFiltros)
+      .pipe(take(1))
+      .subscribe((filtros) => {
+        const nuevoMes = filtros.mes === valor ? '' : valor;
+        this.store.dispatch(actualizarFiltros({ filtros: { mes: nuevoMes } }));
+        this.paginaActual$.next(1);
+      });
+  }
+
   onAnioChange(valor: string) {
-    this.store.dispatch(actualizarFiltros({ filtros: { anio: valor } }));
-    this.paginaActual$.next(1);
+    this.store
+      .select(selectFiltros)
+      .pipe(take(1))
+      .subscribe((filtros) => {
+        const nuevoAnio = filtros.anio === valor ? '' : valor;
+        this.store.dispatch(
+          actualizarFiltros({ filtros: { anio: nuevoAnio } }),
+        );
+        this.paginaActual$.next(1);
+      });
   }
 
   limpiarFiltros() {

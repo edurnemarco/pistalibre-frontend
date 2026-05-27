@@ -79,6 +79,34 @@
 
         <div class="filtro-grupo">
           <p class="filtro-label" id="fecha-label">abierto hasta</p>
+          <!-- DÍA -->
+          <div class="filtro-desplegable">
+            <button
+              class="filtro-desplegable-toggle"
+              (click)="diaAbierto = !diaAbierto"
+            >
+              <span>{{ filtros.dia ? "día " + filtros.dia : "día" }}</span>
+              <span>{{ diaAbierto ? "∧" : "∨" }}</span>
+            </button>
+            <div *ngIf="diaAbierto" class="filtro-desplegable-panel">
+              <label
+                *ngFor="let d of (diasOpciones$ | async) || []"
+                class="filtro-item"
+              >
+                <input
+                  type="checkbox"
+                  class="checkbox-hidden"
+                  [checked]="filtros.dia === d"
+                  (change)="onDiaChange(d)"
+                />
+                <span
+                  class="checkbox"
+                  [class.checked]="filtros.dia === d"
+                ></span>
+                <span>{{ d }}</span>
+              </label>
+            </div>
+          </div>
 
           <!-- MES -->
           <div class="filtro-desplegable">
