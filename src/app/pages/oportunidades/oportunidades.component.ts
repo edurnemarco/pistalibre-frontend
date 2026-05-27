@@ -229,13 +229,14 @@ export class OportunidadesComponent implements OnInit {
     this.store.dispatch(actualizarFiltros({ filtros: { ciudad } }));
     this.paginaActual$.next(1);
   }
-
-  onDiaChange(valor: string) {
+  onDiaChange(event: Event) {
+    const valor = (event.target as HTMLInputElement).value;
     this.store
       .select(selectFiltros)
       .pipe(take(1))
       .subscribe((filtros) => {
-        const nuevoDia = filtros.dia === valor ? '' : valor;
+        if (!filtros.mes) return;
+        const nuevoDia = valor || '';
         this.store.dispatch(actualizarFiltros({ filtros: { dia: nuevoDia } }));
         this.paginaActual$.next(1);
       });

@@ -79,31 +79,31 @@
 
         <div class="filtro-grupo">
           <p class="filtro-label" id="fecha-label">abierto hasta</p>
-          <!-- DÍA -->
+          <!-- AÑO -->
           <div class="filtro-desplegable">
             <button
               class="filtro-desplegable-toggle"
-              (click)="diaAbierto = !diaAbierto"
+              (click)="anioAbierto = !anioAbierto"
             >
-              <span>{{ filtros.dia ? "día " + filtros.dia : "día" }}</span>
-              <span>{{ diaAbierto ? "∧" : "∨" }}</span>
+              <span>{{ filtros.anio || "año" }}</span>
+              <span>{{ anioAbierto ? "∧" : "∨" }}</span>
             </button>
-            <div *ngIf="diaAbierto" class="filtro-desplegable-panel">
+            <div *ngIf="anioAbierto" class="filtro-desplegable-panel">
               <label
-                *ngFor="let d of (diasOpciones$ | async) || []"
+                *ngFor="let a of (aniosOpciones$ | async) || []"
                 class="filtro-item"
               >
                 <input
                   type="checkbox"
                   class="checkbox-hidden"
-                  [checked]="filtros.dia === d"
-                  (change)="onDiaChange(d)"
+                  [checked]="filtros.anio === a"
+                  (change)="onAnioChange(a)"
                 />
                 <span
                   class="checkbox"
-                  [class.checked]="filtros.dia === d"
+                  [class.checked]="filtros.anio === a"
                 ></span>
-                <span>{{ d }}</span>
+                <span>{{ a }}</span>
               </label>
             </div>
           </div>
@@ -137,33 +137,17 @@
             </div>
           </div>
 
-          <!-- AÑO -->
-          <div class="filtro-desplegable">
-            <button
-              class="filtro-desplegable-toggle"
-              (click)="anioAbierto = !anioAbierto"
-            >
-              <span>{{ filtros.anio || "año" }}</span>
-              <span>{{ anioAbierto ? "∧" : "∨" }}</span>
-            </button>
-            <div *ngIf="anioAbierto" class="filtro-desplegable-panel">
-              <label
-                *ngFor="let a of (aniosOpciones$ | async) || []"
-                class="filtro-item"
-              >
-                <input
-                  type="checkbox"
-                  class="checkbox-hidden"
-                  [checked]="filtros.anio === a"
-                  (change)="onAnioChange(a)"
-                />
-                <span
-                  class="checkbox"
-                  [class.checked]="filtros.anio === a"
-                ></span>
-                <span>{{ a }}</span>
-              </label>
-            </div>
+          <!-- DÍA -->
+          <div class="filtro-desplegable" *ngIf="filtros.mes">
+            <input
+              type="number"
+              min="1"
+              max="31"
+              placeholder="día"
+              [value]="filtros.dia || ''"
+              (input)="onDiaChange($event)"
+              class="filtro-dia-input"
+            />
           </div>
         </div>
 
