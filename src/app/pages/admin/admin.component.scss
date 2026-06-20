@@ -8,15 +8,14 @@
 
 .conv-item {
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: 1fr 180px;
   grid-template-areas:
     "nombre acciones"
-    "detalle acciones"
-    "footer footer";
-  gap: 0 16px;
+    "detalle acciones";
+  gap: 0;
   padding: 16px 0;
   border-bottom: 1px solid $color-borde;
-  align-items: start;
+  align-items: stretch;
 
   &:first-child {
     padding-top: 0;
@@ -28,6 +27,8 @@
 
 .conv-nombre {
   grid-area: nombre;
+  padding-right: 24px;
+  border-right: 1px solid $color-borde;
 
   p {
     font-size: 12px;
@@ -48,12 +49,14 @@
   flex-direction: column;
   justify-content: space-between;
   align-items: flex-end;
-  align-self: stretch;
+  padding-left: 24px;
 }
 
 .conv-detalle-admin {
   grid-area: detalle;
   padding-top: 8px;
+  padding-right: 24px;
+  border-right: 1px solid $color-borde;
 
   .conv-fecha-pub {
     font-size: 12px;
@@ -75,7 +78,7 @@
 }
 
 .conv-footer {
-  grid-area: footer;
+  grid-column: 1 / -1;
   padding-top: 6px;
 }
 
@@ -84,13 +87,12 @@
   font-size: 12px;
   color: $color-texto;
   background: $color-acento;
-  border: none;
+  border: 1px solid transparent;
   cursor: pointer;
   padding: 4px 8px;
 
   &:hover {
     border: 1px solid $color-texto;
-    padding: 6px 12px;
   }
 }
 
