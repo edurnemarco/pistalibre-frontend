@@ -1,4 +1,12 @@
-import { Directive, ElementRef, OnDestroy, OnInit } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import {
+  Directive,
+  ElementRef,
+  Inject,
+  OnDestroy,
+  OnInit,
+  PLATFORM_ID,
+} from '@angular/core';
 
 @Directive({
   selector: '[appScrollReveal]',
@@ -7,9 +15,16 @@ import { Directive, ElementRef, OnDestroy, OnInit } from '@angular/core';
 export class ScrollRevealDirective implements OnInit, OnDestroy {
   private observer!: IntersectionObserver;
 
-  constructor(private el: ElementRef) {}
+  constructor(
+    private el: ElementRef,
+    @Inject(PLATFORM_ID) private platformId: Object,
+  ) {}
 
   ngOnInit() {
+    if (!isPlatformBrowser(this.platformId)) {
+      return;
+    }
+
     this.el.nativeElement.classList.add('scroll-hidden');
 
     this.observer = new IntersectionObserver(
@@ -28,6 +43,6 @@ export class ScrollRevealDirective implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.observer.disconnect();
+    this.observer?.disconnect();
   }
 }

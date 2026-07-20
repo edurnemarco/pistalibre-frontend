@@ -19,6 +19,7 @@ import { alertasReducer } from './store/alertas/alertas.reducer';
 
 import { ParticipacionesEffects } from './store/participaciones/participaciones.effects';
 import { participacionesReducer } from './store/participaciones/participaciones.reducer';
+import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -42,6 +43,6 @@ export const appConfig: ApplicationConfig = {
     provideStoreDevtools({
       maxAge: 25,
       logOnly: false,
-    }),
+    }), provideClientHydration(withEventReplay()),
   ],
 };
