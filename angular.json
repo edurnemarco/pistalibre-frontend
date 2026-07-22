@@ -36,6 +36,7 @@
               "allowedHosts": []
             },
             "prerender": false,
+            "outputMode": "server",
             "ssr": {
               "entry": "src/server.ts"
             }
