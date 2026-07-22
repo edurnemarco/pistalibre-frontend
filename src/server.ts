@@ -13,16 +13,20 @@ const app = express();
 const commonEngine = new CommonEngine();
 
 /**
- * Example Express Rest API endpoints can be defined here.
- * Uncomment and define endpoints as necessary.
- *
- * Example:
- * ```ts
- * app.get('/api/**', (req, res) => {
- *   // Handle API request
- * });
- * ```
+ * Proxy del sitemap.xml hacia el backend (Laravel/Render)
  */
+app.get('/sitemap.xml', async (req, res) => {
+  try {
+    const response = await fetch(
+      'https://pistalibre-backend.onrender.com/sitemap.xml',
+    );
+    const xml = await response.text();
+    res.set('Content-Type', 'application/xml');
+    res.send(xml);
+  } catch (err) {
+    res.status(502).send('No se pudo obtener el sitemap');
+  }
+});
 
 /**
  * Serve static files from /browser
@@ -31,7 +35,7 @@ app.get(
   '**',
   express.static(browserDistFolder, {
     maxAge: '1y',
-    index: 'index.html'
+    index: 'index.html',
   }),
 );
 
