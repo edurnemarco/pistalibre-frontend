@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
+import { Meta, Title } from '@angular/platform-browser';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { environment } from '../../../environments/environment';
 
@@ -21,6 +22,8 @@ export class ConvocatoriaComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private http: HttpClient,
+    private titleService: Title,
+    private metaService: Meta,
   ) {}
 
   ngOnInit(): void {
@@ -35,12 +38,34 @@ export class ConvocatoriaComponent implements OnInit {
       next: (data) => {
         this.convocatoria = data;
         this.loading = false;
+        this.actualizarMetadatos(data);
       },
       error: () => {
         this.error = true;
         this.loading = false;
       },
     });
+  }
+
+  private actualizarMetadatos(convocatoria: any): void {
+    const titulo = `${convocatoria.titulo} — Pistalibre`;
+    this.titleService.setTitle(titulo);
+
+    this.metaService.updateTag({
+      name: 'description',
+      content: this.truncar(convocatoria.descripcion, 155),
+    });
+
+    this.metaService.updateTag({ property: 'og:title', content: titulo });
+    this.metaService.updateTag({
+      property: 'og:description',
+      content: this.truncar(convocatoria.descripcion, 155),
+    });
+  }
+
+  private truncar(texto: string, max: number): string {
+    if (!texto) return '';
+    return texto.length > max ? texto.slice(0, max).trim() + '…' : texto;
   }
 
   get participantes(): {
