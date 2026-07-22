@@ -13,8 +13,10 @@ export const authReducer = createReducer(
   })),
 
   on(AuthActions.loginSuccess, (state, { user, token }) => {
-    localStorage.setItem('token', token);
-    localStorage.setItem('user', JSON.stringify(user));
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem('token', token);
+      localStorage.setItem('user', JSON.stringify(user));
+    }
     return {
       ...state,
       user,
@@ -38,8 +40,10 @@ export const authReducer = createReducer(
   })),
 
   on(AuthActions.registerSuccess, (state, { user, token }) => {
-    localStorage.setItem('token', token);
-    localStorage.setItem('user', JSON.stringify(user));
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem('token', token);
+      localStorage.setItem('user', JSON.stringify(user));
+    }
     return {
       ...state,
       user,
@@ -57,8 +61,10 @@ export const authReducer = createReducer(
 
   // Logout
   on(AuthActions.logoutSuccess, (state) => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    if (typeof localStorage !== 'undefined') {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+    }
     return {
       ...state,
       user: null,
@@ -77,7 +83,9 @@ export const authReducer = createReducer(
 
   //Guardar cambios perfil
   on(AuthActions.updateUserSuccess, (state, { user }) => {
-    localStorage.setItem('user', JSON.stringify(user));
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem('user', JSON.stringify(user));
+    }
     return {
       ...state,
       user,

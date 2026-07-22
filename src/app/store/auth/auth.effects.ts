@@ -116,7 +116,10 @@ export class AuthEffects {
     this.actions$.pipe(
       ofType(AuthActions.logout),
       switchMap(() => {
-        const token = localStorage.getItem('token') || '';
+        const token =
+          typeof localStorage !== 'undefined'
+            ? localStorage.getItem('token') || ''
+            : '';
         return this.authService.logout(token).pipe(
           map(() => AuthActions.logoutSuccess()),
           catchError(() => of(AuthActions.logoutSuccess())),
@@ -138,8 +141,14 @@ export class AuthEffects {
     this.actions$.pipe(
       ofType(AuthActions.loadUserFromStorage),
       map(() => {
-        const token = localStorage.getItem('token');
-        const user = localStorage.getItem('user');
+        const token =
+          typeof localStorage !== 'undefined'
+            ? localStorage.getItem('token')
+            : null;
+        const user =
+          typeof localStorage !== 'undefined'
+            ? localStorage.getItem('user')
+            : null;
         if (token && user) {
           return AuthActions.loadUserFromStorageSuccess({
             user: JSON.parse(user),

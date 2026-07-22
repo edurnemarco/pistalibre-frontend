@@ -10,7 +10,10 @@ export class InstitucionService {
   constructor(private http: HttpClient) {}
 
   private getHeaders(): { Authorization: string } {
-    const token = localStorage.getItem('token') || '';
+    const token =
+      typeof localStorage !== 'undefined'
+        ? localStorage.getItem('token') || ''
+        : '';
     return { Authorization: `Bearer ${token}` };
   }
 

@@ -27,7 +27,10 @@ export class ConvocatoriasService {
   constructor(private http: HttpClient) {}
 
   private getHeaders() {
-    const token = localStorage.getItem('token') || '';
+    const token =
+      typeof localStorage !== 'undefined'
+        ? localStorage.getItem('token') || ''
+        : '';
     return { Authorization: `Bearer ${token}` };
   }
 

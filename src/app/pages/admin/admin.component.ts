@@ -124,7 +124,10 @@ export class AdminComponent implements OnInit {
   }
 
   private getHeaders(): HttpHeaders {
-    const token = localStorage.getItem('token') || '';
+    const token =
+      typeof localStorage !== 'undefined'
+        ? localStorage.getItem('token') || ''
+        : '';
     return new HttpHeaders({ Authorization: `Bearer ${token}` });
   }
 
